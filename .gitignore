@@ -1,0 +1,82 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# ProtLoc Fusion — ignore rules
+# Principle: bytes that are large, derived, secret or machine-specific stay out
+# of git. Pointers, manifests and checksums stay in.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Secrets and local environment ──
+.env
+.env.*
+!.env.example
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+build/
+sdist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# ── Node / frontend ──
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+frontend/coverage/
+frontend/test-results/
+frontend/playwright-report/
+
+# ── Data: DVC tracks the bytes, git tracks the pointers ──
+data/raw/
+data/interim/
+data/processed/
+data/embeddings/
+data/evidence/
+!data/**/.gitkeep
+!data/manifests/
+!data/**/*.dvc
+
+# ── Model artifacts: the registry directory is versioned, the weights are not ──
+registry/**/model.pt
+registry/**/calibrator.pkl
+*.pt
+*.pth
+*.pkl
+*.ckpt
+*.safetensors
+*.h5
+*.onnx
+
+# ── Experiment and benchmark outputs (manifests are committed, outputs are not) ──
+experiments/**/checkpoints/
+experiments/**/artifacts/
+benchmarks/**/raw_output/
+wandb/
+outputs/
+multirun/
+
+# ── Notebooks: exploration only, no checkpoints in git ──
+.ipynb_checkpoints/
+
+# ── OS and editor ──
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+!.vscode/extensions.json
+*.swp
+*~

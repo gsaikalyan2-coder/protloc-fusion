@@ -1,0 +1,55 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Line endings. The project is authored on Windows and built on Linux CI.
+# Without this, every checkout rewrites line endings and `ruff format --check`
+# and `prettier --check` fail for reasons unrelated to the code.
+# ─────────────────────────────────────────────────────────────────────────────
+* text=auto eol=lf
+
+# Explicitly textual — normalised to LF in the repository and in the checkout
+*.py       text eol=lf
+*.pyi      text eol=lf
+*.ts       text eol=lf
+*.tsx      text eol=lf
+*.js       text eol=lf
+*.jsx      text eol=lf
+*.json     text eol=lf
+*.css      text eol=lf
+*.html     text eol=lf
+*.md       text eol=lf
+*.txt      text eol=lf
+*.yaml     text eol=lf
+*.yml      text eol=lf
+*.toml     text eol=lf
+*.cfg      text eol=lf
+*.ini      text eol=lf
+*.sh       text eol=lf
+*.fasta    text eol=lf
+*.fa       text eol=lf
+*.tsv      text eol=lf
+*.csv      text eol=lf
+Dockerfile*     text eol=lf
+.gitignore      text eol=lf
+.gitattributes  text eol=lf
+.env.example    text eol=lf
+
+# Binary — never diffed, never normalised
+*.png      binary
+*.jpg      binary
+*.jpeg     binary
+*.gif      binary
+*.ico      binary
+*.pdf      binary
+*.woff     binary
+*.woff2    binary
+*.pt       binary
+*.pth      binary
+*.pkl      binary
+*.ckpt     binary
+*.safetensors binary
+*.gz       binary
+*.zip      binary
+*.db       binary
+
+# Generated files — shown collapsed in review, still diffable on request
+frontend/src/styles/tokens.css linguist-generated=true
+frontend/src/types/api.ts      linguist-generated=true
