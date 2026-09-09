@@ -1,0 +1,225 @@
+# ProtLoc Fusion — continuous integration.
+#
+# Every job below is required. Two of them are the reason this file is worth
+# writing carefully:
+#
+#   backend-test   runs test_layering.py, which fails on an architecture
+#                  violation rather than leaving the layering aspirational.
+#   tokens-current regenerates tokens.css from docs/DESIGN.md and fails on a
+#                  diff, which catches a hand-edited token file.
+#
+# The docker-build job asserts the separation between the two images: the
+# training image must have needleall, and the serving image must NOT be able to
+# import torch. That check is deliberately inverted — it proves the images are
+# genuinely separate rather than sharing a base by accident.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "22"
+
+jobs:
+  backend-lint:
+    name: backend · lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the dev extra
+        run: pip install -e "backend[dev]"
+      - name: ruff check
+        run: ruff check backend
+      - name: ruff format --check
+        run: ruff format --check backend
+      - name: ruff check (scripts, under the backend rule set)
+        run: ruff check --config backend/ruff.toml scripts
+
+  backend-types:
+    name: backend · types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install -e "backend[dev]"
+      # PHASE_01 §5 check 4. Widened to inference/ in Phase 7, when it has code.
+      - name: mypy (strict)
+        run: mypy backend/protloc/domain backend/protloc/config
+
+  backend-test:
+    name: backend · test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install -e "backend[dev]"
+      - name: pytest
+        working-directory: backend
+        run: python -m pytest tests
+
+  frontend-lint:
+    name: frontend · lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: eslint
+        run: npx eslint . --max-warnings 0
+      - name: prettier
+        run: npx prettier --check .
+
+  frontend-build:
+    name: frontend · build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: tsc --noEmit
+        run: npx tsc --noEmit
+      - name: vite build
+        run: npm run build
+      - name: dist/ was produced
+        run: test -f dist/index.html
+
+  tokens-current:
+    name: tokens · generated, not hand-edited
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Regenerate from docs/DESIGN.md
+        run: python scripts/generate_tokens.py
+      - name: The committed file must match
+        run: git diff --exit-code -- frontend/src/styles/tokens.css
+
+  frontend-deps:
+    name: frontend · React only
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      # CLAUDE.md: no CSS framework, no component library, every version pinned.
+      - run: python scripts/check_frontend_deps.py
+
+  secrets-scan:
+    name: repo · no secret values
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: .env.example carries placeholders only
+        run: |
+          if grep -nE '(API_KEY|SECRET|TOKEN|DSN|PASSWORD)=' .env.example \
+             | grep -v 'ENTER_YOUR_VALUE_HERE'; then
+            echo "::error::.env.example contains a filled-in secret"
+            exit 1
+          fi
+      - name: no .env is committed
+        run: |
+          if git ls-files --error-unmatch .env 2>/dev/null; then
+            echo "::error::.env is tracked; it must never be committed"
+            exit 1
+          fi
+
+  docker-build:
+    name: docker · both images, genuinely separate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build the serving image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deployment/Dockerfile.serve
+          tags: protloc-serve:ci
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build the training image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deployment/Dockerfile.train
+          tags: protloc-train:ci
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # PHASE_01 §5 check 12.
+      - name: Training image has EMBOSS needleall
+        run: docker run --rm protloc-train:ci which needleall
+
+      # PHASE_01 §5 check 13, deliberately inverted: the serving image MUST fail
+      # to import torch. If it succeeds, the two images are sharing a base and
+      # the train/serve separation is decorative.
+      - name: Serving image cannot import torch
+        run: |
+          if docker run --rm protloc-serve:ci python -c "import torch" 2>/dev/null; then
+            echo "::error::the serving image can import torch; the images are not separate"
+            exit 1
+          fi
+          echo "torch is absent from the serving image, as required"
+
+      - name: Serving image validates its configuration and refuses an empty one
+        run: |
+          if docker run --rm protloc-serve:ci 2>/dev/null; then
+            echo "::error::the serving image started with no configuration"
+            exit 1
+          fi
+          docker run --rm \
+            -e APP_ENV=development -e LOG_LEVEL=INFO \
+            -e API_HOST=0.0.0.0 -e API_PORT=8000 \
+            -e CORS_ALLOWED_ORIGINS=http://localhost:5173 \
+            protloc-serve:ci
+
+  compose-valid:
+    name: docker · compose file is valid
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: docker compose config
+        run: |
+          cp .env.example .env
+          docker compose -f deployment/docker-compose.yml config > /dev/null

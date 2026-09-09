@@ -1,0 +1,70 @@
+# ProtLoc Fusion — training image (GPU).
+#
+# Separate from Dockerfile.serve on purpose. This image may install anything a
+# training or split run needs; the serving image may not, and the two never
+# share a base by accident.
+#
+# EMBOSS is installed here in Phase 1 rather than in Phase 4, because GraphPart
+# shells out to `needleall` and fails confusingly when it is absent
+# (EXTERNAL_WORKFLOW.md §8). The dependency is real from the first split run, so
+# it is declared from the first image.
+#
+# Torch, transformers, PEFT and netcal arrive in the phase that first uses them
+# (Phase 5 onward). Phase 1 installs the package's dev extra, which is what CI
+# needs to compose the config tree and run the test suite.
+#
+# Build from the repository root:
+#     docker build -f deployment/Dockerfile.train -t protloc-train .
+
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+
+LABEL org.opencontainers.image.title="protloc-fusion-train" \
+      org.opencontainers.image.description="ProtLoc Fusion training and split image (GPU, EMBOSS for GraphPart)" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.source="https://github.com/gsaikalyan2-coder/protloc-fusion"
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PATH="/opt/venv/bin:${PATH}"
+
+# python3.11 is not in the Ubuntu 22.04 archive; the deadsnakes PPA supplies it,
+# and the project pins 3.11 so that the training and serving images agree on the
+# interpreter that produced a checkpoint.
+#
+# emboss provides `needleall`, the alignment backend GraphPart uses (ADR-0002).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        software-properties-common ca-certificates gnupg \
+    && add-apt-repository -y ppa:deadsnakes/ppa \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3.11 \
+        python3.11-venv \
+        python3.11-dev \
+        build-essential \
+        git \
+        curl \
+        emboss \
+    && rm -rf /var/lib/apt/lists/*
+
+# Fail the build, not the first split run, if needleall did not land.
+RUN needleall -version 2>&1 | head -1 && which needleall
+
+WORKDIR /workspace
+
+COPY backend/pyproject.toml backend/ruff.toml ./backend/
+COPY backend/protloc ./backend/protloc
+
+RUN python3.11 -m venv /opt/venv \
+    && /opt/venv/bin/pip install --upgrade pip setuptools wheel \
+    && /opt/venv/bin/pip install -e "./backend[dev]"
+
+COPY configs ./configs
+COPY scripts ./scripts
+COPY backend/rules ./backend/rules
+COPY backend/tests ./backend/tests
+
+CMD ["python", "-c", "import shutil, sys; sys.stdout.write(f'needleall: {shutil.which(\"needleall\")}\\n')"]

@@ -1,0 +1,60 @@
+# ProtLoc Fusion — serving image (CPU).
+#
+# This image runs predictions. It does NOT install the training dependencies,
+# and that omission is load-bearing: "training never imports into serving" is a
+# convention in a document and a test in CI, but here it is a build failure. A
+# serving module that starts importing torch or hydra breaks this image, which
+# is the cheapest possible place to find out.
+#
+# Build from the repository root so that backend/ is in the context:
+#     docker build -f deployment/Dockerfile.serve -t protloc-serve .
+
+# ── Build stage: resolve the wheel, keeping the compiler out of the runtime ──
+FROM python:3.11-slim-bookworm AS build
+
+ENV PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /build
+
+COPY backend/pyproject.toml backend/ruff.toml ./
+COPY backend/protloc ./protloc
+
+# Base dependencies only — no [dev], so no pytest, no ruff, no mypy, no hydra.
+RUN python -m venv /opt/venv \
+    && /opt/venv/bin/pip install --upgrade pip setuptools wheel \
+    && /opt/venv/bin/pip install .
+
+# ── Runtime stage ────────────────────────────────────────────────────────────
+FROM python:3.11-slim-bookworm AS runtime
+
+LABEL org.opencontainers.image.title="protloc-fusion-serve" \
+      org.opencontainers.image.description="ProtLoc Fusion serving API (CPU, no training dependencies)" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.source="https://github.com/gsaikalyan2-coder/protloc-fusion"
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/opt/venv/bin:${PATH}"
+
+# The service does not need root, and a container that never writes outside its
+# volumes has no reason to run as it.
+RUN useradd --create-home --uid 10001 protloc
+
+COPY --from=build /opt/venv /opt/venv
+
+WORKDIR /app
+COPY --chown=protloc:protloc backend/rules ./rules
+
+USER protloc
+
+EXPOSE 8000
+
+# Fails fast on an incomplete environment rather than starting and serving with
+# a wrong MODEL_VERSION. Phase 2 replaces this with a request to /health.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD ["python", "-m", "protloc.config.settings"]
+
+# The API application arrives in Phase 2; until then the image's contract is
+# that it starts, validates its configuration, and reports it.
+CMD ["python", "-m", "protloc.config.settings"]
