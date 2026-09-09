@@ -1,0 +1,33 @@
+# The Phase 6 baseline: the trunk is frozen and only the heads are trained.
+# This is the run every later configuration is compared against, so it is the
+# default rather than an afterthought.
+
+name: frozen_trunk
+
+adaptation:
+  mode: frozen
+  lora: null
+
+optimiser:
+  # Values are set by the Phase 8 validation sweep and recorded in the run
+  # manifest. Nulls are deliberate: a hyperparameter invented at scaffold time
+  # becomes a number in the paper that nobody can trace.
+  name: adamw
+  learning_rate: null
+  weight_decay: null
+
+schedule:
+  epochs: null
+  batch_size: null
+  early_stopping_metric: null
+
+loss:
+  # One weight per head. Frozen on validation in Phase 8, before test is touched.
+  task_weights: null
+  # A head with no label for a sequence contributes no gradient for it.
+  mask_unlabelled_tasks: true
+
+tracking:
+  # ADR-0004: the manifest is the source of truth; W&B only views it.
+  manifest: true
+  wandb: true

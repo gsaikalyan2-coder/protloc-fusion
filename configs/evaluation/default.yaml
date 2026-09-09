@@ -1,0 +1,32 @@
+# How a run is scored.
+#
+# The evaluation module calls the SERVED path over HTTP rather than model
+# objects, which is the blueprint's §3.3 requirement: the numbers in the paper
+# are the numbers a user receives. That is a property of the code, and this file
+# records the settings it runs under.
+
+name: default
+
+target:
+  # 'api' is the only supported value. Scoring a model object directly would
+  # produce numbers the served system does not reproduce.
+  mode: api
+  base_url: http://localhost:8000
+
+partitions:
+  # Test is touched once, after every reported value is frozen on validation.
+  validation: [0, 1, 2, 3]
+  test: [4]
+
+metrics:
+  per_head: [macro_f1, mcc]
+  calibration: [ece, brier]
+  # Coverage-risk is how abstention is judged: refusing to answer is only a
+  # virtue if what remains is more reliable.
+  abstention: [coverage, risk_at_coverage]
+
+reporting:
+  # Every reported number names the command, config hash and experiment id that
+  # produced it. A number with no provenance is removed, not footnoted.
+  require_provenance: true
+  bootstrap_samples: 1000

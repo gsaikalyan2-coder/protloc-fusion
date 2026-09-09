@@ -1,0 +1,47 @@
+# The shared representation and the seven heads that sit on it.
+#
+# Phase 7 builds the trunk and one head end to end through the served path
+# before Phase 8 generalises to seven. The head list is here so that the task
+# vocabulary lives in one place; the head implementations arrive with their phase.
+
+name: trunk_esm2_650m
+
+trunk:
+  # The cache key for an embedding includes checkpoint AND revision: a name on
+  # its own does not identify the weights that produced a vector.
+  checkpoint: ${oc.env:ESM_CHECKPOINT,facebook/esm2_t33_650M_UR50D}
+  revision: ???
+  # Measured in Phase 5, not assumed from the model card.
+  embedding_dim: null
+  pooling: mean
+
+# The seven task heads named in PROJECT_PLAN.md §3, in the order the domain enum
+# declares them. `applies_to` is what makes a head masked rather than scored for
+# an organism group it does not apply to — masking and abstaining are different
+# things and are never conflated.
+heads:
+  localization:
+    kind: multi_label
+    applies_to: [eukarya, gram_positive, gram_negative, archaea]
+  membrane_type:
+    kind: multi_class
+    applies_to: [eukarya, gram_positive, gram_negative, archaea]
+  prokaryotic_localization:
+    kind: multi_class
+    applies_to: [gram_positive, gram_negative, archaea]
+  signal_peptide:
+    kind: sequence_tagging
+    applies_to: [eukarya, gram_positive, gram_negative, archaea]
+  mitochondrial_transit_peptide:
+    kind: sequence_tagging
+    applies_to: [eukarya]
+  chloroplast_transit_peptide:
+    kind: sequence_tagging
+    applies_to: [eukarya]
+  go_function:
+    kind: multi_label
+    applies_to: [eukarya, gram_positive, gram_negative, archaea]
+
+classical_branch:
+  # The classical feature branch is a baseline and an ablation, not decoration.
+  enabled: true

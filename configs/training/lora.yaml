@@ -1,0 +1,17 @@
+# The LoRA arm of the Phase 8 adaptation study. Run A/B/C is
+# frozen / LoRA / full fine-tune, and the trade-off table is populated with
+# measured numbers, not with the values that happened to be typed here.
+
+defaults:
+  - frozen_trunk
+
+name: lora
+
+adaptation:
+  mode: lora
+  lora:
+    # Set by the Phase 8 sweep.
+    rank: null
+    alpha: null
+    dropout: null
+    target_modules: null

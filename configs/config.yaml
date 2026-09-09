@@ -1,0 +1,41 @@
+# Root composition for every ProtLoc Fusion run.
+#
+# Hydra composes this file with one option from each group below. A run is
+# specified by overriding groups on the command line rather than by copying and
+# editing a script:
+#
+#     python scripts/train.py training=lora model=trunk_esm2_650m
+#
+# The resolved configuration is hashed and written into the run manifest, which
+# is what makes `config_hash` in an API response mean something. Values that the
+# paper reports are frozen in the phase that owns them (PROJECT_PLAN.md §7.2);
+# this tree records them, it does not invent them.
+
+defaults:
+  - data: uniprot_swissprot
+  - model: trunk_esm2_650m
+  - training: frozen_trunk
+  - evaluation: default
+  - deployment: local
+  - _self_
+
+# Applies to every run, whatever the group choices.
+project:
+  name: protloc-fusion
+  # SemVer of the registry bundle a run targets, not of the code.
+  bundle_version: 1.0.0
+
+# Determinism is a property of a run, not an aspiration. The seed is recorded in
+# the manifest; a run that cannot state its seed cannot be repeated.
+seed: 20260909
+
+paths:
+  data_root: ${oc.env:DATA_ROOT,./data}
+  registry_root: ${oc.env:MODEL_REGISTRY,./registry}
+  experiments_root: ./experiments
+
+hydra:
+  run:
+    dir: ./experiments/${now:%Y%m%d-%H%M%S}
+  job:
+    chdir: false

@@ -1,0 +1,18 @@
+# Local development: the backend on localhost, the frontend on the Vite port.
+
+name: local
+
+api:
+  host: ${oc.env:API_HOST,0.0.0.0}
+  port: ${oc.env:API_PORT,8000}
+  reload: true
+
+serving:
+  # ADR-0001. Every prediction is a job; a single sequence is a job of size one.
+  mode: queue
+  workers: 1
+
+artifacts:
+  # Locally the registry is a directory in the working tree.
+  source: local
+  registry_root: ${oc.env:MODEL_REGISTRY,./registry}

@@ -1,0 +1,47 @@
+# The corpus. Every field here is either frozen now or scheduled to be frozen in
+# the phase named beside it; nothing is guessed. A null is an honest "Phase N
+# produces this", and the loader is expected to fail on a null rather than
+# substitute a default.
+
+name: uniprot_swissprot
+
+source:
+  # Set in Phase 3 from the UniProt download page on the day of the snapshot.
+  # MISSING until Phase 3: reading it before it is set raises rather than
+  # silently substituting a default.
+  release: ???
+  # Reviewed entries only: an unreviewed annotation is not a label.
+  reviewed_only: true
+
+sequence:
+  # Frozen in Phase 3 from the corpus length distribution.
+  max_length: ???
+  # The 20 standard residues plus the ambiguity codes UniProt actually uses.
+  alphabet: ACDEFGHIKLMNPQRSTVWYBXZUO
+  # Normalisation is recorded so that sequence_sha256 is reproducible.
+  uppercase: true
+  strip_whitespace: true
+
+organism_groups:
+  - eukarya
+  - gram_positive
+  - gram_negative
+  - archaea
+
+labels:
+  # A label column distinguishes 'not annotated' from 'annotated negative'.
+  # Conflating them silently corrupts the multi-task loss (CLAUDE.md, data schema).
+  unknown_is_distinct_from_negative: true
+  # Which UniProt evidence codes count as a label. Set in Phase 3.
+  accepted_evidence_codes: null
+
+splits:
+  # ADR-0002: GraphPart over needleall alignments, 30% maximum global identity,
+  # five partitions. Changing any of these means re-splitting and re-training.
+  partitioner: graphpart
+  alignment_backend: needleall
+  max_identity: 0.30
+  partitions: 5
+  # Produced by the Phase 4 GraphPart run and recorded in the split manifest.
+  partitioner_version: null
+  removal_rate: null

@@ -1,0 +1,26 @@
+# Hugging Face Spaces (ADR-0005): a Docker Space for the backend and a Static
+# Space for the frontend, with artifacts pulled from Hub repos at start because
+# the Space's 50 GB disk does not persist across restarts.
+
+defaults:
+  - local
+
+name: hf_spaces
+
+api:
+  reload: false
+
+serving:
+  # 2 vCPU. A second worker competes for the same cores and lengthens the queue
+  # it was meant to shorten. Revisit with the Phase 13 numbers.
+  workers: 1
+
+artifacts:
+  source: hf_hub
+  model_repo: ${oc.env:HF_MODEL_REPO,sk8069/protloc-fusion}
+  evidence_repo: ${oc.env:HF_EVIDENCE_REPO,sk8069/protloc-fusion-evidence}
+  cache_dir: ${oc.env:ARTIFACT_CACHE_DIR,/data/artifacts}
+
+cors:
+  # Restricted to the frontend Space; a wildcard is rejected by settings.py.
+  allowed_origins: ???
