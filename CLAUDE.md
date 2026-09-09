@@ -238,6 +238,10 @@ corrupts the multi-task loss.
   runtime. A literal `0.5` in code is a bug, not a default.
 - **Colors:** every color comes from `docs/DESIGN.md` tokens. A raw hex in a component is
   a review rejection.
+- **React only.** The frontend is React + Vite + TypeScript with plain CSS driven by the
+  generated tokens. No CSS framework, no component library, no styling or UI runtime
+  beyond React and its type packages. A dependency that renders UI is a decision, and
+  decisions become ADRs.
 - **Queries:** parameterized only. No `SELECT *` in production paths.
 - **Secrets:** never in code, never in logs, never in a run manifest.
 - **Restricted licenses:** repos marked restricted in `docs/THIRD_PARTY.md` are read,

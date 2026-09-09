@@ -110,6 +110,8 @@ file; `test_layering` catches an architecture violation.
 - **`frontend/src/styles/tokens.css` is generated** from the tables in `docs/DESIGN.md` by
   `scripts/generate_tokens.py`. Never hand-edit it. No raw colour literal appears anywhere
   under `frontend/src/` — ESLint rejects it.
+- **React only.** No CSS framework, no component library, no UI runtime beyond React.
+  Styling is plain CSS reading the generated tokens.
 - **No inline biology.** Consistency rules live in `backend/rules/consistency_rules.yaml`;
   thresholds live in the registry bundle. A biological constant in a `.py` file is a bug.
 - **No hardcoded τ.** The abstention threshold is read from calibrator metadata at runtime.
