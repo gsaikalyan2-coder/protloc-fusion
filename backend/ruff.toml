@@ -1,0 +1,61 @@
+# ProtLoc Fusion — ruff configuration (lint + format).
+# Kept in its own file rather than inline in pyproject.toml so that the rule set
+# is reviewable on its own and diffs to it are visible in a PR title.
+
+target-version = "py311"
+line-length = 100
+src = ["."]
+extend-exclude = ["../notebooks"]
+
+[lint]
+select = [
+  "E",    # pycodestyle errors
+  "W",    # pycodestyle warnings
+  "F",    # pyflakes
+  "I",    # isort — import order
+  "N",    # pep8-naming
+  "UP",   # pyupgrade
+  "B",    # bugbear
+  "A",    # builtin shadowing
+  "C4",   # comprehensions
+  "DTZ",  # timezone-aware datetimes — CLAUDE.md requires tz-aware times
+  "T20",  # no print() in the package
+  "PT",   # pytest style
+  "RET",  # return simplification
+  "SIM",  # simplification
+  "TID",  # tidy imports — banned relative imports beyond one level
+  "PTH",  # prefer pathlib
+  "ERA",  # commented-out code
+  "PL",   # pylint subset
+  "TRY",  # exception antipatterns
+  "RUF",  # ruff-specific
+  "S",    # bandit — security
+  "ANN",  # missing annotations
+  "D",    # docstrings
+]
+ignore = [
+  "D203",    # conflicts with D211 (blank line before class docstring)
+  "D213",    # conflicts with D212 (multi-line summary position)
+  "ANN401",  # explicit Any is occasionally the honest annotation
+  "TRY003",  # long messages in raises — ours are deliberately explanatory
+]
+
+[lint.per-file-ignores]
+# Tests may use assert, may skip docstrings on trivial helpers, and read paths freely.
+"tests/**" = ["S101", "D100", "D103", "PLR2004", "ANN201"]
+
+[lint.isort]
+known-first-party = ["protloc"]
+force-sort-within-sections = true
+
+[lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
+
+[lint.pydocstyle]
+convention = "google"
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+docstring-code-format = true

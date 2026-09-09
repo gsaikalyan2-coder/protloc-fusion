@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools==80.9.0", "wheel==0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "protloc"
+version = "0.1.0"
+description = "ProtLoc Fusion — unified protein annotation from one shared representation"
+# No `readme` key: setuptools refuses to read a file outside the package root,
+# and the project README lives at the repository root by design.
+requires-python = "==3.11.*"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Saikalyan", email = "gsaikalyan2@gmail.com" }]
+keywords = ["bioinformatics", "protein", "subcellular-localization", "protein-language-model"]
+classifiers = [
+  "Programming Language :: Python :: 3.11",
+  "License :: OSI Approved :: Apache Software License",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+# Exact pins only. A caret or tilde range means the scaffold that passes CI today
+# fails in three months on a transitive bump, and a training run stops being
+# reproducible. Heavier dependencies (torch, transformers, peft, netcal, hydra,
+# mmseqs2 bindings) arrive in the phase that first uses them — not before.
+dependencies = [
+  "fastapi==0.141.1",
+  "uvicorn[standard]==0.52.4",
+  "pydantic==2.13.5",
+  "pydantic-settings==2.15.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==9.1.1",
+  "ruff==0.16.6",
+  "mypy==2.3.1",
+  "httpx==0.28.1",
+]
+
+[project.urls]
+Repository = "https://github.com/gsaikalyan2-coder/protloc-fusion"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["protloc*"]
+
+[tool.setuptools.package-data]
+protloc = ["py.typed"]
+
+# ── mypy ─────────────────────────────────────────────────────────────────────
+# Strict everywhere. `domain/` and `config/` are the two packages CI gates on
+# today (PHASE_01 §5 check 4); the settings below apply to whatever is checked.
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+python_version = "3.11"
+strict = true
+warn_unreachable = true
+warn_no_return = true
+disallow_any_unimported = true
+disallow_any_explicit = false
+no_implicit_reexport = true
+show_error_codes = true
+pretty = true
+
+# ── pytest ───────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+addopts = "-q --strict-markers --strict-config"
+markers = [
+  "integration: exercises more than one module together",
+  "golden: asserts behaviour on the fixed golden protein set",
+]
