@@ -61,8 +61,13 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - run: pip install -e "backend[dev]"
       # PHASE_01 §5 check 4. Widened to inference/ in Phase 7, when it has code.
+      # Run from backend/, because [tool.mypy] — including the pydantic plugin
+      # that makes BaseSettings type-check — lives in backend/pyproject.toml and
+      # mypy only discovers it from there. Running this from the repository root
+      # silently drops the plugin and reports five false errors.
       - name: mypy (strict)
-        run: mypy backend/protloc/domain backend/protloc/config
+        working-directory: backend
+        run: python -m mypy protloc/domain protloc/config
 
   backend-test:
     name: backend · test

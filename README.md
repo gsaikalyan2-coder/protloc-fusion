@@ -93,8 +93,7 @@ docker compose -f deployment/docker-compose.yml up --build
 
 ```bash
 ruff check backend && ruff format --check backend
-mypy backend/protloc/domain backend/protloc/config
-pytest backend/tests
+cd backend && mypy protloc/domain protloc/config && python -m pytest tests && cd ..
 cd frontend && npm run lint && npx tsc --noEmit && npm run build
 python scripts/generate_tokens.py && git diff --exit-code   # tokens.css is generated
 ```
