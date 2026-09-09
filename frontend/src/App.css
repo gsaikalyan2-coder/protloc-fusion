@@ -1,0 +1,28 @@
+.shell {
+  max-width: 68ch;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-5);
+}
+
+.shell__title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-tight);
+}
+
+.shell__lede {
+  margin: 0 0 var(--space-5);
+  color: var(--text-secondary);
+}
+
+.shell__status {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid var(--border);
+  border-left: var(--border-width-emph) solid var(--accent);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}

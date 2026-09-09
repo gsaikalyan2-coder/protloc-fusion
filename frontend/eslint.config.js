@@ -1,0 +1,112 @@
+import js from "@eslint/js";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import globals from "globals";
+import tseslint from "typescript-eslint";
+
+/*
+ * Two rules here are architectural rather than stylistic, and both exist
+ * because the alternative is a convention nobody notices breaking.
+ *
+ * `no-raw-colour` forbids a colour literal anywhere under src/. Every colour
+ * comes from a token in src/styles/tokens.css, which is generated from
+ * docs/DESIGN.md. A hex in a component is how a design system starts drifting
+ * from its document.
+ *
+ * `no-fetch-outside-services` forbids network calls outside src/services/.
+ * One place knows the API exists, so a contract change is a change to one file.
+ */
+
+const COLOUR_LITERAL = String.raw`#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b|\b(rgba?|hsla?|oklch|oklab|color-mix)\s*\(`;
+
+const noRawColour = [
+  {
+    selector: `Literal[value=/${COLOUR_LITERAL}/]`,
+    message:
+      "No colour literals. Use a CSS custom property from src/styles/tokens.css, " +
+      "which is generated from docs/DESIGN.md.",
+  },
+  {
+    selector: `TemplateElement[value.raw=/${COLOUR_LITERAL}/]`,
+    message:
+      "No colour literals. Use a CSS custom property from src/styles/tokens.css, " +
+      "which is generated from docs/DESIGN.md.",
+  },
+];
+
+const noFetchOutsideServices = [
+  {
+    selector: "CallExpression[callee.name='fetch']",
+    message: "Network calls live in src/services/ only. Import the API client instead.",
+  },
+  {
+    selector: "NewExpression[callee.name='XMLHttpRequest']",
+    message: "Network calls live in src/services/ only. Import the API client instead.",
+  },
+  {
+    selector: "NewExpression[callee.name='EventSource']",
+    message: "Network calls live in src/services/ only. Import the API client instead.",
+  },
+];
+
+export default tseslint.config(
+  { ignores: ["dist", "node_modules", "src/styles/tokens.css"] },
+
+  js.configs.recommended,
+
+  {
+    // Type-aware linting applies to the typed program only. eslint.config.js is
+    // plain JavaScript and is checked by the untyped rules below.
+    files: ["**/*.{ts,tsx}"],
+    extends: [...tseslint.configs.strictTypeChecked, ...tseslint.configs.stylisticTypeChecked],
+    languageOptions: {
+      ecmaVersion: 2022,
+      globals: globals.browser,
+      parserOptions: {
+        project: ["./tsconfig.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    plugins: {
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "no-restricted-syntax": ["error", ...noRawColour, ...noFetchOutsideServices],
+      "@typescript-eslint/explicit-function-return-type": [
+        "error",
+        { allowExpressions: false, allowTypedFunctionExpressions: true },
+      ],
+      "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
+      "no-console": ["error", { allow: ["warn", "error"] }],
+      eqeqeq: ["error", "always"],
+    },
+  },
+
+  {
+    // The API client is the one place permitted to call fetch(); the colour ban
+    // still applies to it.
+    files: ["src/services/**/*.ts"],
+    rules: {
+      "no-restricted-syntax": ["error", ...noRawColour],
+    },
+  },
+
+  {
+    // Config files run in Node rather than in a browser.
+    files: ["vite.config.ts", "eslint.config.js"],
+    languageOptions: { globals: globals.node },
+    rules: {
+      "@typescript-eslint/explicit-function-return-type": "off",
+    },
+  },
+
+  {
+    // Plain JavaScript: no type information exists for it, so the typed rules
+    // are switched off rather than left to fail at load time.
+    files: ["**/*.js"],
+    extends: [tseslint.configs.disableTypeChecked],
+  },
+);

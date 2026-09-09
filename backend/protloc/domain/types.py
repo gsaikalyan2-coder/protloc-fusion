@@ -98,15 +98,17 @@ _TERMINAL_JOB_STATUSES: frozenset[JobStatus] = frozenset(
 class Severity(StrEnum):
     """How a biological-consistency violation is reported.
 
-    Severity decides presentation and nothing else: a violation never silently
-    edits a prediction. The user sees what the model said and, beside it, what
-    the rule set thinks of it. The rules themselves and their severities live in
-    ``backend/rules/consistency_rules.yaml``, not in Python.
+    The three levels come from ``docs/DESIGN.md`` §3.3 and mean different
+    things: ``note`` and ``warning`` flag a prediction without altering it,
+    while ``blocking`` forces abstention on the affected task. A violation never
+    silently edits a prediction — the user sees what the model said and, beside
+    it, what the rule set thinks of it. The rules themselves and their
+    severities live in ``backend/rules/consistency_rules.yaml``, not in Python.
     """
 
-    INFO = "info"
+    NOTE = "note"
     WARNING = "warning"
-    ERROR = "error"
+    BLOCKING = "blocking"
 
 
 __all__ = ["JobStatus", "OrganismGroup", "Severity", "TaskName"]

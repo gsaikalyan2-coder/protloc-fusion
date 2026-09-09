@@ -1,0 +1,201 @@
+/* ------------------------------------------------------------------------
+ * GENERATED FILE — DO NOT EDIT.
+ *
+ * Produced by scripts/generate_tokens.py from docs/DESIGN.md.
+ * Change a colour, a size or a compartment in docs/DESIGN.md and re-run:
+ *
+ *     python scripts/generate_tokens.py
+ *
+ * CI regenerates this file and fails the build if the result differs from
+ * what is committed, so an edit made here is reverted rather than kept.
+ * ------------------------------------------------------------------------ */
+
+/* Light theme — the default. */
+:root {
+  --surface-0:          #FBFAF8;
+  --surface-1:          #FFFFFF;
+  --surface-2:          #F4F2EE;
+  --text-primary:       #15130F;
+  --text-secondary:     #5B564E;
+  --text-muted:         #8A8479;
+  --text-inverse:       #FBFAF8;
+  --border:             #E4E0D8;
+  --border-strong:      #CFC9BE;
+  --border-stronger:    #A9A296;
+  --accent:             #3A3A6E;
+  --accent-hover:       #2C2C57;
+  --accent-subtle:      #ECECF4;
+  --focus-ring:         #3A3A6E;
+  --font-sans:          "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:          "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --text-xs:            12px;
+  --text-sm:            13px;
+  --text-base:          15px;
+  --text-lg:            18px;
+  --text-xl:            22px;
+  --text-2xl:           28px;
+  --leading-tight:      1.25;
+  --leading-body:       1.6;
+  --weight-regular:     400;
+  --weight-medium:      500;
+  --space-1:            4px;
+  --space-2:            8px;
+  --space-3:            12px;
+  --space-4:            16px;
+  --space-5:            24px;
+  --space-6:            32px;
+  --space-7:            48px;
+  --space-8:            64px;
+  --radius-sm:          4px;
+  --radius-md:          8px;
+  --radius-lg:          12px;
+  --border-width:       1px;
+  --border-width-emph:  3px;
+  --shadow-overlay:     0 8px 24px rgb(0 0 0 / 0.12);
+  --duration-fast:      0ms;
+  --duration-base:      0ms;
+  --ease:               cubic-bezier(0.2, 0, 0.2, 1);
+  --state-note:         #5B564E;
+  --state-note-bg:      #F4F2EE;
+  --state-warn:         #8A5A11;
+  --state-warn-bg:      #F9F0DF;
+  --state-block:        #A32D2D;
+  --state-block-bg:     #FAE9E9;
+  --loc-cyt-fill:       #E7EAEE;
+  --loc-cyt-ink:        #4A5766;
+  --loc-nuc-fill:       #E6E6F5;
+  --loc-nuc-ink:        #3D3C8C;
+  --loc-ext-fill:       #DDF1EB;
+  --loc-ext-ink:        #0B6E5A;
+  --loc-mem-fill:       #F7EBD6;
+  --loc-mem-ink:        #8A5A11;
+  --loc-mit-fill:       #F7E3E5;
+  --loc-mit-ink:        #8E2C38;
+  --loc-pla-fill:       #E6F0DC;
+  --loc-pla-ink:        #3D6E1A;
+  --loc-er-fill:        #EFE4F7;
+  --loc-er-ink:         #6B3B95;
+  --loc-lys-fill:       #F8E7DB;
+  --loc-lys-ink:        #96491F;
+  --loc-gol-fill:       #F7E4EE;
+  --loc-gol-ink:        #8F3960;
+  --loc-per-fill:       #EFE8DF;
+  --loc-per-ink:        #5E4630;
+  --loc-ppl-fill:       #E0EEF6;
+  --loc-ppl-ink:        #1C6086;
+  --loc-pom-fill:       #F2E9D5;
+  --loc-pom-ink:        #6E4C0C;
+  --loc-pcw-fill:       #EDEFD9;
+  --loc-pcw-ink:        #565F16;
+}
+
+/* Dark theme — an explicit choice by the viewer. */
+:root[data-theme="dark"] {
+  --surface-0:        #121110;
+  --surface-1:        #1B1A18;
+  --surface-2:        #242220;
+  --text-primary:     #F2EFE9;
+  --text-secondary:   #B3AEA4;
+  --text-muted:       #7E7970;
+  --text-inverse:     #121110;
+  --border:           #2E2C29;
+  --border-strong:    #423F3A;
+  --border-stronger:  #5E5A53;
+  --accent:           #A9A9E0;
+  --accent-hover:     #C0C0EC;
+  --accent-subtle:    #24243A;
+  --focus-ring:       #A9A9E0;
+  --state-note:       #B3AEA4;
+  --state-note-bg:    #242220;
+  --state-warn:       #E7BE79;
+  --state-warn-bg:    #3B2C10;
+  --state-block:      #F09595;
+  --state-block-bg:   #3E1A1A;
+  --loc-cyt-fill:     #333C46;
+  --loc-cyt-ink:      #C4CCD6;
+  --loc-nuc-fill:     #2E2D5E;
+  --loc-nuc-ink:      #BFBEE8;
+  --loc-ext-fill:     #0E4438;
+  --loc-ext-ink:      #8FD9C6;
+  --loc-mem-fill:     #4A340C;
+  --loc-mem-ink:      #E7BE79;
+  --loc-mit-fill:     #4E1A20;
+  --loc-mit-ink:      #E9A7AE;
+  --loc-pla-fill:     #22400E;
+  --loc-pla-ink:      #AFD08C;
+  --loc-er-fill:      #3A2152;
+  --loc-er-ink:       #CFAEE6;
+  --loc-lys-fill:     #502713;
+  --loc-lys-ink:      #EBB68F;
+  --loc-gol-fill:     #4E1F34;
+  --loc-gol-ink:      #E6A8C6;
+  --loc-per-fill:     #33261A;
+  --loc-per-ink:      #C7B096;
+  --loc-ppl-fill:     #0F3346;
+  --loc-ppl-ink:      #9BCBE4;
+  --loc-pom-fill:     #3C2A07;
+  --loc-pom-ink:      #D6BC84;
+  --loc-pcw-fill:     #2F340C;
+  --loc-pcw-ink:      #C3CB8B;
+}
+
+/* Dark theme — the viewer expressed no preference and the system is dark.
+   Guarded so that an explicit light choice still wins. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface-0:        #121110;
+    --surface-1:        #1B1A18;
+    --surface-2:        #242220;
+    --text-primary:     #F2EFE9;
+    --text-secondary:   #B3AEA4;
+    --text-muted:       #7E7970;
+    --text-inverse:     #121110;
+    --border:           #2E2C29;
+    --border-strong:    #423F3A;
+    --border-stronger:  #5E5A53;
+    --accent:           #A9A9E0;
+    --accent-hover:     #C0C0EC;
+    --accent-subtle:    #24243A;
+    --focus-ring:       #A9A9E0;
+    --state-note:       #B3AEA4;
+    --state-note-bg:    #242220;
+    --state-warn:       #E7BE79;
+    --state-warn-bg:    #3B2C10;
+    --state-block:      #F09595;
+    --state-block-bg:   #3E1A1A;
+    --loc-cyt-fill:     #333C46;
+    --loc-cyt-ink:      #C4CCD6;
+    --loc-nuc-fill:     #2E2D5E;
+    --loc-nuc-ink:      #BFBEE8;
+    --loc-ext-fill:     #0E4438;
+    --loc-ext-ink:      #8FD9C6;
+    --loc-mem-fill:     #4A340C;
+    --loc-mem-ink:      #E7BE79;
+    --loc-mit-fill:     #4E1A20;
+    --loc-mit-ink:      #E9A7AE;
+    --loc-pla-fill:     #22400E;
+    --loc-pla-ink:      #AFD08C;
+    --loc-er-fill:      #3A2152;
+    --loc-er-ink:       #CFAEE6;
+    --loc-lys-fill:     #502713;
+    --loc-lys-ink:      #EBB68F;
+    --loc-gol-fill:     #4E1F34;
+    --loc-gol-ink:      #E6A8C6;
+    --loc-per-fill:     #33261A;
+    --loc-per-ink:      #C7B096;
+    --loc-ppl-fill:     #0F3346;
+    --loc-ppl-ink:      #9BCBE4;
+    --loc-pom-fill:     #3C2A07;
+    --loc-pom-ink:      #D6BC84;
+    --loc-pcw-fill:     #2F340C;
+    --loc-pcw-ink:      #C3CB8B;
+  }
+}
+
+/* Motion is removed, never merely shortened, for viewers who ask for that. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+  }
+}

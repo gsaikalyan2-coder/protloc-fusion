@@ -1,0 +1,5 @@
+dist
+node_modules
+# Generated from docs/DESIGN.md; prettier must not reformat it, or the
+# tokens-current CI job would fail on formatting rather than on content.
+src/styles/tokens.css
