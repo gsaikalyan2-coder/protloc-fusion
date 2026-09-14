@@ -16,7 +16,10 @@
 # Build from the repository root:
 #     docker build -f deployment/Dockerfile.train -t protloc-train .
 
-FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+# The -runtime base, not -cudnn-runtime. The PyTorch pip wheels installed from
+# Phase 5 bundle their own cuDNN, so the base image's copy is ~2 GB of duplicate
+# that costs build time and, on a CI runner, the whole disk.
+FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
 
 LABEL org.opencontainers.image.title="protloc-fusion-train" \
       org.opencontainers.image.description="ProtLoc Fusion training and split image (GPU, EMBOSS for GraphPart)" \
@@ -48,10 +51,23 @@ RUN apt-get update \
         git \
         curl \
         emboss \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /usr/share/EMBOSS/data/TAXONOMY
+# The rm above drops EMBOSS's copy of the full NCBI taxonomy: 152 MB of the
+# package's 218 MB of data, used by taxget and the ontology tools. needleall
+# needs only the substitution matrices. It is deleted in the same layer that
+# created it, because removing it in a later layer would save nothing.
 
-# Fail the build, not the first split run, if needleall did not land.
-RUN needleall -version 2>&1 | head -1 && which needleall
+# Fail the build, not the first split run, if needleall did not land — or if
+# dropping the taxonomy tree ever breaks it.
+RUN needleall -version 2>&1 | head -1 \
+    && which needleall \
+    && printf '>a\nMKTLLILAVLAAFSSAQA\n' > /tmp/a.fa \
+    && printf '>b\nMKKLLIAAVLAAFASSQA\n' > /tmp/b.fa \
+    && needleall -asequence /tmp/a.fa -bsequence /tmp/b.fa \
+        -gapopen 10 -gapextend 0.5 -outfile /tmp/out.txt -aformat pair \
+    && grep -q Identity /tmp/out.txt \
+    && rm -f /tmp/a.fa /tmp/b.fa /tmp/out.txt
 
 WORKDIR /workspace
 

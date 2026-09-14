@@ -38,8 +38,8 @@ jobs:
     name: backend · lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install the dev extra
@@ -55,8 +55,8 @@ jobs:
     name: backend · types
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - run: pip install -e "backend[dev]"
@@ -73,8 +73,8 @@ jobs:
     name: backend · test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - run: pip install -e "backend[dev]"
@@ -89,8 +89,8 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -108,8 +108,8 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -126,8 +126,8 @@ jobs:
     name: tokens · generated, not hand-edited
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Regenerate from docs/DESIGN.md
@@ -139,8 +139,8 @@ jobs:
     name: frontend · React only
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       # CLAUDE.md: no CSS framework, no component library, every version pinned.
@@ -150,7 +150,7 @@ jobs:
     name: repo · no secret values
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: .env.example carries placeholders only
         run: |
           if grep -nE '(API_KEY|SECRET|TOKEN|DSN|PASSWORD)=' .env.example \
@@ -169,11 +169,28 @@ jobs:
     name: docker · both images, genuinely separate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+
+      # A GitHub-hosted runner ships ~14 GB free and arrives preloaded with
+      # toolchains this job never uses. The CUDA base plus EMBOSS plus a cache
+      # export exhausted it on the first run. This reclaims roughly 25 GB.
+      - name: Reclaim runner disk
+        run: |
+          df -h / | tail -1
+          sudo rm -rf `
+            /usr/share/dotnet `
+            /usr/local/lib/android `
+            /opt/ghc `
+            /usr/local/share/boost `
+            /usr/local/share/powershell `
+            /usr/local/.ghcup `
+            "$AGENT_TOOLSDIRECTORY" || true
+          sudo docker image prune -af || true
+          df -h / | tail -1
 
       - name: Build the serving image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: deployment/Dockerfile.serve
@@ -183,14 +200,14 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build the training image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: deployment/Dockerfile.train
           tags: protloc-train:ci
           load: true
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=min
 
       # PHASE_01 §5 check 12.
       - name: Training image has EMBOSS needleall
@@ -223,7 +240,7 @@ jobs:
     name: docker · compose file is valid
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: docker compose config
         run: |
           cp .env.example .env
