@@ -175,7 +175,7 @@ def test_job_accepted_carries_the_envelope_and_the_job():
 
 
 def test_health_reports_degraded_without_a_bundle():
-    """degraded is a real state: serving, and unable to predict."""
+    """Degraded is a real state: serving, and unable to predict."""
     health = HealthResponse(
         status="degraded",
         detail="no registry bundle is loaded",

@@ -36,6 +36,13 @@ from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 from protloc.domain.types import JobStatus, OrganismGroup, Severity, TaskName
 
+#: SemVer of the HTTP contract, independent of the service package's own version.
+#: It changes when a client would have to change — a removed field, a renamed one,
+#: a narrowed type. Adding an optional field does not change it. It lives here
+#: rather than in ``api/`` because it versions the contract, and the contract is
+#: what this module is.
+API_VERSION = "1.0.0"
+
 # Every model forbids unknown fields. A response a client cannot fully account for
 # is a response whose shape the OpenAPI document does not actually describe, and
 # this phase's exit criterion is that the document describes it exactly.
@@ -623,6 +630,7 @@ def utc_now() -> datetime:
 
 
 __all__ = [
+    "API_VERSION",
     "BatchSubmission",
     "CancelResponse",
     "ConsistencyViolation",
