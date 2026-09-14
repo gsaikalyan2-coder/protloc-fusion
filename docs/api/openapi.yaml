@@ -1,0 +1,1560 @@
+# GENERATED FILE — DO NOT EDIT.
+#
+# Produced by scripts/export_openapi.py from the FastAPI application in
+# backend/protloc/api/. Edit the Pydantic models in
+# backend/protloc/domain/contracts.py and the route decorators, then regenerate.
+#
+# CI regenerates this file and fails on a diff, so a hand edit is reverted by the
+# next build rather than quietly becoming a second source of truth.
+#
+# This is the frozen contract. A change to it is a change a client may have to
+# absorb: see API_VERSION in backend/protloc/domain/contracts.py.
+
+components:
+  schemas:
+    BatchSubmission:
+      properties:
+        file:
+          contentMediaType: application/octet-stream
+          description: 'FASTA. Multipart rather than JSON: a proteome is tens of megabytes.'
+          title: File
+          type: string
+        organism_group:
+          $ref: '#/components/schemas/OrganismGroup'
+          description: Applied to every sequence in the uploaded file.
+      required:
+      - organism_group
+      - file
+      title: BatchSubmission
+      type: object
+    CancelResponse:
+      additionalProperties: false
+      description: 'The body of ``POST /jobs/{job_id}/cancel``.
+
+
+        Cancelling a job that already reached a terminal state is not an error: the
+
+        caller''s intent — that this job not run — is already satisfied. ``cancelled``
+
+        says whether this call changed anything.'
+      properties:
+        cancelled:
+          description: True if this call stopped the job; false if it was already terminal.
+          title: Cancelled
+          type: boolean
+        config_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Hash of the resolved Hydra configuration the bundle was produced under.
+            null when no bundle is loaded.
+          title: Config Hash
+        experiment_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Identifier of the run manifest the bundle came from, e.g. EXP-0031.
+            null when no bundle is loaded.
+          title: Experiment Id
+        job_id:
+          description: The job addressed.
+          format: uuid
+          title: Job Id
+          type: string
+        model_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the loaded registry bundle. null when no bundle is loaded,
+            which is the case until Phase 7 packages bundle v0.
+          title: Model Version
+        rules_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the biological-consistency rule set that scored this response.
+            null when no rule set is loaded.
+          title: Rules Version
+        status:
+          $ref: '#/components/schemas/JobStatus'
+          description: The job's status after the call.
+      required:
+      - model_version
+      - config_hash
+      - rules_version
+      - experiment_id
+      - job_id
+      - status
+      - cancelled
+      title: CancelResponse
+      type: object
+    ConsistencyViolation:
+      additionalProperties: false
+      description: 'A rule the prediction set broke.
+
+
+        A violation never silently edits a prediction. The user sees what the model
+
+        said and, beside it, what the rule set thinks of it. Only ``blocking`` changes
+
+        an outcome, and it does so by forcing abstention on the tasks it names — which
+
+        is then visible in those tasks'' ``abstained`` field.'
+      properties:
+        message:
+          description: What the rule found, in the rule set's own words.
+          title: Message
+          type: string
+        rule_id:
+          description: Identifier from backend/rules/consistency_rules.yaml, which is where
+            the rules and their severities live. Not a Python constant.
+          title: Rule Id
+          type: string
+        severity:
+          $ref: '#/components/schemas/Severity'
+          description: note, warning or blocking.
+        tasks:
+          description: The heads this violation concerns. A blocking violation abstains each.
+          items:
+            $ref: '#/components/schemas/TaskName'
+          title: Tasks
+          type: array
+      required:
+      - rule_id
+      - severity
+      - message
+      - tasks
+      title: ConsistencyViolation
+      type: object
+    ErrorResponse:
+      additionalProperties: false
+      description: 'Every non-2xx body the service produces.
+
+
+        Errors carry the reproducibility envelope too. A user reporting a failure
+
+        should be able to say which model version produced it without being asked to
+
+        reproduce it first.'
+      properties:
+        config_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Hash of the resolved Hydra configuration the bundle was produced under.
+            null when no bundle is loaded.
+          title: Config Hash
+        detail:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Additional context, such as the field that failed validation or the
+            phase that supplies a missing dependency. null when there is none.
+          title: Detail
+        error:
+          description: Stable machine-readable code, e.g. no_registry_bundle, job_not_found,
+            job_expired, results_not_ready. Clients branch on this, never on the message.
+          title: Error
+          type: string
+        experiment_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Identifier of the run manifest the bundle came from, e.g. EXP-0031.
+            null when no bundle is loaded.
+          title: Experiment Id
+        message:
+          description: Human-readable explanation, safe to display.
+          title: Message
+          type: string
+        model_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the loaded registry bundle. null when no bundle is loaded,
+            which is the case until Phase 7 packages bundle v0.
+          title: Model Version
+        rules_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the biological-consistency rule set that scored this response.
+            null when no rule set is loaded.
+          title: Rules Version
+      required:
+      - model_version
+      - config_hash
+      - rules_version
+      - experiment_id
+      - error
+      - message
+      title: ErrorResponse
+      type: object
+    Evidence:
+      additionalProperties: false
+      description: 'Independent evidence, and an honest statement when there is none.
+
+
+        The evidence service degrades gracefully: killing it still returns a complete
+
+        prediction. ``available`` false with a populated ``unavailable_reason`` is that
+
+        degradation made visible, rather than an empty list that reads like "no
+
+        homologs found".'
+      properties:
+        available:
+          description: False when the evidence service did not answer in time or is not configured.
+          title: Available
+          type: boolean
+        go_annotations:
+          description: Transferred GO terms. Empty when unavailable.
+          items:
+            $ref: '#/components/schemas/GoAnnotation'
+          title: Go Annotations
+          type: array
+        goa_release:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Release string of the UniProt-GOA snapshot searched.
+          title: Goa Release
+        homology:
+          description: Top hits, capped by EVIDENCE_TOP_K. Empty when unavailable.
+          items:
+            $ref: '#/components/schemas/HomologyHit'
+          title: Homology
+          type: array
+        swissprot_release:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Release string of the Swiss-Prot snapshot searched.
+          title: Swissprot Release
+        unavailable_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Why evidence is missing. null when available is true.
+          title: Unavailable Reason
+      required:
+      - available
+      - homology
+      - go_annotations
+      title: Evidence
+      type: object
+    ExampleSequence:
+      additionalProperties: false
+      description: 'One gallery entry, with its result already computed.
+
+
+        The gallery exists because the asynchronous contract has no instant demo
+
+        (ADR-0001 section 5). Its results are cached, and the frontend says so — a fast
+
+        answer presented as if it had just been computed would be a lie about the
+
+        system''s behaviour.'
+      properties:
+        computed_at:
+          description: When this cached result was produced. Shown to the user as cached.
+          format: date-time
+          title: Computed At
+          type: string
+        description:
+          description: Why this example is interesting.
+          title: Description
+          type: string
+        example_id:
+          description: Stable identifier for this gallery entry.
+          title: Example Id
+          type: string
+        name:
+          description: Display name, e.g. Human cytochrome c oxidase subunit 4.
+          title: Name
+          type: string
+        organism_group:
+          $ref: '#/components/schemas/OrganismGroup'
+          description: The group it is scored under.
+        result:
+          $ref: '#/components/schemas/SequenceResult'
+          description: The pre-computed, cached result.
+        sequence:
+          description: The sequence, so a user can resubmit it.
+          minLength: 1
+          title: Sequence
+          type: string
+      required:
+      - example_id
+      - name
+      - description
+      - organism_group
+      - sequence
+      - result
+      - computed_at
+      title: ExampleSequence
+      type: object
+    ExamplesResponse:
+      additionalProperties: false
+      description: The body of ``GET /examples``.
+      properties:
+        config_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Hash of the resolved Hydra configuration the bundle was produced under.
+            null when no bundle is loaded.
+          title: Config Hash
+        examples:
+          description: The gallery, in display order.
+          items:
+            $ref: '#/components/schemas/ExampleSequence'
+          title: Examples
+          type: array
+        experiment_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Identifier of the run manifest the bundle came from, e.g. EXP-0031.
+            null when no bundle is loaded.
+          title: Experiment Id
+        model_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the loaded registry bundle. null when no bundle is loaded,
+            which is the case until Phase 7 packages bundle v0.
+          title: Model Version
+        rules_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the biological-consistency rule set that scored this response.
+            null when no rule set is loaded.
+          title: Rules Version
+      required:
+      - model_version
+      - config_hash
+      - rules_version
+      - experiment_id
+      - examples
+      title: ExamplesResponse
+      type: object
+    GoAnnotation:
+      additionalProperties: false
+      description: One GO term from the local UniProt-GOA snapshot (ADR-0003).
+      properties:
+        aspect:
+          description: The GO aspect. These three are the Gene Ontology's own top-level structure,
+            not a biological choice this project made.
+          enum:
+          - cellular_component
+          - molecular_function
+          - biological_process
+          title: Aspect
+          type: string
+        evidence_code:
+          description: GO evidence code, e.g. IDA, ISS.
+          title: Evidence Code
+          type: string
+        go_id:
+          description: GO identifier, e.g. GO:0005739.
+          title: Go Id
+          type: string
+        name:
+          description: The term's label.
+          title: Name
+          type: string
+        source_accession:
+          description: The homolog the annotation was transferred from.
+          title: Source Accession
+          type: string
+      required:
+      - go_id
+      - name
+      - aspect
+      - evidence_code
+      - source_accession
+      title: GoAnnotation
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    HealthResponse:
+      additionalProperties: false
+      description: 'The body of ``GET /health``.
+
+
+        ``ok`` means the process is serving and a registry bundle is loaded.
+
+        ``degraded`` means it is serving without one, which is the truthful state of
+
+        the service until Phase 7 — it answers requests, and it cannot predict.'
+      properties:
+        bundle_loaded:
+          description: Whether a registry bundle is loaded.
+          title: Bundle Loaded
+          type: boolean
+        config_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Hash of the resolved Hydra configuration the bundle was produced under.
+            null when no bundle is loaded.
+          title: Config Hash
+        detail:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: What is degraded. null when status is ok.
+          title: Detail
+        experiment_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Identifier of the run manifest the bundle came from, e.g. EXP-0031.
+            null when no bundle is loaded.
+          title: Experiment Id
+        model_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the loaded registry bundle. null when no bundle is loaded,
+            which is the case until Phase 7 packages bundle v0.
+          title: Model Version
+        queue_depth:
+          description: Jobs waiting. 0 with no workers running, which is a true 0.
+          minimum: 0.0
+          title: Queue Depth
+          type: integer
+        rules_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the biological-consistency rule set that scored this response.
+            null when no rule set is loaded.
+          title: Rules Version
+        status:
+          description: degraded means serving but unable to predict; see detail.
+          enum:
+          - ok
+          - degraded
+          title: Status
+          type: string
+      required:
+      - model_version
+      - config_hash
+      - rules_version
+      - experiment_id
+      - status
+      - bundle_loaded
+      - queue_depth
+      title: HealthResponse
+      type: object
+    HomologyHit:
+      additionalProperties: false
+      description: 'One Swiss-Prot match, from the local MMseqs2 snapshot (ADR-0003).
+
+
+        Evidence is independent of the model: it is what the databases already say,
+
+        offered beside the prediction rather than folded into it. The frontend renders
+
+        it as visually subordinate for that reason.'
+      properties:
+        accession:
+          description: Swiss-Prot accession of the match.
+          title: Accession
+          type: string
+        annotated_locations:
+          description: Subcellular locations annotated on the matched entry.
+          items:
+            type: string
+          title: Annotated Locations
+          type: array
+        e_value:
+          description: MMseqs2 E-value for the alignment.
+          minimum: 0.0
+          title: E Value
+          type: number
+        identity:
+          description: Sequence identity as a fraction, not a percentage.
+          maximum: 1.0
+          minimum: 0.0
+          title: Identity
+          type: number
+        protein_name:
+          description: The matched entry's protein name.
+          title: Protein Name
+          type: string
+      required:
+      - accession
+      - protein_name
+      - identity
+      - e_value
+      - annotated_locations
+      title: HomologyHit
+      type: object
+    JobAccepted:
+      additionalProperties: false
+      description: 'The body of a ``202 Accepted`` from ``POST /predict`` or ``POST /batch``.
+
+
+        ``POST /predict`` does not return a prediction (ADR-0001). It returns this.
+
+        A single sequence is a job of size one, which is why one model serves both
+
+        endpoints.
+
+
+        For a size-one job that completes inside ``INLINE_RESULT_WINDOW_SECONDS`` the
+
+        server may answer ``200`` with a :class:`JobResource` instead. That fast path
+
+        is a convenience and never a contract: a client that assumes ``200`` is broken.'
+      properties:
+        config_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Hash of the resolved Hydra configuration the bundle was produced under.
+            null when no bundle is loaded.
+          title: Config Hash
+        estimated_wait_seconds:
+          description: Best-effort estimate from measured throughput and queue depth. Displayed
+            as approximate; never a guarantee.
+          minimum: 0.0
+          title: Estimated Wait Seconds
+          type: integer
+        experiment_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Identifier of the run manifest the bundle came from, e.g. EXP-0031.
+            null when no bundle is loaded.
+          title: Experiment Id
+        job_id:
+          description: UUIDv4. Unguessable, but the result URL is not access-controlled —
+            anyone holding it can read the result.
+          format: uuid
+          title: Job Id
+          type: string
+        model_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the loaded registry bundle. null when no bundle is loaded,
+            which is the case until Phase 7 packages bundle v0.
+          title: Model Version
+        queue_position:
+          description: Jobs ahead of this one at acceptance. 0 means it starts now.
+          minimum: 0.0
+          title: Queue Position
+          type: integer
+        result_url:
+          description: Path of the job resource to poll, e.g. /jobs/{job_id}.
+          title: Result Url
+          type: string
+        rules_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the biological-consistency rule set that scored this response.
+            null when no rule set is loaded.
+          title: Rules Version
+        sequence_count:
+          description: Number of sequences in this job. 1 for POST /predict.
+          minimum: 1.0
+          title: Sequence Count
+          type: integer
+        status:
+          $ref: '#/components/schemas/JobStatus'
+          description: The job's status at acceptance. Always queued in practice.
+      required:
+      - model_version
+      - config_hash
+      - rules_version
+      - experiment_id
+      - job_id
+      - result_url
+      - status
+      - sequence_count
+      - queue_position
+      - estimated_wait_seconds
+      title: JobAccepted
+      type: object
+    JobProgress:
+      additionalProperties: false
+      description: Counts for a job in flight. Batch jobs report these; size-one jobs do too.
+      properties:
+        completed_count:
+          description: Finished successfully so far.
+          minimum: 0.0
+          title: Completed Count
+          type: integer
+        failed_count:
+          description: Failed so far. Does not stop the job.
+          minimum: 0.0
+          title: Failed Count
+          type: integer
+        total:
+          description: Sequences in the job.
+          minimum: 1.0
+          title: Total
+          type: integer
+      required:
+      - total
+      - completed_count
+      - failed_count
+      title: JobProgress
+      type: object
+    JobResource:
+      additionalProperties: false
+      description: 'The body of ``GET /jobs/{job_id}`` — the job, in whatever state it is
+        in.
+
+
+        This is the URL in ``result_url`` and the one the frontend polls. It answers
+
+        ``200`` for a live job at every status, and carries ``results`` only when
+
+        ``status`` is ``completed``. Past the retention window it answers ``410 Gone``
+
+        rather than a silent empty result.
+
+
+        ``GET /jobs/{job_id}/results`` is a different thing: the same results as a
+
+        downloadable representation, with a format parameter. It is never polled, and
+
+        it refuses a job that has not completed rather than returning a partial one.'
+      properties:
+        config_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Hash of the resolved Hydra configuration the bundle was produced under.
+            null when no bundle is loaded.
+          title: Config Hash
+        created_at:
+          description: When the job was accepted. Timezone-aware, always UTC.
+          format: date-time
+          title: Created At
+          type: string
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Why the job failed or was cancelled. null otherwise.
+          title: Error
+        estimated_wait_seconds:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Best-effort estimate. null once running or terminal.
+          title: Estimated Wait Seconds
+        experiment_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Identifier of the run manifest the bundle came from, e.g. EXP-0031.
+            null when no bundle is loaded.
+          title: Experiment Id
+        job_id:
+          description: The job's identifier.
+          format: uuid
+          title: Job Id
+          type: string
+        model_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the loaded registry bundle. null when no bundle is loaded,
+            which is the case until Phase 7 packages bundle v0.
+          title: Model Version
+        progress:
+          $ref: '#/components/schemas/JobProgress'
+          description: Counts, valid at every status.
+        queue_position:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Jobs ahead of this one. null once running or terminal.
+          title: Queue Position
+        results:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SequenceResult'
+            type: array
+          - type: 'null'
+          description: Present only when status is completed. null otherwise — a running job
+            has no partial results to offer, and a failed one has an error.
+          title: Results
+        rules_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the biological-consistency rule set that scored this response.
+            null when no rule set is loaded.
+          title: Rules Version
+        sequence_count:
+          description: Sequences submitted.
+          minimum: 1.0
+          title: Sequence Count
+          type: integer
+        status:
+          $ref: '#/components/schemas/JobStatus'
+          description: queued, running, completed, failed or cancelled.
+        updated_at:
+          description: When the status last changed. Timezone-aware, always UTC.
+          format: date-time
+          title: Updated At
+          type: string
+      required:
+      - model_version
+      - config_hash
+      - rules_version
+      - experiment_id
+      - job_id
+      - status
+      - sequence_count
+      - created_at
+      - updated_at
+      - progress
+      title: JobResource
+      type: object
+    JobStatus:
+      description: 'The lifecycle of a prediction job.
+
+
+        Every prediction is a job; a single sequence is a job of size one
+
+        (ADR-0001). A job leaves a terminal state only by being resubmitted as a new
+
+        job — statuses are never rewound.'
+      enum:
+      - queued
+      - running
+      - completed
+      - failed
+      - cancelled
+      title: JobStatus
+      type: string
+    OrganismGroup:
+      description: 'The organism group a user selects alongside the sequence.
+
+
+        Sorting signals and localization compartments differ enough between these
+
+        groups that the model is conditioned on the choice rather than asked to infer
+
+        it. The four groups follow the convention established by the signal-peptide
+
+        literature the project benchmarks against.'
+      enum:
+      - eukarya
+      - gram_positive
+      - gram_negative
+      - archaea
+      title: OrganismGroup
+      type: string
+    PredictRequest:
+      additionalProperties: false
+      description: 'One sequence and the organism group to interpret it under.
+
+
+        The organism group is required and has no default. Sorting signals and
+
+        localization compartments differ enough between groups that guessing on the
+
+        user''s behalf would silently change the answer, so the API asks rather than
+
+        infers.
+
+
+        Length and alphabet policy are deliberately absent. ``MAX_SEQUENCE_LENGTH``
+
+        and the accepted residue alphabet are frozen in Phase 3 from the corpus''s own
+
+        distribution; encoding a guess here would put an unmeasured constant into the
+
+        contract, where changing it later is a breaking change.'
+      properties:
+        accession:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: An optional identifier echoed back in the result, so a caller submitting
+            many single sequences can match responses to inputs. Not used by the model.
+          title: Accession
+        organism_group:
+          $ref: '#/components/schemas/OrganismGroup'
+          description: 'The organism group the sequence belongs to. Required: the model is
+            conditioned on this choice rather than asked to infer it.'
+        sequence:
+          description: The amino-acid sequence, raw. Surrounding whitespace and FASTA headers
+            are handled by the server; the length and alphabet policy is frozen in Phase 3
+            and enforced from configuration, not from this schema.
+          minLength: 1
+          title: Sequence
+          type: string
+      required:
+      - sequence
+      - organism_group
+      title: PredictRequest
+      type: object
+    ReproducibilityEnvelope:
+      additionalProperties: false
+      description: The four reproducibility fields carried by every response, including 202
+        and errors. They appear inline on each response rather than nested under a key; this
+        schema names the group so a client can type it once. Every field is null while no
+        registry bundle is loaded.
+      properties:
+        config_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Hash of the resolved Hydra configuration the bundle was produced under.
+            null when no bundle is loaded.
+          title: Config Hash
+        experiment_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Identifier of the run manifest the bundle came from, e.g. EXP-0031.
+            null when no bundle is loaded.
+          title: Experiment Id
+        model_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the loaded registry bundle. null when no bundle is loaded,
+            which is the case until Phase 7 packages bundle v0.
+          title: Model Version
+        rules_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the biological-consistency rule set that scored this response.
+            null when no rule set is loaded.
+          title: Rules Version
+      required:
+      - model_version
+      - config_hash
+      - rules_version
+      - experiment_id
+      title: ReproducibilityEnvelope
+      type: object
+    ResidueAttribution:
+      additionalProperties: false
+      description: One residue's contribution to one task's prediction.
+      properties:
+        position:
+          description: 1-based position in the normalized sequence.
+          minimum: 1.0
+          title: Position
+          type: integer
+        residue:
+          description: The single-letter amino-acid code at this position.
+          maxLength: 1
+          minLength: 1
+          title: Residue
+          type: string
+        score:
+          description: Signed attribution. Positive supports the predicted label, negative
+            argues against it. Comparable within one task and sequence only — never across
+            tasks, and never as a probability.
+          title: Score
+          type: number
+      required:
+      - position
+      - residue
+      - score
+      title: ResidueAttribution
+      type: object
+    SequenceResult:
+      additionalProperties: false
+      description: 'Everything the system concluded about one sequence.
+
+
+        This is the shape ``CLAUDE.md`` describes as "Blueprint 21.3''s response
+
+        schema": the payload of a completed job, never the body of a POST.'
+      properties:
+        accession:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: The caller's identifier, echoed. FASTA header id in batch mode.
+          title: Accession
+        attributions:
+          description: Per-residue explanation, per task.
+          items:
+            $ref: '#/components/schemas/TaskAttribution'
+          title: Attributions
+          type: array
+        consistency:
+          description: Violations found. Empty means the rule set checked and found none.
+          items:
+            $ref: '#/components/schemas/ConsistencyViolation'
+          title: Consistency
+          type: array
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Why this sequence failed, when a batch job completed but this member
+            did not. null on success. A failed member never carries a partial prediction.
+          title: Error
+        evidence:
+          $ref: '#/components/schemas/Evidence'
+          description: Independent database evidence.
+        index:
+          description: 0-based position in the submitted job. 0 for a single sequence.
+          minimum: 0.0
+          title: Index
+          type: integer
+        length:
+          description: Residue count after normalization.
+          minimum: 1.0
+          title: Length
+          type: integer
+        organism_group:
+          $ref: '#/components/schemas/OrganismGroup'
+          description: The group this sequence was scored under.
+        predictions:
+          description: One entry per task that applies to this organism group. A task that
+            does not apply is absent, not abstained.
+          items:
+            $ref: '#/components/schemas/TaskPrediction'
+          title: Predictions
+          type: array
+        rules_checked:
+          description: How many rules ran. Reported so that an empty violations list is readable
+            as 'checked and clean' rather than 'not checked'.
+          minimum: 0.0
+          title: Rules Checked
+          type: integer
+        sequence_sha256:
+          description: SHA-256 of the normalized sequence. The cache and dedup key.
+          title: Sequence Sha256
+          type: string
+      required:
+      - index
+      - sequence_sha256
+      - length
+      - organism_group
+      - predictions
+      - consistency
+      - rules_checked
+      - attributions
+      - evidence
+      title: SequenceResult
+      type: object
+    Severity:
+      description: 'How a biological-consistency violation is reported.
+
+
+        The three levels come from ``docs/DESIGN.md`` §3.3 and mean different
+
+        things: ``note`` and ``warning`` flag a prediction without altering it,
+
+        while ``blocking`` forces abstention on the affected task. A violation never
+
+        silently edits a prediction — the user sees what the model said and, beside
+
+        it, what the rule set thinks of it. The rules themselves and their
+
+        severities live in ``backend/rules/consistency_rules.yaml``, not in Python.'
+      enum:
+      - note
+      - warning
+      - blocking
+      title: Severity
+      type: string
+    TaskAttribution:
+      additionalProperties: false
+      description: Per-residue attribution for one task.
+      properties:
+        residues:
+          description: One entry per residue, in sequence order.
+          items:
+            $ref: '#/components/schemas/ResidueAttribution'
+          title: Residues
+          type: array
+        task:
+          $ref: '#/components/schemas/TaskName'
+          description: The head being explained.
+      required:
+      - task
+      - residues
+      title: TaskAttribution
+      type: object
+    TaskName:
+      description: 'The seven task heads sharing one trunk representation.
+
+
+        Scope is fixed at seven by ``PROJECT_PLAN.md`` §3. A task is added by
+
+        amending that section first, because each addition changes the multi-task
+
+        loss, the label schema and the consistency rule set together.'
+      enum:
+      - localization
+      - membrane_type
+      - prokaryotic_localization
+      - signal_peptide
+      - mitochondrial_transit_peptide
+      - chloroplast_transit_peptide
+      - go_function
+      title: TaskName
+      type: string
+    TaskPrediction:
+      additionalProperties: false
+      description: 'One task head''s answer for one sequence.
+
+
+        Abstention and a low-confidence answer are different outcomes and are reported
+
+        as such. When ``abstained`` is true the model declined because no label cleared
+
+        the calibrated threshold, or because a blocking consistency violation forced
+
+        it; ``labels`` is then empty rather than holding a best guess.
+
+
+        A task that does not apply to the submitted organism group — prokaryotic
+
+        localization for a eukaryotic sequence — is *masked*, not abstained, and is
+
+        absent from the results list entirely. Scoring a task and declining is not the
+
+        same as never having scored it, and conflating the two would misreport
+
+        coverage.'
+      properties:
+        abstained:
+          description: True when no label cleared the threshold, or when a blocking consistency
+            violation forced abstention on this task.
+          title: Abstained
+          type: boolean
+        abstention_threshold:
+          description: The tau this head was scored against, read from calibrator metadata
+            at prediction time. Reported so a user can reproduce the decision; it has no default
+            because there is no default tau.
+          title: Abstention Threshold
+          type: number
+        cleavage_site:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: 1-based residue position of the predicted cleavage site, for the signal-
+            and transit-peptide heads. null for every other task and when no site is predicted.
+          title: Cleavage Site
+        labels:
+          description: Predicted labels, empty when abstained. Multi-label for localization
+            and GO function, single-element otherwise. The label vocabulary comes from the
+            registry bundle, not from this schema.
+          items:
+            type: string
+          title: Labels
+          type: array
+        probabilities:
+          additionalProperties:
+            type: number
+          description: Calibrated probability per candidate label. Present even when abstained,
+            so a user can see how close the call was.
+          title: Probabilities
+          type: object
+        task:
+          $ref: '#/components/schemas/TaskName'
+          description: Which of the seven heads produced this.
+      required:
+      - task
+      - labels
+      - probabilities
+      - abstained
+      - abstention_threshold
+      title: TaskPrediction
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    VersionResponse:
+      additionalProperties: false
+      description: The body of ``GET /version`` — what is loaded, and what it hashes to.
+      properties:
+        api_version:
+          description: SemVer of the HTTP contract itself.
+          title: Api Version
+          type: string
+        checksums:
+          additionalProperties:
+            type: string
+          description: SHA-256 of each artifact in the loaded bundle, by filename. Empty when
+            no bundle is loaded.
+          title: Checksums
+          type: object
+        config_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Hash of the resolved Hydra configuration the bundle was produced under.
+            null when no bundle is loaded.
+          title: Config Hash
+        experiment_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Identifier of the run manifest the bundle came from, e.g. EXP-0031.
+            null when no bundle is loaded.
+          title: Experiment Id
+        model_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the loaded registry bundle. null when no bundle is loaded,
+            which is the case until Phase 7 packages bundle v0.
+          title: Model Version
+        rules_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the biological-consistency rule set that scored this response.
+            null when no rule set is loaded.
+          title: Rules Version
+        service_version:
+          description: SemVer of the running service package.
+          title: Service Version
+          type: string
+      required:
+      - model_version
+      - config_hash
+      - rules_version
+      - experiment_id
+      - api_version
+      - service_version
+      - checksums
+      title: VersionResponse
+      type: object
+info:
+  contact:
+    name: ProtLoc Fusion
+    url: https://github.com/gsaikalyan2-coder/protloc-fusion
+  description: 'Unified protein annotation from one shared representation: one sequence and
+    one
+
+    organism group in, seven annotations out, with calibrated probabilities,
+
+    abstention, biological-consistency flags, per-residue explanation and independent
+
+    database evidence.
+
+
+    **The contract is asynchronous.** `POST /predict` returns `202 Accepted` with a
+
+    job identifier and a result URL, never a prediction. A single sequence is a job
+
+    of size one; there is exactly one inference path, so the answer a user gets is
+
+    the answer the paper measures (ADR-0001).
+
+
+    **Every response carries provenance.** `model_version`, `config_hash`,
+
+    `rules_version` and `experiment_id` appear on every body, including acceptances
+
+    and errors. They are `null` when no registry bundle is loaded.
+
+
+    **Result URLs are unguessable but not private.** A `job_id` is a UUIDv4; anyone
+
+    holding the URL can read the result. Results expire after a retention window.
+
+    '
+  license:
+    identifier: Apache-2.0
+    name: Apache-2.0
+  summary: Seven protein annotations from one shared representation.
+  title: ProtLoc Fusion
+  version: 1.0.0
+openapi: 3.1.0
+paths:
+  /batch:
+    post:
+      description: 'Accept a FASTA upload as one job.
+
+
+        Async because reading the upload is I/O. The size cap is enforced by
+
+        ``MAX_UPLOAD_BYTES`` in Phase 15, not by a constant here; parsing the FASTA
+
+        belongs to the job service, which is why the bytes are handed over whole.'
+      operationId: batch_batch_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchSubmission'
+        required: true
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAccepted'
+          description: The job was accepted. `sequence_count` reports how many were parsed.
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: The request does not match the contract. `error` is `validation_failed`.
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No registry bundle is loaded, so no work can be accepted. `error` is
+            `no_registry_bundle`.
+      summary: Submit a FASTA file. Returns a job
+      tags:
+      - prediction
+  /examples:
+    get:
+      description: Return the gallery.
+      operationId: examples_examples_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamplesResponse'
+          description: The gallery in display order. Each entry carries its computed_at.
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No registry bundle is loaded. The gallery's entries are cached results,
+            which require the model that produced them. `error` is `no_registry_bundle`.
+      summary: Gallery sequences with pre-computed, cached results
+      tags:
+      - examples
+  /health:
+    get:
+      description: 'Report liveness.
+
+
+        Answers ``200`` whenever the process is up, including when it cannot
+
+        predict — a probe that fails while the service is correctly serving its
+
+        contract would restart a container that is working. Inability to predict is
+
+        reported in ``status``, not in the status code.'
+      operationId: health_health_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+          description: The service is answering. Read `status` for whether it can predict.
+      summary: Liveness, what is loaded, and how deep the queue is
+      tags:
+      - service
+  /jobs/{job_id}:
+    get:
+      description: 'Return the job.
+
+
+        This is the URL in ``result_url``. It is safe to poll: it answers ``200`` for
+
+        a queued, running, completed, failed or cancelled job alike, and the client
+
+        reads ``status`` rather than branching on a status code.'
+      operationId: read_job_jobs__job_id__get
+      parameters:
+      - description: The job's UUIDv4, as returned at acceptance.
+        in: path
+        name: job_id
+        required: true
+        schema:
+          description: The job's UUIDv4, as returned at acceptance.
+          format: uuid
+          title: Job Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResource'
+          description: The job resource. `results` is populated only when `status` is `completed`.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No such job. `error` is `not_found`.
+        '410':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 'The job existed and its retention window closed. `error` is `job_expired`.
+            Distinct from 404 deliberately: a user holding an old URL is told it expired,
+            never that it never existed.'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No registry bundle is loaded. `error` is `no_registry_bundle`.
+      summary: The job, in whatever state it is in
+      tags:
+      - jobs
+  /jobs/{job_id}/cancel:
+    post:
+      description: 'Cancel the job.
+
+
+        Cancelling a job that already reached a terminal state is not an error: the
+
+        caller''s intent — that this job not run — is already satisfied, and returning
+
+        ``409`` for it would make a retry after a network failure look like a bug.'
+      operationId: cancel_job_jobs__job_id__cancel_post
+      parameters:
+      - description: The job's UUIDv4, as returned at acceptance.
+        in: path
+        name: job_id
+        required: true
+        schema:
+          description: The job's UUIDv4, as returned at acceptance.
+          format: uuid
+          title: Job Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelResponse'
+          description: '`cancelled` says whether this call changed anything.'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No such job. `error` is `not_found`.
+        '410':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 'The job existed and its retention window closed. `error` is `job_expired`.
+            Distinct from 404 deliberately: a user holding an old URL is told it expired,
+            never that it never existed.'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No registry bundle is loaded. `error` is `no_registry_bundle`.
+      summary: Stop a queued or running job
+      tags:
+      - jobs
+  /jobs/{job_id}/results:
+    get:
+      description: 'Return the results as a download.
+
+
+        Never returns a partial result: a job that has not completed is a ``409``,
+
+        because a truncated download that looks complete is worse than a refusal.'
+      operationId: download_results_jobs__job_id__results_get
+      parameters:
+      - description: The job's UUIDv4, as returned at acceptance.
+        in: path
+        name: job_id
+        required: true
+        schema:
+          description: The job's UUIDv4, as returned at acceptance.
+          format: uuid
+          title: Job Id
+          type: string
+      - description: json preserves the full nested result; csv flattens one row per sequence
+          and task, and necessarily omits per-residue attribution.
+        in: query
+        name: format
+        required: false
+        schema:
+          default: json
+          description: json preserves the full nested result; csv flattens one row per sequence
+            and task, and necessarily omits per-residue attribution.
+          enum:
+          - json
+          - csv
+          title: Format
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+            text/csv: {}
+          description: The results, as an attachment.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No such job. `error` is `not_found`.
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: The job has not completed, so it has no results. `error` is `results_not_ready`.
+            Poll `GET /jobs/{job_id}` instead.
+        '410':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 'The job existed and its retention window closed. `error` is `job_expired`.
+            Distinct from 404 deliberately: a user holding an old URL is told it expired,
+            never that it never existed.'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No registry bundle is loaded. `error` is `no_registry_bundle`.
+      summary: Download a completed job's results
+      tags:
+      - jobs
+  /predict:
+    post:
+      description: 'Accept one sequence as a job of size one.
+
+
+        This endpoint does not return a prediction, and no future version of it will:
+
+        that is the contract, not a property of the current implementation. A
+
+        size-one job that finishes inside the inline window may be answered with
+
+        ``200`` and a job resource as a convenience, but a client that assumes ``200``
+
+        is broken against any deployment that happens to be busy.'
+      operationId: predict_predict_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PredictRequest'
+        required: true
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAccepted'
+          description: The job was accepted. Poll `result_url` for status and, once completed,
+            results.
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: The request does not match the contract. `error` is `validation_failed`.
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No registry bundle is loaded, so no work can be accepted. `error` is
+            `no_registry_bundle`.
+      summary: Submit one sequence. Returns a job, never a prediction
+      tags:
+      - prediction
+  /version:
+    get:
+      description: 'Report what is running.
+
+
+        ``api_version`` is the contract''s version and ``service_version`` the
+
+        package''s; they move independently, because a bug fix that changes no shape
+
+        must not look like a contract change to a client pinning one.'
+      operationId: service_version_version_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionResponse'
+          description: Everything needed to identify exactly what answered.
+      summary: Contract version, service version and bundle checksums
+      tags:
+      - service
+tags:
+- description: Liveness and what is loaded.
+  name: service
+- description: Submitting work. Always asynchronous.
+  name: prediction
+- description: Following work and reading results.
+  name: jobs
+- description: The gallery, with pre-computed results.
+  name: examples
