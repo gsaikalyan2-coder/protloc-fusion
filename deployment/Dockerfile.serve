@@ -50,11 +50,35 @@ USER protloc
 
 EXPOSE 8000
 
-# Fails fast on an incomplete environment rather than starting and serving with
-# a wrong MODEL_VERSION. Phase 2 replaces this with a request to /health.
+# A real request to the real endpoint. Python's urllib rather than curl: this is
+# a slim image and adding curl to check one URL would be a package installed
+# purely so that a HEALTHCHECK could be written in shell.
+#
+# /health answers 200 whenever the process is serving, including while it reports
+# `degraded` because no registry bundle is loaded. That distinction matters here:
+# a health check that failed on `degraded` would restart a container that is
+# correctly serving its frozen contract.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD ["python", "-m", "protloc.config.settings"]
+    CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4).status == 200 else 1)"]
 
-# The API application arrives in Phase 2; until then the image's contract is
-# that it starts, validates its configuration, and reports it.
-CMD ["python", "-m", "protloc.config.settings"]
+# The FastAPI application. Replaces `python -m protloc.config.settings`, which
+# was Phase 1's placeholder entry point (handover KNOWN GAPS 4).
+#
+# Factory mode: the application is built by create_app(), which reads and
+# validates the settings at startup. A missing or malformed variable therefore
+# still stops the container before it serves anything — the guarantee the config
+# validator provided is kept, it has simply moved inside the thing that starts.
+# The `--factory` flag is what makes uvicorn call it rather than look for a
+# module-level `app`, and a module-level `app` is deliberately absent so that
+# importing this module never has the side effect of reading the environment.
+#
+# --host and --port come from the environment at run time, which needs a shell to
+# expand them. `exec` is what makes that safe: without it the shell stays PID 1
+# and uvicorn runs as its child, so a SIGTERM from `docker stop` reaches the
+# shell and not the server — the container then ignores the signal and is killed
+# after the 10-second grace period on every single stop. With `exec`, uvicorn
+# replaces the shell, becomes PID 1, receives the signal directly and shuts down
+# cleanly. This is also why the JSON array form is used: it makes the shell
+# explicit rather than implicit, so nobody removes the `exec` thinking it is
+# redundant.
+CMD ["/bin/sh", "-c", "exec uvicorn protloc.api.app:create_app --factory --host \"${API_HOST:-0.0.0.0}\" --port \"${API_PORT:-8000}\""]
