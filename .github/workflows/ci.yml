@@ -174,17 +174,19 @@ jobs:
 
       # A GitHub-hosted runner ships ~14 GB free and arrives preloaded with
       # toolchains this job never uses. The CUDA base plus EMBOSS plus a cache
-      # export exhausted it on the first run. This reclaims roughly 25 GB.
+      # export exhausted it on the first run:
+      #   write /usr/share/EMBOSS/data/TAXONOMY/nodes.dmp: no space left on device
+      # Removing the preloaded toolchains reclaims roughly 25 GB.
       - name: Reclaim runner disk
         run: |
           df -h / | tail -1
-          sudo rm -rf `
-            /usr/share/dotnet `
-            /usr/local/lib/android `
-            /opt/ghc `
-            /usr/local/share/boost `
-            /usr/local/share/powershell `
-            /usr/local/.ghcup `
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /usr/local/lib/android \
+            /opt/ghc \
+            /usr/local/share/boost \
+            /usr/local/share/powershell \
+            /usr/local/.ghcup \
             "$AGENT_TOOLSDIRECTORY" || true
           sudo docker image prune -af || true
           df -h / | tail -1
@@ -207,6 +209,9 @@ jobs:
           tags: protloc-train:ci
           load: true
           cache-from: type=gha
+          # mode=min, not max: exporting every intermediate layer of a multi-GB
+          # CUDA image doubles the disk this job needs, and no other job reuses
+          # those layers.
           cache-to: type=gha,mode=min
 
       # PHASE_01 §5 check 12.
