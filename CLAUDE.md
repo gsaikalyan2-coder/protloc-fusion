@@ -324,8 +324,8 @@ tracked measurements.
 Every `<PIN>` in `docs/THIRD_PARTY.md` is resolved and each licence was verified at
 its pinned commit; four rows changed, five repositories are restricted (§1.1 there).
 
-**Phase 2 may begin, with one carried item.** Exit-gate checks 11, 12 and 16 — both
-Docker images building, and CI green — could not run in the environment Phase 1 was
-executed in, which denies every container registry. They are discharged by the first
-push: the `docker-build` job performs all of them. Push and confirm CI before
-relying on either image.
+**Phase 2 may begin. Nothing is carried forward.** Every exit-gate check passes.
+The repository is at `github.com/gsaikalyan2-coder/protloc-fusion` and CI is green —
+all 10 jobs, run 34861352299 — including `docker-build`, which builds both images,
+asserts `needleall` in the training image and the **absence** of torch in the
+serving one.

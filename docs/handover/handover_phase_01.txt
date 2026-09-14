@@ -191,16 +191,22 @@ VERIFICATION RESULTS
    8 npx tsc --noEmit                     -> exit 0
    9 npm run build                        -> dist/ produced
   10 generate_tokens.py; git diff         -> no diff
-  11 docker build Dockerfile.serve        -> NOT RUN — see KNOWN GAPS
-  12 train image has needleall            -> NOT RUN — see KNOWN GAPS
-  13 serve image lacks torch              -> NOT RUN as a container; the property
-       was verified directly: `pip install ./backend` into a clean venv yields
-       24 packages, and torch, hydra, omegaconf, pytest, ruff, mypy,
+  11 docker build, both images            -> PASSED in CI, run 34861352299
+  12 train image has needleall            -> PASSED in CI (and the build itself
+       now runs a real alignment and greps the output)
+  13 serve image lacks torch              -> PASSED in CI, inverted as specified:
+       the job fails if `import torch` succeeds. Also verified independently as
+       a dependency-closure property — `pip install ./backend` into a clean venv
+       yields 24 packages, and torch, hydra, omegaconf, pytest, ruff, mypy,
        transformers and netcal all raise ModuleNotFoundError while
        protloc.domain and protloc.config import
   14 no secrets in history                -> 0 matches
   15 .env.example placeholders only       -> only publishable defaults remain
-  16 CI green                             -> NOT RUN — nothing pushed yet
+  16 CI green                             -> PASSED. All 10 jobs, run 34861352299
+       on commit 2b3d4ca..HEAD, github.com/gsaikalyan2-coder/protloc-fusion
+
+  EVERY EXIT-GATE CHECK PASSES. Checks 11-13 and 16 were open when this handover
+  was first written and are now closed; what follows records what it took.
 
   ENFORCEMENT PROVED BY DELIBERATE VIOLATION. Every rule was broken on purpose,
   the failure observed, and the repository restored:
@@ -222,17 +228,36 @@ VERIFICATION RESULTS
 
 KNOWN GAPS
 
-  1. DOCKER CHECKS 11, 12 AND 16 ARE UNVERIFIED. Neither image has ever been
-     built. The environment Phase 1 was executed in denies every container
-     registry — Docker Hub, GCR, ECR Public, GHCR, Quay — so no base image could
-     be pulled. This is an environment limit, not a Dockerfile defect, and it is
-     recorded rather than worked around.
-     What WAS verified independently: check 13 as a dependency-closure property
-     (above), and check 12's substance — the `emboss` apt package does provide
-     /usr/bin/needleall, EMBOSS 6.6.0.0, confirmed by installing it.
-     CLOSES WHEN: the repository is pushed and the `docker-build` CI job runs.
-     It performs 11, 12 and 13 including the inverted torch assertion.
-     PHASE 2 MUST NOT ASSUME THE IMAGES BUILD until that run is green.
+  1. CLOSED. The Docker checks were unverified when this handover was drafted —
+     the environment Phase 1 was executed in denies every container registry, so
+     no base image could be pulled and neither image had ever been built. They
+     are now verified by CI. Two failures on the way, both recorded because the
+     second is a trap anyone editing this workflow can fall into:
+
+     (a) The first run died with
+           write /usr/share/EMBOSS/data/TAXONOMY/nodes.dmp: no space left on device
+         A GitHub-hosted runner has ~14 GB free and arrives preloaded with
+         toolchains this job never uses. Fixed four ways: CI reclaims ~25 GB
+         before building; the CUDA base dropped from -cudnn-runtime to -runtime
+         (the PyTorch wheels from Phase 5 bundle their own cuDNN, so the base
+         image's copy was ~2 GB of duplicate); EMBOSS's NCBI taxonomy tree is
+         deleted in the layer that installs it (152 MB of the package's 218 MB,
+         used only by taxget and the ontology tools); and the train image
+         exports cache with mode=min, since nothing reuses its layers.
+         The taxonomy deletion is the one that could break silently, so the
+         build now runs an actual needleall alignment and greps the output. If
+         dropping that tree ever breaks the aligner, the image fails to build
+         rather than the first Phase 4 split run failing.
+
+     (b) The second run died on a backtick. The disk-reclaim step was patched
+         into ci.yml from PowerShell, and a line continuation came through as
+         ` rather than \ — which bash reads as command substitution.
+         EDIT .github/workflows/ci.yml IN AN EDITOR, NOT WITH A POWERSHELL
+         -replace. The desktop file bridge refuses to write anything under
+         .github/, which is what pushed the edit into PowerShell in the first
+         place; the workaround is to write the file elsewhere in the repo and
+         `Move-Item` it into place, then diff it against a known-good copy
+         before committing.
 
   2. mypy must be invoked FROM backend/. [tool.mypy] — including the pydantic
      plugin that makes BaseSettings type-check — lives in backend/pyproject.toml
@@ -263,21 +288,20 @@ NEXT PHASE
 
   Phase 2 — Contracts & wireframes
 
+  Remote: https://github.com/gsaikalyan2-coder/protloc-fusion (private)
+  CI: all 10 jobs green as of run 34861352299, 2026-09-14.
+
   First three actions:
-    1. Push to GitHub and watch CI. Create the remote, push main, and confirm
-       all 10 jobs pass — particularly docker-build, which closes gaps 11, 12
-       and 16 above. Do this BEFORE writing Phase 2 code: the scaffold's
-       enforcement is unproven in CI until it runs once.
-    2. Freeze the API as an OpenAPI 3.1 document. The contract is asynchronous
+    1. Freeze the API as an OpenAPI 3.1 document. The contract is asynchronous
        (ADR-0001): POST /predict returns 202 with {job_id, result_url, status},
        never a prediction. Every response, including 202 and errors, carries
        model_version, config_hash, rules_version, experiment_id.
-    3. Generate frontend/src/types/api.ts from that document and wire the
+    2. Generate frontend/src/types/api.ts from that document and wire the
        generation into CI, so a backend schema change that breaks the frontend
-       fails at build time rather than in a browser.
+       fails at build time rather than in a browser. This retires KNOWN GAPS 5.
+    3. Replace Dockerfile.serve's CMD, which is currently the config validator,
+       with the FastAPI application. KNOWN GAPS 4.
 
-  Blocking prerequisites not yet met: none.
-    The three Phase 1 prerequisites are closed — this handover exists, every
-    <PIN> is resolved with its licence verified, and the Docker checks have a
-    named closure path (action 1). Gap 1 is a gap in EVIDENCE, not in work: it
-    is discharged by the first CI run, not by writing more code.
+  Blocking prerequisites not yet met: NONE. Every exit-gate check passes, the
+  handover is written, every <PIN> is resolved with its licence verified at the
+  pinned commit, and CI is green on a pushed remote. Phase 1 is closed.
