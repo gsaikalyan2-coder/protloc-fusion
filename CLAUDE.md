@@ -17,6 +17,18 @@
 - **Full plan:** `PROJECT_PLAN.md` · **Repo blueprint:** `FOLDER_STRUCTURE.md` ·
   **Visual system:** `docs/DESIGN.md` · **Dependencies:** `docs/THIRD_PARTY.md`
 
+> ## Working folder — read this before touching a file
+>
+> **All work happens in `C:\Users\saika\protloc-fusion`.** It is the git repository:
+> every commit, every check and every push starts there.
+>
+> `C:\Users\saika\ProtLoc` is an **archive**. It is not a git repository, nothing in it
+> is tracked, and an edit made there reaches neither the history nor GitHub. It is kept
+> only for `Base Idea/ProtLoc Documentation.pdf` and the superseded `Claude outputs/`.
+> Do not edit it, and do not copy from it without checking the repo copy first.
+>
+> If a path in any document or chat says `ProtLoc\...`, read it as `protloc-fusion\...`.
+
 ---
 
 ## Tech stack
@@ -275,7 +287,7 @@ corrupts the multi-task loss.
 
 ```
 [x] Phase 0  — Research & prior art
-[ ] Phase 1  — Scaffold & source of truth
+[x] Phase 1  — Scaffold & source of truth
 [ ] Phase 2  — Contracts & wireframes
 [ ] Phase 3  — Data corpus & manifest
 [ ] Phase 4  — Homology splits & leakage gates
@@ -308,6 +320,12 @@ Everything still open is a **value produced by running a phase**, not a decision
 on a person — see `PROJECT_PLAN.md` §7.2 for the freeze schedule and §7.3 for the three
 tracked measurements.
 
-**Phase 1 may begin immediately.**
+**Phase 1 closed 2026-09-14.** Handover: `docs/handover/handover_phase_01.txt`.
+Every `<PIN>` in `docs/THIRD_PARTY.md` is resolved and each licence was verified at
+its pinned commit; four rows changed, five repositories are restricted (§1.1 there).
 
-**Open at Phase 1:** resolve every `<PIN>` commit SHA in `docs/THIRD_PARTY.md`.
+**Phase 2 may begin, with one carried item.** Exit-gate checks 11, 12 and 16 — both
+Docker images building, and CI green — could not run in the environment Phase 1 was
+executed in, which denies every container registry. They are discharged by the first
+push: the `docker-build` job performs all of them. Push and confirm CI before
+relying on either image.

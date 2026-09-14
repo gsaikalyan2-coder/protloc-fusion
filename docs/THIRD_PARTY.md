@@ -14,30 +14,55 @@ this file is the live register.
 3. The **Redistribution** column governs what may ship inside our Docker image
    and what may be exposed through the public web server. Read it before
    deploying, not after.
-4. License facts below were read from each repository's own GitHub page on
-   **2026-09-09**. Re-verify at pin time — licenses change.
+4. License facts below were read from each repository's own `LICENSE` file at the
+   pinned commit on **2026-09-14**, not from a badge or a GitHub summary. Re-verify
+   at any re-pin — licenses change, and two rows below changed between the first
+   reading and this one.
+5. Every `Pinned at` SHA below is the repository's `HEAD` as reported by
+   `git ls-remote https://github.com/<owner>/<repo> HEAD` on **2026-09-14**, with the
+   commit date shown beside it. Resolved in Phase 1 (`PROJECT_PLAN.md` §7.3, M2).
 
 ---
 
 ## 1. Register
 
-| # | Repository | Role in ProtLoc Fusion | License | Pinned at | Weights used? | Redistribution |
+| # | Repository | Role in ProtLoc Fusion | License (verified at the pinned commit) | Pinned at | Weights used? | Redistribution |
 |---|-----------|------------------------|---------|-----------|---------------|----------------|
-| 1 | `graph-part/graph-part` | Homology-aware split generation | BSD-3-Clause | `<PIN>` | no | Permissive — safe to vendor and ship |
-| 2 | `soedinglab/mmseqs2` | Clustering backend / alternative to GraphPart's alignment step | GPL-3.0 *(verify at pin)* | `<PIN>` | no | Invoke as an external binary; do **not** statically link |
-| 3 | `facebookresearch/esm` | ESM-2 embeddings (primary representation) | MIT *(verify at pin)* | `<PIN>` | **yes** — ESM-2 650M | Permissive; still cite and record checkpoint revision |
-| 4 | `efs-opensource/calibration-framework` (netcal) | Temperature / vector scaling, ECE, reliability diagrams | Apache-2.0 | `<PIN>` | no | Permissive — safe to ship |
-| 5 | `huggingface/peft` | LoRA adaptation of the PLM trunk | Apache-2.0 *(verify at pin)* | `<PIN>` | no | Permissive — safe to ship |
-| 6 | `fteufel/signalp-6.0` | Reference implementation for SP + cleavage-site modelling; benchmark baseline | Academic / non-commercial *(verify — DTU terms)* | `<PIN>` | **do not redistribute** | **Restricted.** Study the method; do not bundle weights or serve it |
-| 7 | `JJAlmagro/TargetP-2.0` | Reference for mTP/cTP modelling; benchmark baseline | CC BY-NC-SA | `<PIN>` | **do not redistribute** | **Restricted.** Non-commercial, share-alike. Never vendored |
-| 8 | `TviNet/DeepLoc-2.0` | Reference architecture for multi-label localization + attention interpretability | *(verify at pin)* | `<PIN>` | no | Verify before any reuse |
-| 9 | `brinkmanlab/psortb_commandline_docker` | Prokaryotic localization benchmark baseline | GPL *(verify at pin)* | `<PIN>` | no | Run as a separate container; do not link into our image |
-| 10 | `mahdip72/prot2token` | Methodology reference for unified multi-task protein prediction | **AGPL-3.0 + research-use-only** | `<PIN>` | no | **Hard blocker — see §3** |
-| 11 | `mem0ai/mem0` | Project context memory service (development-time only) | Apache-2.0 | `<PIN>` | no | Dev tooling; never part of the served product |
-| 12 | `ashleve/lightning-hydra-template` | Config/experiment scaffolding pattern | MIT *(verify at pin)* | `<PIN>` | no | Pattern adopted, code largely rewritten |
+| 1 | `graph-part/graph-part` | Homology-aware split generation | BSD-3-Clause | `f470726216bc7ec4cb60f6424548bfd60c550e42` (2023-10-26) | no | Permissive — safe to vendor and ship |
+| 2 | `soedinglab/MMseqs2` | Clustering backend / alternative to GraphPart's alignment step | **MIT** — see §1.1 | `d401e78c2d18a822cdb1527d7464a043f6035a15` (2026-09-13) | no | Permissive. Still invoked as an external binary, for operational reasons rather than licensing ones |
+| 3 | `facebookresearch/esm` | ESM-2 embeddings (primary representation) | MIT | `2b369911bb5b4b0dda914521b9475cad1656b2ac` (2023-06-27) | **yes** — ESM-2 650M | Permissive; still cite and record checkpoint revision |
+| 4 | `efs-opensource/calibration-framework` (netcal) | Temperature / vector scaling, ECE, reliability diagrams | Apache-2.0 | `34b677f42b83803aa35503c5b6fefb1387ea9167` (2026-04-16) | no | Permissive — safe to ship |
+| 5 | `huggingface/peft` | LoRA adaptation of the PLM trunk | Apache-2.0 | `e99fdd275075068d093f8996a59bc0eb865f71a2` (2026-09-14) | no | Permissive — safe to ship |
+| 6 | `fteufel/signalp-6.0` | Reference implementation for SP + cleavage-site modelling; benchmark baseline | **CC BY-NC-ND 2.0** — see §1.1 | `9bcd1b25fbbf8d8e97d048ec1122f70390253de3` (2025-02-04) | **do not redistribute** | **Restricted.** Non-commercial *and* no-derivatives. Study the method; do not bundle weights, do not adapt the code, do not serve it |
+| 7 | `JJAlmagro/TargetP-2.0` | Reference for mTP/cTP modelling; benchmark baseline | CC BY-NC-SA 4.0 | `695c7b252298d3ec7a30491c8026e8839d41f678` (2019-09-05) | **do not redistribute** | **Restricted.** Non-commercial, share-alike. Never vendored |
+| 8 | `TviNet/DeepLoc-2.0` | Reference architecture for multi-label localization + attention interpretability | **CC BY-NC-SA 4.0** — see §1.1 | `e6d44d01f6026b756ba35c4a89715e23a2957590` (2026-01-12) | no | **Restricted.** Non-commercial, share-alike. Read the method; never vendored, never copied |
+| 9 | `brinkmanlab/psortb_commandline_docker` | Prokaryotic localization benchmark baseline | **No LICENSE file in the repository**; its README states PSORTb itself is GPL-3.0 — see §1.1 | `6a034d8a99f2fe00d9b414bbb201478bf97c9da2` (2026-03-24) | no | **Restricted.** Run as a separate container, invoked over its CLI. Copy nothing; link nothing |
+| 10 | `mahdip72/prot2token` | Methodology reference for unified multi-task protein prediction | **AGPL-3.0** (confirmed) + research-use-only | `8bd6ef846e21a08d80bf1a84bbbf923f10835a2d` (2025-06-06) | no | **Hard blocker — see §3** |
+| 11 | `mem0ai/mem0` | Project context memory service (development-time only) | Apache-2.0 | `c7ee362aff94a369af70f13f2b4f853f6793ff4c` (2026-09-11) | no | Dev tooling; never part of the served product |
+| 12 | `ashleve/lightning-hydra-template` | Config/experiment scaffolding pattern | **No LICENSE file at the pinned commit**; the README's badge claims MIT and its License section is empty — see §1.1 | `bddbc24b82ab6ccfa6243e815a49dc5bfe8d4144` (2023-09-25) | no | **Treat as unlicensed.** The pattern is adopted; no code is copied |
 
-`<PIN>` entries are unresolved. A `<PIN>` still present when an experiment is
-run is a reproducibility failure — the run manifest cannot be reconstructed.
+Every `<PIN>` is resolved. Re-pinning a row means re-reading its licence at the new
+commit and recording both here in the same change.
+
+### 1.1 What changed when the licences were verified
+
+Four rows moved when the `LICENSE` file at each pinned commit was read rather than
+its GitHub summary. Recorded because a licence the register gets wrong is worse
+than one it marks unknown.
+
+| # | Was | Is | Why it matters |
+|---|---|---|---|
+| 2 | GPL-3.0 *(verify)* | **MIT** | MMseqs2 is permissive. The "do not statically link" instruction was written to avoid GPL contamination that does not exist. Keeping it as an external binary is still right — it is a heavyweight C++ tool with its own release cadence — but that is now an engineering choice, not a licence constraint |
+| 6 | Academic / non-commercial *(verify — DTU terms)* | **CC BY-NC-ND 2.0** | **ND is stricter than assumed.** No-derivatives forbids adapting the code at all, not merely redistributing it. Reading the method and reimplementing independently is fine; porting or modifying a file is not |
+| 8 | *(verify at pin)* | **CC BY-NC-SA 4.0** | DeepLoc-2.0 is restricted, not open. It moves into the same class as rows 6 and 7: read, never copied |
+| 9 | GPL *(verify)* | **no LICENSE file** | Absence of a licence is not permission. The README attributes GPL-3.0 to PSORTb itself, but the wrapper repository grants nothing, so it is treated as all-rights-reserved and only ever invoked as a separate container |
+| 12 | MIT *(verify)* | **no LICENSE file at the pinned commit** | Only a README badge claims MIT, and the section it links to is empty. The project uses the layout idea, which is not copyrightable; no file is copied, so nothing depends on resolving this |
+
+None of these changes unblocks anything, and two of them tighten a constraint.
+Rows 6, 7, 8, 9 and 10 are now all **restricted**: five of the twelve repositories
+may be read and cited but never copied, vendored, bundled or served.
+
+
 
 ---
 
@@ -61,12 +86,18 @@ run is a reproducibility failure — the run manifest cannot be reconstructed.
 - **Citation:** Teufel F, et al. *GraphPart: homology partitioning for
   biological sequence analysis.* NAR Genomics and Bioinformatics, 2023.
 
-### 2.2 MMseqs2 — `soedinglab/mmseqs2`
+### 2.2 MMseqs2 — `soedinglab/MMseqs2`
 
+- **License:** MIT, read from `LICENSE.md` at the pinned commit on 2026-09-14.
+  The register previously recorded GPL-3.0; see §1.1.
 - **Role:** GraphPart can use alignment backends; MMseqs2 `easy-cluster` is also
   the fallback/comparison clustering path referenced in the GraphPart paper.
-- **Integration rule:** invoked as an external binary from a subprocess. Never
-  linked. This keeps its copyleft terms off our image's own license surface.
+  It is also the homology-search engine for the evidence layer (ADR-0003).
+- **Integration rule:** invoked as an external binary from a subprocess. The
+  reason is operational, not legal — MIT imposes no linking constraint. It is a
+  large C++ tool with its own release cadence and index format, and running it
+  out of process keeps its version pinned in the image rather than in our
+  dependency graph.
 - **Open decision:** whether the frozen split uses GraphPart's needleall
   alignment or MMseqs2 pre-clustering. Requires an ADR before the split is
   frozen.
