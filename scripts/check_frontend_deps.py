@@ -52,6 +52,13 @@ ALLOWED_DEV_DEPENDENCIES: dict[str, str] = {
     "eslint-plugin-react-hooks": "rules of hooks",
     "eslint-plugin-react-refresh": "fast-refresh correctness in development",
     "globals": "environment globals for the ESLint config",
+    "openapi-typescript": (
+        "generates src/types/api.generated.ts from docs/api/openapi.yaml. A "
+        "build-time code generator: it emits type declarations, ships nothing "
+        "to the browser and renders no UI, so the React-only rule permits it. "
+        "It is what closes the gap where the frontend's types mirrored the "
+        "backend's schemas by hand and nothing checked that they agreed."
+    ),
     "prettier": "formatting, checked in CI",
     "typescript": "the compiler and the strict type gate",
     "typescript-eslint": "type-aware linting",

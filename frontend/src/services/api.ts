@@ -32,13 +32,22 @@ export const API_BASE_URL: string = (import.meta.env.VITE_API_BASE_URL ?? "/api"
 export class ApiError extends Error {
   readonly status: number;
   readonly url: string;
+  /** The contract's stable error code, e.g. `no_registry_bundle`. */
+  readonly code: string | undefined;
   readonly provenance: Partial<Provenance>;
 
-  constructor(status: number, url: string, message: string, provenance: Partial<Provenance>) {
+  constructor(
+    status: number,
+    url: string,
+    message: string,
+    code: string | undefined,
+    provenance: Partial<Provenance>,
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.url = url;
+    this.code = code;
     this.provenance = provenance;
   }
 }
@@ -70,14 +79,45 @@ function readProvenance(body: unknown): Partial<Provenance> {
   return provenance;
 }
 
+function readCode(body: unknown): string | undefined {
+  if (typeof body === "object" && body !== null) {
+    const { error } = body as { error?: unknown };
+    if (typeof error === "string") {
+      return error;
+    }
+  }
+  return undefined;
+}
+
 function readMessage(body: unknown, status: number): string {
   if (typeof body === "object" && body !== null) {
-    const { detail } = body as { detail?: unknown };
+    // The contract's error body is {error, message, detail}: `message` is the
+    // human-readable half and is safe to display, `detail` is context. Prefer
+    // the former and fall back to the latter, which is what a response from
+    // outside the application — a proxy, a gateway — is more likely to carry.
+    const { message, detail } = body as { message?: unknown; detail?: unknown };
+    if (typeof message === "string") {
+      return message;
+    }
     if (typeof detail === "string") {
       return detail;
     }
   }
   return `Request failed with status ${String(status)}`;
+}
+
+/**
+ * The stable, machine-readable code from an error body, when there is one.
+ *
+ * Clients branch on this and never on the message: `no_registry_bundle`,
+ * `job_not_found`, `job_expired`, `results_not_ready`. The message is for a
+ * human to read and may be reworded without a contract change.
+ */
+export function errorCode(error: unknown): string | undefined {
+  if (error instanceof ApiError) {
+    return error.code;
+  }
+  return undefined;
 }
 
 export interface RequestOptions {
@@ -121,6 +161,7 @@ export async function request<T>(
       response.status,
       url,
       readMessage(body, response.status),
+      readCode(body),
       readProvenance(body),
     );
   }
