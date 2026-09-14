@@ -156,7 +156,10 @@ SENTRY_DSN=ENTER_YOUR_VALUE_HERE
 
 ## API map
 
-Frozen in Phase 2 as OpenAPI. **The contract is asynchronous** — see
+**Frozen.** The authoritative document is `docs/api/openapi.yaml`, generated from the
+FastAPI application by `scripts/export_openapi.py` and diffed by CI. The table below is
+the human-readable index of it; where the two disagree, the document is right and the
+table is a bug. **The contract is asynchronous** — see
 `docs/adr/ADR-0001-serving-strategy.md` (Accepted). Every prediction is a job; a single
 sequence is a job of size one. There is no synchronous prediction endpoint.
 
@@ -170,7 +173,9 @@ sequence is a job of size one. There is no synchronous prediction endpoint.
 | `POST` | `/jobs/{job_id}/cancel` | `200` | Cancel a queued or running job | none |
 | `GET` | `/jobs/{job_id}/results` | `200` | Download results (JSON or CSV) | none |
 | `GET` | `/examples` | `200` | Gallery sequences with **pre-computed cached results** | none |
-| `GET` | `/docs` | `200` | Swagger UI | none |
+
+`GET /docs` serves Swagger UI. It is a rendering of the contract, not part of it, and it
+is deliberately absent from `docs/api/openapi.yaml`.
 
 ### Contract rules
 
@@ -213,7 +218,7 @@ depth. It is displayed as approximate and never presented as a guarantee.
 
 ---
 
-## Data schema (draft — frozen in Phase 2)
+## Data schema (frozen 2026-09-14, Phase 2)
 
 **Sequence record** — `accession` (PK) · `sequence_raw` · `sequence_normalized` ·
 `sequence_sha256` (indexed, unique) · `length` · `organism` · `taxonomy_id` ·
@@ -288,7 +293,7 @@ corrupts the multi-task loss.
 ```
 [x] Phase 0  — Research & prior art
 [x] Phase 1  — Scaffold & source of truth
-[ ] Phase 2  — Contracts & wireframes
+[x] Phase 2  — Contracts & wireframes
 [ ] Phase 3  — Data corpus & manifest
 [ ] Phase 4  — Homology splits & leakage gates
 [ ] Phase 5  — Feature layer
@@ -324,8 +329,19 @@ tracked measurements.
 Every `<PIN>` in `docs/THIRD_PARTY.md` is resolved and each licence was verified at
 its pinned commit; four rows changed, five repositories are restricted (§1.1 there).
 
-**Phase 2 may begin. Nothing is carried forward.** Every exit-gate check passes.
-The repository is at `github.com/gsaikalyan2-coder/protloc-fusion` and CI is green —
-all 10 jobs, run 34861352299 — including `docker-build`, which builds both images,
-asserts `needleall` in the training image and the **absence** of torch in the
-serving one.
+**Phase 2 closed 2026-09-14.** Handover: `docs/handover/handover_phase_02.txt`.
+The HTTP contract is frozen as `docs/api/openapi.yaml` (OpenAPI 3.1, 8 paths, 26
+schemas), `frontend/src/types/api.generated.ts` is generated from it, and both are
+regenerated and diffed by CI — 12 jobs now, up from 10. `Dockerfile.serve` runs the
+FastAPI application instead of the config validator.
+
+**Phase 3 may begin.** Two things a cold session must know before touching the API:
+
+1. **The contract is frozen, not finished.** Five endpoints answer `503` with
+   `no_registry_bundle` because no registry bundle exists until Phase 7. That is real
+   behaviour, not a stub — but it means the served path cannot be exercised end to end
+   until then, and the integration tests assert the refusal *and its reason*, so they
+   will fail loudly when a bundle appears. Rewriting them is part of Phase 7.
+2. **`docs/api/openapi.yaml` is generated.** Edit `backend/protloc/domain/contracts.py`
+   and the route decorators, then run `python scripts/export_openapi.py`. A hand edit is
+   reverted by the next build.

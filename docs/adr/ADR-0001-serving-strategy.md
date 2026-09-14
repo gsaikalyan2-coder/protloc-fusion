@@ -149,7 +149,9 @@ The result page becomes a **result URL**, reachable and shareable — which is a
 better for a research tool than an ephemeral response. The screens gain a pending state
 that is neither an error nor an empty state, and `docs/DESIGN.md` needs a fourth state in
 its visual language: *queued/running*, visually distinct from *abstained* and from
-*failed*. This is a small addition to §3 of `DESIGN.md`, to be made in Phase 12.
+*failed*. This was written as §3.4 of `DESIGN.md`; the Phase 2 wireframes carry it into
+each of the five screens, and Phase 12 implements it. (This paragraph said "to be made in
+Phase 12" while §7 below recorded it as done; corrected in Phase 2.)
 
 Result URLs are unguessable (UUIDv4) and results expire after a retention window set in
 Phase 16. They are not access-controlled — anyone with the URL can read the result — which
@@ -223,7 +225,8 @@ Reopen this ADR if any of these become true:
 - [x] The API map reflects the `202 Accepted` contract (`CLAUDE.md`; OpenAPI spec
       formalised at Phase 2 exit).
 - [x] `PROJECT_PLAN.md` §1 carries the revised targets from §4.3.
-- [x] `docs/DESIGN.md` §3.5 defines the queued/running visual state.
+- [x] `docs/DESIGN.md` **§3.4** defines the queued/running visual state. (Corrected in
+      Phase 2: this line read §3.5, which is the evidence section.)
 - [ ] **Open — does not block acceptance.** The chosen hosting provider's measured
       memory limit, idle-suspension behaviour and request timeout, replacing the derived
       estimates in §1.1. Provider is `[CLIENT-TBD]`; record the three numbers here on

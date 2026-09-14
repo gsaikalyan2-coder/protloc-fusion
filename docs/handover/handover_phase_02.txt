@@ -1,0 +1,276 @@
+PHASE 02 — Contracts & wireframes
+Closed: 2026-09-14
+Commit: the phase spans 4e5d62e..HEAD on main
+
+PROJECT STATE
+
+  ProtLoc Fusion is a unified protein-annotation web server and API: one
+  sequence plus one organism group in, seven annotations out from a shared
+  protein-language-model representation. Nothing predicts anything yet, and
+  nothing will until Phase 7.
+
+  What exists now is the frozen interface. docs/api/openapi.yaml is an OpenAPI
+  3.1 document with 8 paths and 26 schemas, generated from a real FastAPI
+  application rather than written by hand. frontend/src/types/api.generated.ts
+  is generated from that document. Both are regenerated and diffed by CI, so a
+  backend schema change that breaks the frontend fails at build time instead of
+  in a browser. Dockerfile.serve runs the application.
+
+  Five of the eight endpoints answer 503. Read "DECISIONS MADE" before
+  concluding that something is unfinished — it is not, and the tests are built
+  to fail loudly when it stops being true.
+
+  THE WORKING FOLDER IS C:\Users\saika\protloc-fusion. It is the git
+  repository. C:\Users\saika\ProtLoc is an archive: not a repository, nothing
+  in it tracked, edits there reach neither history nor GitHub.
+
+BUILT THIS PHASE
+
+  The contract — backend/protloc/domain/
+    contracts.py        21 Pydantic models, the entire HTTP contract, plus
+                        API_VERSION. In domain/ rather than api/ because a
+                        schema is vocabulary: jobs/, evaluation/ and api/ all
+                        need it and domain/ is the only module all three may
+                        import.
+    ports.py            ProvenanceSource, JobService, ExampleGallery, and the
+                        four domain errors the API renders as 503/404/410/409.
+
+  The application — backend/protloc/
+    inference/provenance.py   UnloadedProvenance + UnavailableJobService
+    api/deps.py               three providers. Wiring, no logic.
+    api/app.py                create_app(), CORS, six exception handlers
+    api/routers/health.py     GET /health, GET /version — live
+    api/routers/predict.py    POST /predict, POST /batch
+    api/routers/jobs.py       GET/POST /jobs/*
+    api/routers/examples.py   GET /examples
+
+  Generation
+    scripts/export_openapi.py   app -> docs/api/openapi.yaml. --check exits 1
+                                if stale. Self-verifying: refuses to write a
+                                document that breaks the contract's own rules.
+    docs/api/openapi.yaml       GENERATED. The frozen contract.
+    frontend/src/types/api.generated.ts   GENERATED from that document.
+    frontend/src/types/api.ts   hand-written facade: names + runtime helpers.
+
+  Tests
+    backend/tests/unit/test_contracts.py        16 tests on the shapes
+    backend/tests/integration/test_api_contract.py  27 tests over HTTP
+
+  CI — .github/workflows/ci.yml
+    openapi-current   regenerate and diff docs/api/openapi.yaml
+    types-current     regenerate and diff api.generated.ts
+    docker-build      two steps rewritten (see KNOWN GAPS 2)
+    12 jobs now, up from 10.
+
+  Deployment
+    deployment/Dockerfile.serve   CMD is uvicorn --factory; HEALTHCHECK is a
+                                  real request to /health via urllib.
+
+  Documentation
+    docs/ARCHITECTURE.md
+    docs/diagrams/request_sequence.md
+    docs/diagrams/wireframes/{landing,predict,result,batch,job}.md
+    docs/phases/PHASE_02_contracts.md
+    CLAUDE.md, FOLDER_STRUCTURE.md, ADR-0001 updated
+
+DECISIONS MADE
+
+  503, NOT A STUB. READ THIS BEFORE CHANGING THE ROUTERS.
+  Five endpoints — /predict, /batch, /jobs/*, /examples — answer 503 with
+  error "no_registry_bundle". This is not a placeholder standing in for logic
+  that belongs here. A placeholder asserts something false; a mock prediction
+  claims a model ran. The 503 asserts something true: the service cannot
+  accept jobs because no model bundle is loaded. The condition is checked at
+  request time, not hardcoded, and it stops being true the moment Phase 7 puts
+  a bundle in the registry — at which point no router changes, only which
+  implementation deps.py constructs.
+  The integration tests assert the REASON, not just the status code: they
+  check that "Phase 7" appears in the error detail. When a bundle exists those
+  tests fail loudly and are rewritten. That is deliberate. Rewriting them is
+  part of Phase 7, not a nuisance.
+
+  THE ENVELOPE IS NULL, NOT A SENTINEL. model_version, config_hash,
+  rules_version and experiment_id are present on every response — including
+  the 202, every error and the 404 — and typed `string | null`. They are null
+  exactly when no bundle is loaded. A sentinel like "unloaded" or "0.0.0" was
+  rejected: a client can test for null but cannot distinguish an invented
+  version string from a real one, and PROJECT_PLAN §7.2 exists to keep
+  plausible defaults out of the system.
+  Pydantic flattens inheritance, so the four fields appear inline on every
+  response and the envelope itself appeared in no schema.
+  export_openapi.py adds ReproducibilityEnvelope to components/schemas,
+  generated from the model, and leaves it unreferenced — the wire shape stays
+  flat, and a client gets a name for the group. Without this the frontend had
+  no type for a reproducibility footer.
+
+  ROUTERS RETURN WHAT A PORT RETURNS. The first draft had each handler call
+  provenance.require_bundle() and then hit an unreachable raise to satisfy the
+  return type. That unreachable line was a placeholder wearing a different
+  hat. The ports now return the response type, so every handler body is one
+  delegating expression.
+
+  NO MODULE-LEVEL `app`. Building the application reads and validates the
+  settings; a module-level instance would do that at import time, and the
+  OpenAPI export and every test import this module. Factory mode instead:
+  uvicorn protloc.api.app:create_app --factory. create_app() takes an optional
+  Settings so the generated document cannot vary with whose machine produced
+  it — which matters, because CI diffs that document.
+
+  API_VERSION LIVES IN contracts.py, not in api/app.py. Defining it in app.py
+  meant the health router importing from app.py, which imports the routers: a
+  cycle. It versions the contract, so it belongs with the contract.
+
+  MODEL_REGISTRY IS NOT READ. It is a Phase 11 variable in CLAUDE.md's fill
+  schedule. Pulling it forward would have meant a settings field, an
+  .env.example regrouping and a filesystem dependency, all to discover what
+  UnloadedProvenance already knows for certain.
+
+  TWO RESULT ENDPOINTS, DOCUMENTED AS DIFFERENT THINGS.
+    GET /jobs/{id}          the job resource. 200 at every status, results
+                            inline once completed, 410 past retention. This is
+                            result_url and what the frontend polls.
+    GET /jobs/{id}/results  the download representation. ?format=json|csv,
+                            Content-Disposition, 409 when not completed. Never
+                            polled, never partial.
+  GET /docs is Swagger UI. It renders the contract; it is not part of it and
+  is absent from the document.
+
+  /health ANSWERS 200 WHILE DEGRADED. A readiness probe that failed here would
+  restart a container that is correctly serving its frozen contract.
+
+  410 IS SEPARATE FROM 404. A user holding a month-old URL is told the result
+  expired, not that it never existed — the second reading invites them to
+  doubt whether they ever ran the job.
+
+  GENERATED TS IS A SEPARATE FILE. openapi-typescript emits types only, and
+  src/types/api.ts also exports TERMINAL_JOB_STATUSES, isTerminal and
+  hasResults, which services/api.ts imports. Generation writes
+  api.generated.ts; api.ts re-exports from it under readable names and keeps
+  the helpers. Adding a hand-written TYPE to api.ts is almost always a
+  mistake: if the backend does not describe it, the server does not send it.
+
+  openapi-typescript IS PERMITTED BY THE REACT-ONLY RULE. It is a build-time
+  code generator: emits declarations, ships nothing to the browser, renders no
+  UI. No ADR — nothing about it is irreversible. It is on the
+  check_frontend_deps.py allowlist with that reasoning, which is the decision
+  record.
+
+  WIREFRAMES ARE MARKDOWN. docs/DESIGN.md owns colour and spacing; a binary
+  mockup competes with it, pins values the tokens already own, and cannot be
+  diffed in review. Each wireframe fixes layout, hierarchy, state coverage and
+  which token each region draws from.
+
+  ADR-0001 CORRECTED. §7 cited docs/DESIGN.md §3.5 for the queued/running
+  state; §3.4 is the pending state and §3.5 is evidence. §4.2 also said the
+  addition was "to be made in Phase 12" while §7 recorded it as done. Both
+  were documentation errors. The decision is untouched and the status is
+  unchanged.
+
+VALUES FROZEN
+
+  API_VERSION = "1.0.0" — backend/protloc/domain/contracts.py
+    SemVer of the HTTP contract, independent of the service package version.
+    It changes when a client would have to change: a removed field, a renamed
+    one, a narrowed type. Adding an optional field does not change it.
+
+  The data schema — CLAUDE.md, marked frozen 2026-09-14.
+
+  New pins
+    python-multipart 0.0.20   backend/pyproject.toml
+    openapi-typescript 7.13.0 frontend/package.json
+
+  Error codes — stable, machine-readable; clients branch on these, never on
+  the message: no_registry_bundle, validation_failed, not_found, job_expired,
+  results_not_ready, method_not_allowed, payload_too_large, rate_limited.
+
+VERIFICATION RESULTS
+
+   1 cd backend && python -m pytest tests     -> 96 passed
+   2 python -m mypy protloc/domain protloc/config -> Success, 6 source files
+       (from backend/ — the plugin does not load from the repository root)
+   3 ruff check backend                       -> All checks passed!
+   4 ruff format --check backend              -> 36 files already formatted
+   5 ruff check --config backend/ruff.toml scripts -> All checks passed!
+   6 python scripts/export_openapi.py --check -> docs/api/openapi.yaml is current
+   7 openapi version in the document          -> 3.1.0
+   8 paths in the document                    -> 8, exactly CLAUDE.md's API map
+   9 POST /predict responses                  -> 202, 422, 503. No 200.
+  10 every response schema carries the envelope -> asserted in the generator
+  11 npm run generate:types; git diff         -> no diff
+  12 npx tsc --noEmit                         -> exit 0
+  13 npm run lint && npm run build            -> exit 0, dist/index.html
+  14 python scripts/check_frontend_deps.py    -> React only; 16 deps, all pinned
+  15 docker build -f deployment/Dockerfile.serve -> succeeds
+  16 container /health                        -> 200, status "degraded",
+                                                 model_version null
+  17 serving image cannot import torch        -> still fails, as required
+  18 five wireframes, each naming its pending state -> present
+  19 CI on main                               -> 12 jobs green
+
+KNOWN GAPS
+
+  1. Five endpoints answer 503 until Phase 7. Deliberate; see DECISIONS MADE.
+     The tests assert the reason and will fail when a bundle appears.
+
+  2. THE docker-build JOB HAD A STEP THAT WOULD HANG. "Serving image validates
+     its configuration and refuses an empty one" ran the container to
+     completion and read its exit code. With CMD now uvicorn, the container
+     does not exit and that step would have run until the job timed out. It is
+     replaced by two steps: the config validator invoked as an explicit
+     command override (keeping both the refusal and the success assertions),
+     and a new step that starts the container detached, polls /health, asserts
+     status "degraded" with a null envelope, and stops it.
+     EDIT .github/workflows/ci.yml IN AN EDITOR. The desktop file bridge
+     refuses to write under .github/; write elsewhere and Move-Item it into
+     place. A PowerShell -replace already broke CI once with a backtick.
+
+  3. python-multipart is a hard dependency of the frozen contract, not a
+     convenience. FastAPI raises at ROUTE-DEFINITION time — import time, not
+     request time — if Form/File are declared without it. Removing it does not
+     degrade /batch; it stops the application importing at all.
+
+  4. Prettier reformats the generated TypeScript. `npm run generate:types`
+     therefore runs openapi-typescript and then `prettier --write` on the
+     output. Dropping the second half makes `npm run lint` fail on formatting,
+     which reads as a spurious failure until someone finds this note.
+     api.generated.ts is in eslint's ignores, alongside tokens.css, for the
+     same reason: linting a generated file can only report a finding whose fix
+     the next generation reverts.
+
+  5. mypy still gates domain/ and config/ only. CLAUDE.md says domain and
+     inference. inference/ now has code (provenance.py), so the gate CAN be
+     widened — it was left alone in this phase because widening it is a CI
+     change unrelated to the contract. WIDEN IT IN PHASE 7, as Phase 1 already
+     scheduled.
+
+  6. backend/rules/consistency_rules.yaml still does not exist. Phase 10.
+
+  7. FastAPI names a multipart body after its route function, giving
+     Body_batch_batch_post. export_openapi.py renames it to BatchSubmission
+     via an explicit one-entry map. A rename that finds no target is a no-op,
+     and nothing else in the document is rewritten — but it IS a
+     post-processing step on generated output, and anyone adding a second
+     multipart endpoint will need to add its entry.
+
+NEXT PHASE
+
+  Phase 3 — Data corpus & manifest
+
+  Exit criterion (PROJECT_PLAN §4): a manifest exists with a real release,
+  date and hash, and rerunning the build from the snapshot reproduces the
+  identical corpus hash.
+
+  First three actions:
+    1. Fill UNIPROT_RELEASE in a local .env from the release string on the
+       UniProt download page on the day you snapshot. Never commit it.
+    2. Write scripts/download_data.py and snapshot the corpus. The bytes are
+       DVC-tracked; only pointers go into git.
+    3. Decide MAX_SEQUENCE_LENGTH and the residue alphabet from the corpus's
+       own length distribution, and record both in the dataset card. The
+       contract deliberately encodes NEITHER — PredictRequest has no
+       max_length, and a test asserts its absence — so that these are measured
+       values rather than a guess frozen into an API.
+
+  Blocking prerequisites not yet met: NONE. Every exit-gate check passes, the
+  contract is frozen and generated end to end, CI is green on 12 jobs, and the
+  serving image serves the application. Phase 2 is closed.
