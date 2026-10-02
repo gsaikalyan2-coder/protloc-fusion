@@ -3,6 +3,7 @@
 - **Status:** **Accepted** (2026-09-09)
 - **Date proposed:** 2026-09-09 · **Date accepted:** 2026-09-09
 - **Deciders:** Saikalyan
+- **Amended by:** [ADR-0008](ADR-0008-batch-mode-durability.md) — batch mode is client-side chunking
 - **Blocks:** Phase 11 (Backend service & batch), Phase 12 (Frontend), Phase 13
   (Integration & performance)
 - **Related:** `PROJECT_PLAN.md` §1 (non-functional targets), §6 (infrastructure

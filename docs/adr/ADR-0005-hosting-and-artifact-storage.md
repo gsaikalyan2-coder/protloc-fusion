@@ -1,10 +1,20 @@
 # ADR-0005 — Hosting and artifact storage
 
-- **Status:** **Accepted** (2026-09-09), pending the measurements in §7
+- **Status:** **Superseded by [ADR-0007](ADR-0007-hosting.md)** (2026-10-02). Was Accepted
+  2026-09-09.
 - **Deciders:** Saikalyan
 - **Blocks:** Phase 16 (Governance, cost & release readiness), Phase 17 (Release) —
   and closes ADR-0001's outstanding checkbox
 - **Related:** ADR-0001 §1.1, §7; ADR-0003 §4; ADR-0004 §3.3
+
+---
+
+> **Superseded.** The central decision — a free HF Docker Space, CPU Basic, for the
+> backend (§4.1) — was invalidated in July 2026, when Hugging Face began requiring a
+> PRO subscription to host Docker Spaces on cpu-basic. See ADR-0007 for the evidence and
+> the replacement. §4.2 (Static Space frontend) and §4.3 (Hub repositories for artifacts)
+> are carried forward unchanged by ADR-0007 §4. The text below is kept as written, as the
+> record of what was decided and why.
 
 ---
 
