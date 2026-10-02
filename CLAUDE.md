@@ -338,9 +338,9 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 1   — Repository init, licensing, CI green          MVP   2.0 h   done 2026-10-02
 [x] Phase 2   — Host decision, supersede ADR-0005             MVP   3.0 h   done 2026-10-02 (v0.2.0)
 [x] Phase 3   — Widen contract: provenance + calibration      MVP   2.5 h   done 2026-10-02 (v0.3.0)
-[x] Phase 4   — Motif-engine test harness & golden set        MVP   3.0 h   done 2026-10-02 (branch, untagged)
-[ ] Phase 5   — Swiss-Prot corpus, labels, manifest           MVP   8.0 h   <-- NEXT
-[ ] Phase 6   — GraphPart splits & leakage gate               MVP   5.0 h
+[x] Phase 4   — Motif-engine test harness & golden set        MVP   3.0 h   done 2026-10-02 (v0.4.0)
+[x] Phase 5   — Swiss-Prot corpus, labels, manifest           MVP   8.0 h   done 2026-10-02 (branch; you tag v0.5.0)
+[ ] Phase 6   — GraphPart splits & leakage gate               MVP   5.0 h   <-- NEXT
 [ ] Phase 7   — ESM-2 embedding cache                         MVP   6.0 h
 [ ] Phase 8   — Classical baselines (metric floor)            ENH   3.0 h
 [ ] Phase 9   — Localization head (attention pooling + MLP)   MVP   7.0 h
@@ -374,7 +374,7 @@ docs say so rather than promising durability the host cannot deliver.
 | 0003 | Self-hosted Swiss-Prot MMseqs2 + UniProt-GOA snapshots | Accepted · ENH, k-mer fallback allowed | 13 |
 | 0004 | Run manifest authoritative; W&B as viewer | Accepted | 8, 9 |
 | 0005 | HF Spaces (Docker + Static) + HF Hub artifact repos | **Superseded 2026-10-02** — Docker Spaces are paid | — |
-| 0006 | Label semantics: four states, per-label evidence, per-task negative rule | Accepted at Phase 5 exit | 5, 9, 20 |
+| 0006 | Label semantics: four states, per-label evidence, per-task negative rule | Accepted 2026-10-02 | 5, 9, 20 |
 | 0007 | Hosting, post-paywall | Accepted for the Phase 2 acceptance host; **host for the real service undecided** | 19, 20 |
 | 0008 | Batch durability scoped to client-side chunking | Accepted | 14, 16 |
 | 0009 | Frozen encoder + trained heads; ESM-2 150M | **To be written in Phase 7** | 7, 9 |
@@ -404,6 +404,15 @@ Deviations and UNVERIFIED items: `docs/phases/03.md` §8.
 TRUST fit. Test-only, never served. A changed engine fails `pytest tests/golden` with a
 per-sequence, per-field diff; `python scripts/regen_golden.py --write` is the only way to
 rewrite it. No real protein is in it (UniProt was unreachable): `docs/phases/04.md` §7.
+
+### Phase 5 close — 2026-10-02
+
+Swiss-Prot release `2026_03` (02-Sep-2026) is snapshotted and built: 548,702 records from
+575,748 entries, corpus SHA-256 `d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8`,
+identical across three builds; `MAX_SEQUENCE_LENGTH` frozen at 1496 (quantile 0.99; 5,478
+records longer, kept in the corpus). Manifest, dataset card, build report and class counts are in
+`data/manifests/`; the bytes are gitignored. ADR-0006 is Accepted. UNVERIFIED: the ESM-2 context
+(1022) and cross-platform hash reproducibility. Detail: `docs/phases/05.md`.
 
 ### Two things a cold session must know
 
