@@ -166,6 +166,7 @@ sequence is a job of size one. There is no synchronous prediction endpoint.
 | Method | Endpoint | Returns | Description | Auth |
 |---|---|---|---|---|
 | `GET` | `/health` | `200` | Liveness, loaded model version, queue depth | none |
+| `GET` | `/healthz` | `200` | Model-registry state (`loaded` / `empty`) for platform probes | none |
 | `GET` | `/version` | `200` | Registry bundle version, checksums, rule-set version | none |
 | `POST` | `/predict` | **`202`** | One sequence → `{job_id, result_url, status}` | none, rate-limited |
 | `POST` | `/batch` | **`202`** | FASTA upload → `{job_id, result_url, status}` | none, rate-limited |

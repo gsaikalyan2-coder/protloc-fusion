@@ -41,7 +41,7 @@ from protloc.domain.types import JobStatus, OrganismGroup, Severity, TaskName
 #: a narrowed type. Adding an optional field does not change it. It lives here
 #: rather than in ``api/`` because it versions the contract, and the contract is
 #: what this module is.
-API_VERSION = "1.0.0"
+API_VERSION = "1.1.0"
 
 # Every model forbids unknown fields. A response a client cannot fully account for
 # is a response whose shape the OpenAPI document does not actually describe, and
@@ -527,6 +527,30 @@ class HealthResponse(ReproducibilityEnvelope):
     )
 
 
+class HealthzResponse(ReproducibilityEnvelope):
+    """The body of ``GET /healthz`` — the model-registry state, and nothing else.
+
+    A probe for platforms and phones: it says whether a registry bundle is
+    loaded, and carries none of ``/health``'s queue accounting. It answers
+    ``200`` whenever the process is serving, for the same reason ``/health`` does:
+    a probe that failed while the service was correctly serving its contract would
+    restart a container that is working.
+    """
+
+    model_config = _STRICT
+
+    status: Literal["ok", "degraded"] = Field(
+        description="ok when a registry bundle is loaded; degraded when serving without one.",
+    )
+    registry_state: Literal["loaded", "empty"] = Field(
+        description="loaded when a registry bundle is loaded; empty when none is.",
+    )
+    detail: str | None = Field(
+        default=None,
+        description="What is missing. null when registry_state is loaded.",
+    )
+
+
 class VersionResponse(ReproducibilityEnvelope):
     """The body of ``GET /version`` — what is loaded, and what it hashes to."""
 
@@ -640,6 +664,7 @@ __all__ = [
     "ExamplesResponse",
     "GoAnnotation",
     "HealthResponse",
+    "HealthzResponse",
     "HomologyHit",
     "JobAccepted",
     "JobProgress",
