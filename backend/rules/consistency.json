@@ -1,0 +1,17 @@
+{
+  "rules_version": "demo-0.1.0",
+  "rules": [
+    {"id": "R01", "severity": "warning", "when": "loc_and_signal", "loc": "NUC", "signal": "SP",
+     "message": "Nuclear call with a secretory signal peptide: a protein entering the ER lumen cannot reach the nucleus."},
+    {"id": "R02", "severity": "warning", "when": "retention_without_entry",
+     "message": "C-terminal KDEL/HDEL retention motif without an N-terminal signal peptide: retention needs prior ER entry."},
+    {"id": "R03", "severity": "blocked", "when": "dual_nterminal",
+     "message": "Signal peptide and mitochondrial transit peptide both scored > 0.5: these N-terminal signals are mutually exclusive."},
+    {"id": "R04", "severity": "warning", "when": "tm_but_secreted",
+     "message": "Transmembrane helix predicted but top location is extracellular / periplasm."},
+    {"id": "R05", "severity": "warning", "when": "pts1_with_sp",
+     "message": "Peroxisomal PTS1 tripeptide present together with a signal peptide."},
+    {"id": "R06", "severity": "uncertain", "when": "evidence_disagrees",
+     "message": "Closest reference homolog (>= 40% identity) is annotated to a different compartment."}
+  ]
+}

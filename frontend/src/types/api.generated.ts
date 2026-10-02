@@ -73,6 +73,29 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/healthz": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Model-registry state, for platform and phone probes
+     * @description Report the model-registry state.
+     *
+     *     Answers ``200`` whenever the process is up, including with no bundle loaded;
+     *     the registry's state is in the body, not the status code.
+     */
+    get: operations["healthz_healthz_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/jobs/{job_id}": {
     parameters: {
       query?: never;
@@ -521,6 +544,55 @@ export interface components {
       /**
        * Status
        * @description degraded means serving but unable to predict; see detail.
+       * @enum {string}
+       */
+      status: "ok" | "degraded";
+    };
+    /**
+     * HealthzResponse
+     * @description The body of ``GET /healthz`` — the model-registry state, and nothing else.
+     *
+     *     A probe for platforms and phones: it says whether a registry bundle is
+     *     loaded, and carries none of ``/health``'s queue accounting. It answers
+     *     ``200`` whenever the process is serving, for the same reason ``/health`` does:
+     *     a probe that failed while the service was correctly serving its contract would
+     *     restart a container that is working.
+     */
+    HealthzResponse: {
+      /**
+       * Config Hash
+       * @description Hash of the resolved Hydra configuration the bundle was produced under. null when no bundle is loaded.
+       */
+      config_hash: string | null;
+      /**
+       * Detail
+       * @description What is missing. null when registry_state is loaded.
+       */
+      detail?: string | null;
+      /**
+       * Experiment Id
+       * @description Identifier of the run manifest the bundle came from, e.g. EXP-0031. null when no bundle is loaded.
+       */
+      experiment_id: string | null;
+      /**
+       * Model Version
+       * @description SemVer of the loaded registry bundle. null when no bundle is loaded, which is the case until Phase 7 packages bundle v0.
+       */
+      model_version: string | null;
+      /**
+       * Registry State
+       * @description loaded when a registry bundle is loaded; empty when none is.
+       * @enum {string}
+       */
+      registry_state: "loaded" | "empty";
+      /**
+       * Rules Version
+       * @description SemVer of the biological-consistency rule set that scored this response. null when no rule set is loaded.
+       */
+      rules_version: string | null;
+      /**
+       * Status
+       * @description ok when a registry bundle is loaded; degraded when serving without one.
        * @enum {string}
        */
       status: "ok" | "degraded";
@@ -1120,6 +1192,26 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["HealthResponse"];
+        };
+      };
+    };
+  };
+  healthz_healthz_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The service is answering. Read `registry_state` for the bundle. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HealthzResponse"];
         };
       };
     };

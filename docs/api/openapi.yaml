@@ -457,6 +457,79 @@ components:
       - queue_depth
       title: HealthResponse
       type: object
+    HealthzResponse:
+      additionalProperties: false
+      description: 'The body of ``GET /healthz`` — the model-registry state, and nothing else.
+
+
+        A probe for platforms and phones: it says whether a registry bundle is
+
+        loaded, and carries none of ``/health``''s queue accounting. It answers
+
+        ``200`` whenever the process is serving, for the same reason ``/health`` does:
+
+        a probe that failed while the service was correctly serving its contract would
+
+        restart a container that is working.'
+      properties:
+        config_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Hash of the resolved Hydra configuration the bundle was produced under.
+            null when no bundle is loaded.
+          title: Config Hash
+        detail:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: What is missing. null when registry_state is loaded.
+          title: Detail
+        experiment_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Identifier of the run manifest the bundle came from, e.g. EXP-0031.
+            null when no bundle is loaded.
+          title: Experiment Id
+        model_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the loaded registry bundle. null when no bundle is loaded,
+            which is the case until Phase 7 packages bundle v0.
+          title: Model Version
+        registry_state:
+          description: loaded when a registry bundle is loaded; empty when none is.
+          enum:
+          - loaded
+          - empty
+          title: Registry State
+          type: string
+        rules_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: SemVer of the biological-consistency rule set that scored this response.
+            null when no rule set is loaded.
+          title: Rules Version
+        status:
+          description: ok when a registry bundle is loaded; degraded when serving without
+            one.
+          enum:
+          - ok
+          - degraded
+          title: Status
+          type: string
+      required:
+      - model_version
+      - config_hash
+      - rules_version
+      - experiment_id
+      - status
+      - registry_state
+      title: HealthzResponse
+      type: object
     HomologyHit:
       additionalProperties: false
       description: 'One Swiss-Prot match, from the local MMseqs2 snapshot (ADR-0003).
@@ -1206,7 +1279,7 @@ info:
     name: Apache-2.0
   summary: Seven protein annotations from one shared representation.
   title: ProtLoc Fusion
-  version: 1.0.0
+  version: 1.1.0
 openapi: 3.1.0
 paths:
   /batch:
@@ -1291,6 +1364,25 @@ paths:
                 $ref: '#/components/schemas/HealthResponse'
           description: The service is answering. Read `status` for whether it can predict.
       summary: Liveness, what is loaded, and how deep the queue is
+      tags:
+      - service
+  /healthz:
+    get:
+      description: 'Report the model-registry state.
+
+
+        Answers ``200`` whenever the process is up, including with no bundle loaded;
+
+        the registry''s state is in the body, not the status code.'
+      operationId: healthz_healthz_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthzResponse'
+          description: The service is answering. Read `registry_state` for the bundle.
+      summary: Model-registry state, for platform and phone probes
       tags:
       - service
   /jobs/{job_id}:

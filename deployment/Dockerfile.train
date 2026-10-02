@@ -76,7 +76,7 @@ COPY backend/protloc ./backend/protloc
 
 RUN python3.11 -m venv /opt/venv \
     && /opt/venv/bin/pip install --upgrade pip setuptools wheel \
-    && /opt/venv/bin/pip install -e "./backend[dev]"
+    && /opt/venv/bin/pip install -e "./backend[dev,data]"
 
 COPY configs ./configs
 COPY scripts ./scripts

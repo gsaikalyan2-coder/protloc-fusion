@@ -41,6 +41,19 @@ dev = [
   "ruff==0.16.6",
   "mypy==2.3.1",
   "httpx==0.28.1",
+  "types-PyYAML==6.0.12.20260906",
+]
+
+# Corpus construction (Phase 3). Separate from the serving dependencies:
+# Dockerfile.serve installs neither extra, so none of this reaches the served image.
+data = [
+  "biopython==1.88",
+  "pyyaml==6.0.3",
+]
+# Data versioning. Kept apart from `data` because CI never needs it and it pulls
+# in a large dependency tree.
+dvc = [
+  "dvc==3.67.1",
 ]
 
 [project.urls]
@@ -54,8 +67,8 @@ include = ["protloc*"]
 protloc = ["py.typed"]
 
 # ── mypy ─────────────────────────────────────────────────────────────────────
-# Strict everywhere. `domain/` and `config/` are the two packages CI gates on
-# today (PHASE_01 §5 check 4); the settings below apply to whatever is checked.
+# Strict everywhere. CI gates `domain/`, `config/` and — from Phase 3 — `data/`;
+# the settings below apply to whatever is checked.
 [tool.mypy]
 plugins = ["pydantic.mypy"]
 python_version = "3.11"

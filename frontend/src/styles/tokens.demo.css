@@ -1,0 +1,90 @@
+/*
+ * DEMO TOKENS.
+ * Token NAMES are copied from docs/DESIGN.md so components read identically to
+ * the real system. Only the neutral/accent VALUES are overridden with a dark-green
+ * scheme for the presentation (DESIGN.md itself is untouched). Compartment colors
+ * use DESIGN.md section 2 dark-mode values verbatim: color still means biology.
+ */
+:root {
+  --surface-0: #0b1611;
+  --surface-1: #11211a;
+  --surface-2: #182d23;
+  --text-primary: #e6f1ea;
+  --text-secondary: #a7c2b3;
+  --text-muted: #6f8f7e;
+  --text-inverse: #0b1611;
+  --border: #1f3a2d;
+  --border-strong: #2d523f;
+  --border-stronger: #417258;
+  --accent: #6fcf97;
+  --accent-hover: #8fdcae;
+  --accent-subtle: #163726;
+  --focus-ring: #6fcf97;
+
+  /* type + space + radius: DESIGN.md values, unchanged */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --leading-tight: 1.25;
+  --leading-body: 1.6;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --border-width: 1px;
+  --border-width-emph: 3px;
+  --shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.4);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+
+  /* trust states: DESIGN.md section 3 dark values */
+  --state-note: #b3aea4;
+  --state-note-bg: #242220;
+  --state-warn: #e7be79;
+  --state-warn-bg: #3b2c10;
+  --state-block: #f09595;
+  --state-block-bg: #3e1a1a;
+  --loc-cyt: #333c46;
+  --loc-cyt-text: #c4ccd6;
+  --loc-nuc: #2e2d5e;
+  --loc-nuc-text: #bfbee8;
+  --loc-ext: #0e4438;
+  --loc-ext-text: #8fd9c6;
+  --loc-mem: #4a340c;
+  --loc-mem-text: #e7be79;
+  --loc-mit: #4e1a20;
+  --loc-mit-text: #e9a7ae;
+  --loc-pla: #22400e;
+  --loc-pla-text: #afd08c;
+  --loc-er: #3a2152;
+  --loc-er-text: #cfaee6;
+  --loc-lys: #502713;
+  --loc-lys-text: #ebb68f;
+  --loc-gol: #4e1f34;
+  --loc-gol-text: #e6a8c6;
+  --loc-per: #33261a;
+  --loc-per-text: #c7b096;
+  --loc-ppl: #0f3346;
+  --loc-ppl-text: #9bcbe4;
+  --loc-pom: #3c2a07;
+  --loc-pom-text: #d6bc84;
+  --loc-pcw: #2f340c;
+  --loc-pcw-text: #c3cb8b;
+  --loc-pcm: #4a340c;
+  --loc-pcm-text: #e7be79;
+}

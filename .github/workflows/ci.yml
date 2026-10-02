@@ -82,7 +82,8 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - run: pip install -e "backend[dev]"
+      # `data` carries biopython, which the Phase 3 parser tests import.
+      - run: pip install -e "backend[dev,data]"
       - name: pytest
         working-directory: backend
         run: python -m pytest tests

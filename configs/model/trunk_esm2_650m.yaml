@@ -20,9 +20,13 @@ trunk:
 # an organism group it does not apply to — masking and abstaining are different
 # things and are never conflated.
 heads:
+  # Eukaryotic compartments only; prokaryotes use prokaryotic_localization.
+  # ADR-0006 §3.2 (2026-09-15) — this line previously listed all four groups.
+  # backend/tests/unit/test_corpus_rules.py asserts every applies_to here equals
+  # the applicability table in backend/rules/uniprot_label_map.yaml.
   localization:
     kind: multi_label
-    applies_to: [eukarya, gram_positive, gram_negative, archaea]
+    applies_to: [eukarya]
   membrane_type:
     kind: multi_class
     applies_to: [eukarya, gram_positive, gram_negative, archaea]

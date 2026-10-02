@@ -1,0 +1,86 @@
+# Taxonomic lineage → ProtLoc organism group.  ADR-0006 §3.6.
+#
+# Data, not code: this is biology, and CLAUDE.md forbids biology in a .py file.
+# The corpus build records this file's SHA-256 in the dataset manifest, so editing
+# it changes the corpus hash — deliberately.
+#
+# Semantics
+#   Rules are evaluated top to bottom; the FIRST rule with any token present in the
+#   entry's `OC` lineage (exact, case-sensitive token match) decides. A rule either
+#   assigns `group` (an OrganismGroup value) or `exclude`s the entry with a reason
+#   that is counted in the manifest. An entry matching no rule is excluded with
+#   reason `no_rule_matched`.
+#
+#   Order matters where a clade nests inside another: Negativicutes and the
+#   wall-less Mollicutes sit inside lineages that otherwise read Gram-positive, so
+#   they are listed first.
+#
+#   Both current NCBI phylum names (-ota, adopted by UniProt from 2024) and the
+#   older names are listed, because an entry's lineage text depends on the release.
+#
+# Review status: drafted 2026-09-15 for Phase 3; to be reviewed with ADR-0006.
+# Gram-stain assignment follows cell-envelope architecture (monoderm vs diderm),
+# the convention used by the prokaryotic localization literature. Phyla whose
+# envelope is atypical for their stain are excluded rather than guessed.
+
+version: 1.0.0
+
+rules:
+  - any_of: [Viruses]
+    exclude: virus
+  - any_of: [Eukaryota]
+    group: eukarya
+  - any_of: [Archaea]
+    group: archaea
+
+  # Diderm clades nested inside a mostly monoderm phylum.
+  - any_of: [Negativicutes]
+    group: gram_negative
+  # No cell wall: neither stain describes the envelope.
+  - any_of: [Mycoplasmatota, Tenericutes, Mollicutes]
+    exclude: wall_less_bacterium
+  # Stain and envelope disagree; not assigned.
+  - any_of: [Deinococcota, Deinococcus-Thermus, Chloroflexota, Chloroflexi]
+    exclude: atypical_envelope
+
+  - any_of: [Bacillota, Firmicutes, Actinomycetota, Actinobacteria]
+    group: gram_positive
+
+  - any_of:
+      - Pseudomonadota
+      - Proteobacteria
+      - Bacteroidota
+      - Bacteroidetes
+      - Campylobacterota
+      - Cyanobacteriota
+      - Cyanobacteria
+      - Chlamydiota
+      - Chlamydiae
+      - Spirochaetota
+      - Spirochaetes
+      - Verrucomicrobiota
+      - Verrucomicrobia
+      - Planctomycetota
+      - Planctomycetes
+      - Fusobacteriota
+      - Fusobacteria
+      - Aquificota
+      - Aquificae
+      - Thermotogota
+      - Thermotogae
+      - Acidobacteriota
+      - Acidobacteria
+      - Chlorobiota
+      - Chlorobi
+      - Nitrospirota
+      - Nitrospirae
+      - Thermodesulfobacteriota
+      - Myxococcota
+      - Bdellovibrionota
+      - Gemmatimonadota
+      - Deferribacterota
+    group: gram_negative
+
+  # Any other bacterium: excluded and counted, never defaulted.
+  - any_of: [Bacteria]
+    exclude: unmapped_bacterial_phylum

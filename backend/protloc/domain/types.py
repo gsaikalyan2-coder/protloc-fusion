@@ -111,4 +111,26 @@ class Severity(StrEnum):
     BLOCKING = "blocking"
 
 
-__all__ = ["JobStatus", "OrganismGroup", "Severity", "TaskName"]
+@unique
+class LabelState(StrEnum):
+    """What the corpus knows about one task for one protein.
+
+    Four states, not two, because three different kinds of "no positive label"
+    mean three different things to the multi-task loss (ADR-0006 §3.1):
+
+    * :attr:`NEGATIVE` — curated absence, under the task's rule in ADR-0006 §3.3.
+      It is a training signal.
+    * :attr:`UNKNOWN` — nobody annotated this. It is not a training signal, and
+      it must never be read as a negative.
+    * :attr:`NOT_APPLICABLE` — the task is not defined for this organism group.
+      It is masked by design, and counted separately from unknown in every
+      coverage table.
+    """
+
+    ANNOTATED = "annotated"
+    NEGATIVE = "negative"
+    UNKNOWN = "unknown"
+    NOT_APPLICABLE = "not_applicable"
+
+
+__all__ = ["JobStatus", "LabelState", "OrganismGroup", "Severity", "TaskName"]

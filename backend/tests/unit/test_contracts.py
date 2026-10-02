@@ -19,6 +19,7 @@ from protloc.domain import contracts
 from protloc.domain.contracts import (
     ErrorResponse,
     HealthResponse,
+    HealthzResponse,
     JobAccepted,
     PredictRequest,
     ReproducibilityEnvelope,
@@ -190,6 +191,21 @@ def test_health_reports_degraded_without_a_bundle():
     assert health.bundle_loaded is False
 
 
+def test_healthz_reports_an_empty_registry():
+    """/healthz names the registry's state; empty is degraded, not an error."""
+    healthz = HealthzResponse(
+        status="degraded",
+        registry_state="empty",
+        detail="no registry bundle is loaded",
+        model_version=None,
+        config_hash=None,
+        rules_version=None,
+        experiment_id=None,
+    )
+    assert healthz.registry_state == "empty"
+    assert healthz.status == "degraded"
+
+
 def test_errors_carry_the_envelope():
     """A user reporting a failure can name the model version without reproducing it."""
     error = ErrorResponse(
@@ -214,6 +230,8 @@ def test_no_model_hardcodes_a_biological_vocabulary():
     allowed = {
         ("GoAnnotation", "aspect"),
         ("HealthResponse", "status"),
+        ("HealthzResponse", "status"),
+        ("HealthzResponse", "registry_state"),
     }
     literal_fields = {
         (name, field_name)

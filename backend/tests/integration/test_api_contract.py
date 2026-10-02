@@ -29,6 +29,7 @@ ENVELOPE_FIELDS = ("model_version", "config_hash", "rules_version", "experiment_
 # absent deliberately: Swagger UI is a rendering of the contract, not part of it.
 CONTRACT_PATHS = {
     ("GET", "/health"),
+    ("GET", "/healthz"),
     ("GET", "/version"),
     ("POST", "/predict"),
     ("POST", "/batch"),
@@ -135,6 +136,18 @@ def test_health_is_200_and_degraded(client: TestClient):
     assert body["detail"]
 
 
+def test_healthz_reports_the_registry_state(client: TestClient):
+    """/healthz is a 200 that names the registry's state in the body."""
+    response = client.get("/healthz")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "degraded"
+    assert body["registry_state"] == "empty"
+    assert body["detail"]
+    for field in ENVELOPE_FIELDS:
+        assert body[field] is None
+
+
 def test_version_reports_the_contract_and_the_package(client: TestClient):
     response = client.get("/version")
     assert response.status_code == 200
@@ -191,6 +204,7 @@ def test_batch_refuses_with_503(client: TestClient):
     ("method", "path", "kwargs"),
     [
         ("get", "/health", {}),
+        ("get", "/healthz", {}),
         ("get", "/version", {}),
         ("get", "/examples", {}),
         ("post", "/predict", {"json": {"sequence": "MKTFF", "organism_group": "eukarya"}}),
