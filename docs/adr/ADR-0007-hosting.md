@@ -1,7 +1,8 @@
 # ADR-0007 — Hosting for the backend
 
-- **Status:** **Accepted** (2026-10-02) for the host choice. §6 measurements are
-  **UNVERIFIED** until the acceptance test in `deployment/cloudrun.md` is run and recorded.
+- **Status:** **Accepted** (2026-10-02) for the Phase 2 acceptance host (Render free tier).
+  **The host for the real serving image is undecided** (§3.3). Remaining §6 measurements
+  are **UNVERIFIED** where marked.
 - **Deciders:** Saikalyan
 - **Supersedes:** [ADR-0005](ADR-0005-hosting-and-artifact-storage.md)
 - **Related:** ADR-0001 (queue everything), ADR-0008 (batch durability)
@@ -55,7 +56,14 @@ ADR-0005's own first driver (a bill that stops means a dead URL in a paper).
 
 ## 3. Decision
 
-**Run the backend on Google Cloud Run, scaled to zero** (`--min-instances 0`), built from
+### 3.0 Revision, same day
+
+The operator declined to use `gcloud`. The decision below was the first recommendation;
+it was not deployed. The hello-world acceptance test ran on **Render's free tier**
+instead (§3.3). Everything below about Cloud Run stays as the record of why it was
+recommended and remains the only documented free option that fits the model.
+
+**Original recommendation: run the backend on Google Cloud Run, scaled to zero** (`--min-instances 0`), built from
 `deployment/Dockerfile.serve`.
 
 ### 3.1 Cost
@@ -74,6 +82,16 @@ troubleshooting page does not mention it). The contract now has both `/health` a
 `/healthz`, and the acceptance test requests both. If `/healthz` 404s on `run.app`, that
 is recorded in §6 and the Phase 2 acceptance wording ("returns 200 from `/healthz`") is
 met by `/health` with the deviation stated, rather than by editing the result.
+
+### 3.3 What Render's free tier does and does not prove
+
+It proves a containerised FastAPI is reachable on the public internet and serves
+`/healthz`. It does **not** host the real service: the free instance has 512 MB of RAM
+(`render.com/pricing`) and ESM-2 650M needs about 2.6 GB for fp32 weights alone (ADR-0001
+§1.1). The smallest Render tier that clearly fits is 4 GB at $85/month. So no free host
+that fits the real model has been *deployed and verified*. Cloud Run is the only free
+option found that fits on paper (32 GiB, free tier), and it is not verified. Decide before
+Phase 7: Cloud Run, a smaller checkpoint (ADR-0001 Option A trade-offs), or a paid tier.
 
 ## 4. What carries over from ADR-0005
 
@@ -101,17 +119,22 @@ then loading them). Moving between hosts is a redeploy, since the image is the s
 
 ## 6. Measurements
 
-Both figures below must come from `scripts/measure_cold_start.py` and the phone test in
-`deployment/cloudrun.md`. Neither has been taken yet.
+Cold-start figures must come from `scripts/measure_cold_start.py`; the phone test is by
+hand. Steps are in `deployment/render.md`.
 
 | Measurement | Value |
 |---|---|
-| Hello-world image, cold start from scale-to-zero (client-observed, median of verified-cold requests) | **UNVERIFIED — not yet measured** |
-| Hello-world image, warm request | **UNVERIFIED — not yet measured** |
-| `GET /healthz` on the public `run.app` URL returns 200 | **UNVERIFIED — not yet measured** |
-| `GET /healthz` returns 200 from a phone on mobile data | **UNVERIFIED — not yet measured** |
-| Cold start with a ≈1 GB image (ballast build) | **UNVERIFIED — not yet measured** |
+| `GET /healthz` on the public Render URL returns 200 | **200**, body `{"status":"degraded","registry_state":"empty",...}`. Run 2026-10-02 from the operator's PowerShell with `curl.exe` against `https://protloc-fusion.onrender.com` |
+| `GET /health` on the same URL | **200** |
+| `GET /healthz` returns 200 from a phone on mobile data | **UNVERIFIED — not yet tested** |
+| Hello-world image, cold start from spin-down (Render free; client-observed) | **UNVERIFIED — `scripts/measure_cold_start.py` run in progress** |
+| Cold start with a ≈1 GB image | **UNVERIFIED — not measured** |
 | Cold start of the real serving image with weights | **UNVERIFIED — Phase 7+** |
+| `/healthz` intercepted on `run.app` (Cloud Run) | **UNVERIFIED — Cloud Run not deployed** |
+
+The two 200 responses reported `instance_uptime_seconds` of 87.3 and 89.9: the instance
+had been up about 87 s when first asked. That shows the service was running, not how long
+a cold start takes, and it is not recorded as one.
 
 The hello-world cold start is a floor, not the serving image's cold start.
 
