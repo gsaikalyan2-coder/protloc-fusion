@@ -14,6 +14,7 @@ is how an invented number reaches a paper. Reading one raises
 ``MissingMandatoryValue``, which is the behaviour being asserted.
 """
 
+import json
 from pathlib import Path
 
 from hydra import compose, initialize_config_dir
@@ -33,10 +34,10 @@ GROUP_OPTIONS: dict[str, list[str]] = {
 
 # Values produced by a later phase. Each must be MISSING, never defaulted.
 SCHEDULED_VALUES: list[tuple[str, str]] = [
-    ("data.source.release", "Phase 3 — the UniProt release on the snapshot day"),
-    ("data.sequence.max_length", "Phase 3 — from the corpus length distribution"),
     ("model.trunk.revision", "Phase 5 — the HuggingFace commit hash pulled"),
 ]
+
+MANIFEST = CONFIG_DIR.parent / "data" / "manifests" / "dataset_manifest.json"
 
 
 def _compose(*overrides: str) -> DictConfig:
@@ -82,6 +83,16 @@ def test_scheduled_values_are_missing_not_defaulted(dotted_path: str, owner: str
 
     with pytest.raises(MissingMandatoryValue):
         OmegaConf.select(cfg, dotted_path, throw_on_missing=True)
+
+
+def test_frozen_data_values_equal_the_manifest() -> None:
+    """Phase 5 froze these; the manifest is the record and the config must agree."""
+    manifest = json.loads(MANIFEST.read_bytes())
+    cfg = _compose()
+    assert cfg.data.source.release == manifest["snapshot"]["release"]
+    assert cfg.data.sequence.max_length == manifest["policy"]["max_sequence_length"]
+    assert cfg.data.sequence.alphabet == manifest["policy"]["alphabet"]
+    assert cfg.data.labels.accepted_evidence_codes == manifest["build"]["accepted_evidence_codes"]
 
 
 def test_the_seed_is_recorded() -> None:
