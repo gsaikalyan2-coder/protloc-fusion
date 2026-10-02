@@ -337,9 +337,9 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 0   — Cleanup & restructure (one repo, MVP promoted)      done 2026-09-28
 [x] Phase 1   — Repository init, licensing, CI green          MVP   2.0 h   done 2026-10-02
 [x] Phase 2   — Host decision, supersede ADR-0005             MVP   3.0 h   done 2026-10-02 (v0.2.0)
-[x] Phase 3   — Widen contract: provenance + calibration      MVP   2.5 h   done 2026-10-02 (branch, untagged)
-[ ] Phase 4   — Motif-engine test harness & golden set        MVP   3.0 h   <-- NEXT (confirm scope: docs/phases/03.md §8)
-[ ] Phase 5   — Swiss-Prot corpus, labels, manifest           MVP   8.0 h
+[x] Phase 3   — Widen contract: provenance + calibration      MVP   2.5 h   done 2026-10-02 (v0.3.0)
+[x] Phase 4   — Motif-engine test harness & golden set        MVP   3.0 h   done 2026-10-02 (branch, untagged)
+[ ] Phase 5   — Swiss-Prot corpus, labels, manifest           MVP   8.0 h   <-- NEXT
 [ ] Phase 6   — GraphPart splits & leakage gate               MVP   5.0 h
 [ ] Phase 7   — ESM-2 embedding cache                         MVP   6.0 h
 [ ] Phase 8   — Classical baselines (metric floor)            ENH   3.0 h
@@ -396,6 +396,14 @@ The contract carries provenance: per task `source`, `threshold`, `calibrated`,
 `threshold_policy`. The motif engine reports `motif`, its real tau (0.67), uncalibrated.
 `threshold` has no literal default (a legacy payload reads it from `abstention_threshold`).
 Deviations and UNVERIFIED items: `docs/phases/03.md` §8.
+
+### Phase 4 close — 2026-10-02
+
+`backend/tests/golden/golden_set.json` locks the motif engine: 67 entries (10 gallery,
+23 synthetic, 34 engineered, 0 real), full recorded output plus the engine identity and
+TRUST fit. Test-only, never served. A changed engine fails `pytest tests/golden` with a
+per-sequence, per-field diff; `python scripts/regen_golden.py --write` is the only way to
+rewrite it. No real protein is in it (UniProt was unreachable): `docs/phases/04.md` §7.
 
 ### Two things a cold session must know
 
