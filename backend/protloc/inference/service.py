@@ -19,6 +19,7 @@ import math
 from pathlib import Path
 
 from protloc.data import reference_demo as data
+from protloc.domain.types import ConfidenceBand, EngineSource, ThresholdPolicy
 from protloc.features.classical import (
     LOC_NAMES,
     ORGANISM_GROUPS,
@@ -35,6 +36,34 @@ from protloc.features.classical import (
 RULES = json.loads((Path(__file__).resolve().parents[2] / "rules" / "consistency.json").read_text())
 MODEL_VERSION = "demo-0.1.0"
 EXPERIMENT_ID = "DEMO-PRESENTATION"
+
+# Phase 3 provenance. The motif engine has one tau, fitted on a synthetic split, and
+# no calibrator in the contract's sense: `calibrated` is False and there is no
+# calibrator to version. Phases 9-14 replace these with the registry bundle's values.
+ENGINE_SOURCE = EngineSource.MOTIF.value
+CALIBRATED = False
+CALIBRATION_VERSION: str | None = None
+THRESHOLD_POLICY = ThresholdPolicy.FIXED.value
+#: The non-localization fields the engine reports, each with the same provenance.
+TASK_SOURCE_KEYS = ("localization", "membrane_type", "signal_peptide", "go_function")
+
+
+def confidence_band(probability: float, threshold: float) -> str:
+    """Coarse band for one label, derived from its threshold and nothing else.
+
+    Below the threshold the system is abstaining on the label: ``none``. Above it,
+    the interval from the threshold to 1 is split in thirds. No cut-off is a free
+    constant, so no tau is hardcoded; Phase 10 replaces this with the calibrator's
+    own metadata.
+    """
+    if probability < threshold:
+        return ConfidenceBand.NONE.value
+    third = (1.0 - threshold) / 3.0
+    if probability < threshold + third:
+        return ConfidenceBand.LOW.value
+    if probability < threshold + 2.0 * third:
+        return ConfidenceBand.MEDIUM.value
+    return ConfidenceBand.HIGH.value
 
 
 # ───────────────────────── calibration (fit once at import) ─────────────────────────
@@ -124,6 +153,9 @@ def _fit() -> dict:
         "coverage_curve": curve,
         "test_at_tau": {"coverage": round(cov, 4), "selective_accuracy": round(acc, 4)},
         "label_noise": 0.08,
+        "threshold_policy": THRESHOLD_POLICY,
+        "calibration_version": CALIBRATION_VERSION,
+        "calibrated": CALIBRATED,
     }
 
 
@@ -252,12 +284,22 @@ def predict(seq_raw: str, group: str, seq_id: str = "query", with_evidence: bool
                 "probability": cal[k],
                 "raw": raw[k],
                 "predicted": cal[k] >= tau,
+                "source": ENGINE_SOURCE,
+                "threshold": tau,
+                "calibrated": CALIBRATED,
+                "confidence_band": confidence_band(cal[k], tau),
             }
             for k in order
             if k in cal
         ],
         "top_location": top,
         "abstained": abstained,
+        "no_confident_call": all(cal[k] < tau for k in order if k in cal),
+        "calibration_version": CALIBRATION_VERSION,
+        "threshold_policy": THRESHOLD_POLICY,
+        "task_sources": {
+            k: {"source": ENGINE_SOURCE, "calibrated": CALIBRATED} for k in TASK_SOURCE_KEYS
+        },
         "tau": tau,
         "temperature": T,
         "membrane_type": mem,
