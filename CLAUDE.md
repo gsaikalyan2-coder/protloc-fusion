@@ -335,10 +335,10 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 
 ```
 [x] Phase 0   — Cleanup & restructure (one repo, MVP promoted)      done 2026-09-28
-[ ] Phase 1   — Repository init, licensing, CI green          MVP   2.0 h
-[ ] Phase 2   — Host decision, supersede ADR-0005             MVP   3.0 h
-[ ] Phase 3   — Widen contract: provenance + calibration      MVP   2.5 h   <-- NEXT
-[ ] Phase 4   — Motif-engine test harness & golden set        MVP   3.0 h
+[x] Phase 1   — Repository init, licensing, CI green          MVP   2.0 h   done 2026-10-02
+[x] Phase 2   — Host decision, supersede ADR-0005             MVP   3.0 h   done 2026-10-02 (v0.2.0)
+[x] Phase 3   — Widen contract: provenance + calibration      MVP   2.5 h   done 2026-10-02 (branch, untagged)
+[ ] Phase 4   — Motif-engine test harness & golden set        MVP   3.0 h   <-- NEXT (confirm scope: docs/phases/03.md §8)
 [ ] Phase 5   — Swiss-Prot corpus, labels, manifest           MVP   8.0 h
 [ ] Phase 6   — GraphPart splits & leakage gate               MVP   5.0 h
 [ ] Phase 7   — ESM-2 embedding cache                         MVP   6.0 h
@@ -375,8 +375,8 @@ docs say so rather than promising durability the host cannot deliver.
 | 0004 | Run manifest authoritative; W&B as viewer | Accepted | 8, 9 |
 | 0005 | HF Spaces (Docker + Static) + HF Hub artifact repos | **Superseded 2026-10-02** — Docker Spaces are paid | — |
 | 0006 | Label semantics: four states, per-label evidence, per-task negative rule | Accepted at Phase 5 exit | 5, 9, 20 |
-| 0007 | Hosting, post-paywall | **To be written in Phase 2** | 19, 20 |
-| 0008 | Batch durability scoped to client-side chunking | **To be written in Phase 2** | 14, 16 |
+| 0007 | Hosting, post-paywall | Accepted for the Phase 2 acceptance host; **host for the real service undecided** | 19, 20 |
+| 0008 | Batch durability scoped to client-side chunking | Accepted | 14, 16 |
 | 0009 | Frozen encoder + trained heads; ESM-2 150M | **To be written in Phase 7** | 7, 9 |
 
 ### Phase 0 close — 2026-09-28
@@ -388,6 +388,14 @@ scaffold deleted. The five-screen app promoted: motif engine to
 `features/classical.py`, service to `inference/service.py`, queue to `jobs/queue.py`,
 app to `api/app_v2.py`, rules to `rules/consistency.json`, and all five pages plus
 `ui.tsx` and `SequenceTrack.tsx` into `frontend/src/`.
+
+### Phase 3 close — 2026-10-02
+
+The contract carries provenance: per task `source`, `threshold`, `calibrated`,
+`confidence_band`; per result `no_confident_call`, `calibration_version`,
+`threshold_policy`. The motif engine reports `motif`, its real tau (0.67), uncalibrated.
+`threshold` has no literal default (a legacy payload reads it from `abstention_threshold`).
+Deviations and UNVERIFIED items: `docs/phases/03.md` §8.
 
 ### Two things a cold session must know
 
