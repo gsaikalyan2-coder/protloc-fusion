@@ -1,0 +1,21 @@
+{
+  "downloaded_at_utc": "2026-10-02T15:53:15+00:00",
+  "files": {
+    "data/raw/reldate.txt": {
+      "bytes": 151,
+      "sha256": "733913b362b641ac2d8de42a6220e794abde0e47d57d6feb57e442c6bf3dac6e",
+      "source_url": "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/reldate.txt"
+    },
+    "data/raw/uniprot_sprot.dat.gz": {
+      "bytes": 700301138,
+      "sha256": "c87208822a56e8ae0d6bf5072c287b35e42a8b9f25e8bd771389abc5b7a29c38",
+      "source_url": "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.dat.gz"
+    }
+  },
+  "license": "CC BY 4.0",
+  "license_url": "https://www.uniprot.org/help/license",
+  "redownload_from": "https://ftp.uniprot.org/pub/databases/uniprot/previous_releases/release-2026_03/",
+  "release": "2026_03",
+  "release_date": "2026-09-02",
+  "source": "UniProtKB/Swiss-Prot"
+}
