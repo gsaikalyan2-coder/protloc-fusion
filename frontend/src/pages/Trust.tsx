@@ -61,6 +61,10 @@ export default function Trust() {
             calibration split ({t.n_calibration} sequences); everything below is measured on the
             held-out test split ({t.n_test}).
           </p>
+          <p className="mono muted" style={{ fontSize: "var(--text-xs)" }}>
+            threshold policy: {t.threshold_policy} · calibrator:{" "}
+            {t.calibration_version ?? "none fitted"} · source: motif
+          </p>
         </div>
       </div>
 

@@ -6,6 +6,7 @@ import {
   type JobBody,
   type LocRow,
   type Provenance,
+  type TaskSource,
 } from "../services/demoApi";
 
 export const locVar = (code: string) => `var(--loc-${code.toLowerCase()})`;
@@ -39,9 +40,27 @@ export function Chip({
   );
 }
 
-export function ConfidenceRow({ row, tau }: { row: LocRow; tau: number }) {
+/** Which engine answered, and whether a fitted calibrator was applied. Never hidden. */
+export function ProvenanceBadge({ src }: { src: TaskSource | undefined }) {
+  if (!src) return null;
   return (
-    <div className="conf">
+    <span
+      className={`badge ${src.source}`}
+      title={
+        src.source === "motif"
+          ? "Produced by the interpretable motif engine, not a trained model."
+          : "Produced by a trained model."
+      }
+    >
+      {src.source} · {src.calibrated ? "calibrated" : "uncalibrated"}
+    </span>
+  );
+}
+
+/** One label's row. The threshold marker is this label's own threshold, not a constant. */
+export function ConfidenceRow({ row }: { row: LocRow }) {
+  return (
+    <div className="conf" data-band={row.confidence_band}>
       <span className="row" style={{ gap: 6 }}>
         <Chip code={row.code} name={row.name} />
         <span style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)" }}>
@@ -60,10 +79,12 @@ export function ConfidenceRow({ row, tau }: { row: LocRow; tau: number }) {
         />
         <span
           className="tau"
-          style={{ position: "absolute", top: -2, bottom: -2, left: `${tau * 100}%` }}
+          style={{ position: "absolute", top: -2, bottom: -2, left: `${row.threshold * 100}%` }}
         />
       </span>
-      <span className="num">{row.probability.toFixed(2)}</span>
+      <span className="num" title={`band: ${row.confidence_band}`}>
+        {row.probability.toFixed(2)}
+      </span>
     </div>
   );
 }

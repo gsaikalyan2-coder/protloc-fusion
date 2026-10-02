@@ -241,6 +241,22 @@ tr.on td {
   border-left: 2px dashed var(--border-stronger);
 }
 
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  background: var(--surface-2);
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 1px var(--space-2);
+}
+.badge.model {
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
 .flag {
   border-left: var(--border-width-emph) solid var(--state-note);
   background: var(--state-note-bg);

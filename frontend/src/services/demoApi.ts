@@ -1,5 +1,6 @@
 /* Single place that talks to the demo backend. Every screen goes through here. */
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { ConfidenceBand, EngineSource, ThresholdPolicy } from "@/types/api";
 
 export interface Provenance {
   model_version: string;
@@ -14,6 +15,17 @@ export interface LocRow {
   probability: number;
   raw: number;
   predicted: boolean;
+  /** Which engine produced this number. The UI shows it (docs/phases/03.md). */
+  source: EngineSource;
+  /** The decision threshold actually applied to this label. */
+  threshold: number;
+  /** Whether a fitted calibrator was applied. */
+  calibrated: boolean;
+  confidence_band: ConfidenceBand;
+}
+export interface TaskSource {
+  source: EngineSource;
+  calibrated: boolean;
 }
 export interface Flag {
   rule_id: string;
@@ -42,6 +54,11 @@ export interface Result {
   localization: LocRow[];
   top_location: string;
   abstained: boolean;
+  /** True when no label clears its threshold: say so instead of showing the argmax. */
+  no_confident_call: boolean;
+  calibration_version: string | null;
+  threshold_policy: ThresholdPolicy;
+  task_sources: Record<string, TaskSource>;
   tau: number;
   temperature: number;
   membrane_type: Record<string, number>;

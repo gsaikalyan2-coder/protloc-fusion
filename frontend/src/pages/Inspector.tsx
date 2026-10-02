@@ -17,6 +17,7 @@ import {
   Flags,
   GROUPS,
   JobState,
+  ProvenanceBadge,
   ProvenanceBar,
   useExamples,
 } from "../components/ui";
@@ -108,25 +109,32 @@ export default function Inspector({
             <Card
               title="Localization"
               aside={
-                <span className="mono muted" style={{ fontSize: "var(--text-xs)" }}>
-                  calibrated · T={r.temperature} · τ={r.tau}
+                <span className="row" style={{ gap: 6 }}>
+                  <ProvenanceBadge src={r.task_sources.localization} />
+                  <span className="mono muted" style={{ fontSize: "var(--text-xs)" }}>
+                    T={r.temperature} · τ={r.tau} · {r.threshold_policy}
+                  </span>
                 </span>
               }
             >
               {r.localization.map((row) => (
-                <ConfidenceRow key={row.code} row={row} tau={r.tau} />
+                <ConfidenceRow key={row.code} row={row} />
               ))}
-              {r.abstained && (
+              {r.no_confident_call && (
                 <div className="flag uncertain">
-                  <strong>Abstained.</strong> Top candidate {r.top_location} at{" "}
-                  {r.localization.find((l) => l.code === r.top_location)?.probability.toFixed(2)} is
-                  below τ = {r.tau}. No compartment is asserted.
+                  <strong>No confident call.</strong> No compartment clears its threshold (τ ={" "}
+                  {r.tau}). The highest score, {r.top_location} at{" "}
+                  {r.localization.find((l) => l.code === r.top_location)?.probability.toFixed(2)},
+                  is shown for transparency and is not asserted.
                 </div>
               )}
             </Card>
 
             <div>
-              <Card title="Membrane type">
+              <Card
+                title="Membrane type"
+                aside={<ProvenanceBadge src={r.task_sources.membrane_type} />}
+              >
                 <div className="row">
                   {Object.entries(r.membrane_type)
                     .sort((a, b) => b[1] - a[1])
@@ -139,7 +147,10 @@ export default function Inspector({
                     ))}
                 </div>
               </Card>
-              <Card title="Sorting signal">
+              <Card
+                title="Sorting signal"
+                aside={<ProvenanceBadge src={r.task_sources.signal_peptide} />}
+              >
                 <p className="mono">
                   {r.sorting_signal.type} · p={r.sorting_signal.probability.toFixed(2)}
                   {r.sorting_signal.region
@@ -156,7 +167,10 @@ export default function Inspector({
                     .join(" · ")}
                 </p>
               </Card>
-              <Card title="GO function (motif-derived)">
+              <Card
+                title="GO function (motif-derived)"
+                aside={<ProvenanceBadge src={r.task_sources.go_function} />}
+              >
                 {r.go_terms.length === 0 && (
                   <p className="muted" style={{ fontSize: "var(--text-sm)" }}>
                     No scoring motif matched.
