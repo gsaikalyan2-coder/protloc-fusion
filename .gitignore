@@ -59,6 +59,7 @@ registry/**/calibrator.pkl
 *.ckpt
 *.safetensors
 *.h5
+.cache/
 *.onnx
 
 # ── Experiment and benchmark outputs (manifests are committed, outputs are not) ──

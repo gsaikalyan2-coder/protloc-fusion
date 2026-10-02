@@ -218,24 +218,35 @@ depth. It is displayed as approximate and never presented as a guarantee.
 
 ---
 
-## Data schema (frozen 2026-09-14, Phase 2)
+## Data schema (frozen 2026-09-14, Phase 2 · amended 2026-09-15, Phase 3, ADR-0006)
 
-**Sequence record** — `accession` (PK) · `sequence_raw` · `sequence_normalized` ·
-`sequence_sha256` (indexed, unique) · `length` · `organism` · `taxonomy_id` ·
-`organism_group` · `source_dataset` · `source_release` · `cluster_id` (indexed) ·
-`annotation_evidence_code` · seven task label columns, each nullable with an explicit
-`unknown` state distinct from `negative`.
+**Sequence record** — `accession` (PK) · `entry_name` · `sequence_raw` ·
+`sequence_normalized` · `sequence_sha256` (indexed, **not unique** — identical
+sequences under different accessions are real) · `length` · `is_fragment` ·
+`organism` · `taxonomy_id` · `organism_group` · `source_dataset` · `source_release` ·
+`labels`: one entry per task (all seven, always present), each
+`{state, values, cleavage_site, evidence}`.
+
+- `state` ∈ `annotated` · `negative` · `unknown` · `not_applicable`
+  (`protloc.domain.types.LabelState`). `values` is non-empty exactly when
+  `annotated`. Where a `negative` may come from is fixed per task by ADR-0006 §3.3.
+- `evidence` is per label value: ECO codes for locations and features, GO evidence
+  codes for GO terms. The old single `annotation_evidence_code` column is removed.
+- `cluster_id` moved to the split registry (it is produced in Phase 4).
+- The corpus is canonical JSON Lines — `data/processed/corpus.jsonl` — and its
+  SHA-256 is the dataset hash (`docs/phases/PHASE_03_data.md` §4.1).
 
 **Split registry** — `split_version` · `accession` (FK, indexed) · `partition` ·
-`partitioner` · `identity_threshold`.
+`cluster_id` (indexed) · `partitioner` · `identity_threshold`.
 
 **Job** — `job_id` (PK) · `input_sha256` · `sequence_count` · `model_version` ·
 `config_hash` · `status` · `completed` · `failed` · `created_at` (tz-aware) ·
 `updated_at`.
 
-Rules: an index on every foreign key. Times are timezone-aware. Nullable label columns
-must distinguish *not annotated* from *annotated negative* — conflating them silently
-corrupts the multi-task loss.
+Rules: an index on every foreign key. Times are timezone-aware. A label's state must
+distinguish *not annotated* (`unknown`) from *annotated negative* (`negative`) and
+from *does not apply* (`not_applicable`) — conflating them silently corrupts the
+multi-task loss.
 
 ---
 
@@ -290,6 +301,11 @@ corrupts the multi-task loss.
 
 ## Current phase
 
+> **Superseded 2026-09-28.** The 17-phase from-scratch list below is historical. The
+> project now follows the MVP-upgrade plan (promote the working five-screen app, replace
+> the motif engine with trained models). Its phase notes live in `docs/phases/NN.md`;
+> its workflow is `CONTRIBUTING.md`.
+
 ```
 [x] Phase 0  — Research & prior art
 [x] Phase 1  — Scaffold & source of truth
@@ -320,6 +336,7 @@ corrupts the multi-task loss.
 | 0003 | Self-hosted Swiss-Prot MMseqs2 + UniProt-GOA snapshots | Accepted | 10 |
 | 0004 | Run manifest authoritative; W&B as viewer | Accepted | 6, 8 |
 | 0005 | HF Spaces (Docker + Static) + HF Hub artifact repos | Accepted | 16, 17 |
+| 0006 | Label semantics: four states, per-label evidence, per-task negative rule | Proposed → Accepted at Phase 3 exit | 3, 8, 14 |
 
 Everything still open is a **value produced by running a phase**, not a decision waiting
 on a person — see `PROJECT_PLAN.md` §7.2 for the freeze schedule and §7.3 for the three

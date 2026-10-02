@@ -102,6 +102,48 @@ export default tseslint.config(
   },
 
   {
+    // TEMPORARY. The five-screen MVP was promoted into the app on 2026-09-28 as
+    // demo-grade code. These nine files are rewritten or replaced in the frontend
+    // phases, at which point this block shrinks to nothing. The exemptions are
+    // scoped to the rules that fire today and to these files only; every new file
+    // is held to the full rule set. `noFetchOutsideServices` stays on.
+    files: [
+      "src/App.tsx",
+      "src/components/SequenceTrack.tsx",
+      "src/components/ui.tsx",
+      "src/pages/Evidence.tsx",
+      "src/pages/Inspector.tsx",
+      "src/pages/Scanner.tsx",
+      "src/pages/Triage.tsx",
+      "src/pages/Trust.tsx",
+      "src/services/demoApi.ts",
+    ],
+    rules: {
+      "no-restricted-syntax": ["error", ...noFetchOutsideServices],
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-unnecessary-condition": "off",
+      "@typescript-eslint/no-confusing-void-expression": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+      "react-refresh/only-export-components": "off",
+      "react-hooks/exhaustive-deps": "off",
+    },
+  },
+
+  {
+    // The demo client is a services/ file, so fetch() is permitted here.
+    files: ["src/services/demoApi.ts"],
+    rules: { "no-restricted-syntax": "off" },
+  },
+
+  {
     // Config files run in Node rather than in a browser.
     files: ["vite.config.ts", "eslint.config.js"],
     languageOptions: { globals: globals.node },

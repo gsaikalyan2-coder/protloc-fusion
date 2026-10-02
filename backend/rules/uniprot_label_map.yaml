@@ -1,0 +1,129 @@
+# UniProtKB/Swiss-Prot annotation → ProtLoc task labels.  ADR-0006 §3.3–3.4.
+#
+# Data, not code. The corpus build hashes this file into the dataset manifest.
+#
+# Term matching (subcellular location and prokaryotic location)
+#   A UniProt location term matches a key when the term equals the key, or begins
+#   with the key followed by a space or a comma. The LONGEST matching key wins, so
+#   "Cell outer membrane" is not captured by a shorter key. Matching is
+#   case-sensitive, as UniProt's controlled vocabulary is.
+#   A term matching no key is dropped and counted in the build report.
+#
+# Class names are the wire values the registry bundle will later carry; the
+# contract types them as plain strings (domain/contracts.py, "No biology").
+#
+# Review status: drafted 2026-09-15 for Phase 3; reviewed with ADR-0006.
+
+version: 1.0.0
+
+# Which organism groups each task is defined for (ADR-0006 §3.2). A task absent
+# from a group's list is `not_applicable` for every record of that group.
+applicability:
+  localization: [eukarya]
+  prokaryotic_localization: [gram_positive, gram_negative, archaea]
+  membrane_type: [eukarya, gram_positive, gram_negative, archaea]
+  signal_peptide: [eukarya, gram_positive, gram_negative, archaea]
+  mitochondrial_transit_peptide: [eukarya]
+  chloroplast_transit_peptide: [eukarya]
+  go_function: [eukarya, gram_positive, gram_negative, archaea]
+
+localization:
+  # Ten eukaryotic compartments, following the class scheme of the multi-label
+  # localization literature (DeepLoc 2.0 paper; method cited, nothing copied).
+  classes:
+    - cell_membrane
+    - cytoplasm
+    - endoplasmic_reticulum
+    - extracellular
+    - golgi_apparatus
+    - lysosome_vacuole
+    - mitochondrion
+    - nucleus
+    - peroxisome
+    - plastid
+  terms:
+    Cell membrane: cell_membrane
+    Cytoplasm: cytoplasm
+    Cytosol: cytoplasm
+    Endoplasmic reticulum: endoplasmic_reticulum
+    Microsome: endoplasmic_reticulum
+    Secreted: extracellular
+    Golgi apparatus: golgi_apparatus
+    Lysosome: lysosome_vacuole
+    Vacuole: lysosome_vacuole
+    Mitochondrion: mitochondrion
+    Nucleus: nucleus
+    Peroxisome: peroxisome
+    Glyoxysome: peroxisome
+    Plastid: plastid
+
+prokaryotic_localization:
+  # The five-plus-one compartment scheme of the prokaryotic localization
+  # literature (PSORTb paper; method cited, nothing copied).
+  classes:
+    - cell_wall
+    - cytoplasmic
+    - cytoplasmic_membrane
+    - extracellular
+    - outer_membrane
+    - periplasmic
+  terms:
+    Cytoplasm: cytoplasmic
+    Cell membrane: cytoplasmic_membrane
+    Cell inner membrane: cytoplasmic_membrane
+    Periplasm: periplasmic
+    Cell outer membrane: outer_membrane
+    Secreted: extracellular
+    Cell wall: cell_wall
+
+membrane_type:
+  classes:
+    - lipid_anchor
+    - multi_pass
+    - peripheral
+    - single_pass
+    - single_pass_type_i
+    - single_pass_type_ii
+    - single_pass_type_iii
+    - single_pass_type_iv
+  # Topology phrases as UniProt writes them after the location term.
+  topology:
+    Single-pass membrane protein: single_pass
+    Single-pass type I membrane protein: single_pass_type_i
+    Single-pass type II membrane protein: single_pass_type_ii
+    Single-pass type III membrane protein: single_pass_type_iii
+    Single-pass type IV membrane protein: single_pass_type_iv
+    Multi-pass membrane protein: multi_pass
+    Peripheral membrane protein: peripheral
+    Lipid-anchor: lipid_anchor
+    GPI-anchor: lipid_anchor
+  # A location term containing this word (as a whole word) marks the entry as
+  # membrane-associated, which forbids a membrane_type negative (ADR-0006 §3.3).
+  membrane_marker_word: membrane
+  # Feature types whose presence forbids a membrane_type negative.
+  membrane_feature_types: [TRANSMEM, INTRAMEM]
+
+signal_peptide:
+  feature_type: SIGNAL
+  value: signal_peptide
+
+transit_peptide:
+  feature_type: TRANSIT
+  # /note text of a TRANSIT feature → which transit-peptide task(s) it labels.
+  # A note absent from this table labels nothing and is counted.
+  notes:
+    Mitochondrion: [mitochondrial_transit_peptide]
+    Chloroplast: [chloroplast_transit_peptide]
+    Chloroplast and mitochondrion: [chloroplast_transit_peptide, mitochondrial_transit_peptide]
+  values:
+    mitochondrial_transit_peptide: mitochondrial_transit_peptide
+    chloroplast_transit_peptide: chloroplast_transit_peptide
+
+fragment:
+  description_flags: [Fragment, Fragments]
+  feature_types: [NON_TER]
+
+go_function:
+  database: GO
+  # Prefix of the DR GO line's third field that marks molecular function.
+  aspect_prefix: "F:"

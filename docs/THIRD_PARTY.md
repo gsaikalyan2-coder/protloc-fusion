@@ -66,6 +66,18 @@ may be read and cited but never copied, vendored, bundled or served.
 
 ---
 
+## 1.2 Datasets and data tooling (added Phase 3, 2026-09-15)
+
+Rule 1 covers data as well as code: the corpus does not enter the pipeline until
+it has a row. Versions below were read on **2026-09-15**. The tag SHAs came from
+`git ls-remote`, and each licence was read from the `LICENSE` file at that tag.
+
+| # | Source | Role in ProtLoc Fusion | License | Pinned at | Redistribution |
+|---|---|---|---|---|---|
+| 13 | UniProtKB/Swiss-Prot — `uniprot_sprot.dat.gz` (UniProt Consortium) | The training corpus: sequences and curated labels (Phase 3, decision D1: Swiss-Prot only) | **CC BY 4.0** — see §2.10. *Unverified at pin* | The release in `reldate.txt` on the snapshot day, recorded with its SHA-256 in `data/manifests/snapshot.json` (Phase 3 §3.4) | Permitted with attribution. The derived corpus may be published in the HF data repo (ADR-0005) if it carries the UniProt attribution and the release |
+| 14 | `iterative/dvc` | Data versioning: pointers in git, bytes outside it | Apache-2.0 | `3.67.1` → `356dfa03278058b02df42124f243c2c345329dae` | Dev and training tooling only. Never in the serving image |
+| 15 | `biopython/biopython` | Parsing the Swiss-Prot flat file (`Bio.SwissProt`) | **Biopython License Agreement**; some files dual-licensed with BSD-3-Clause — see §2.11 | `biopython-188` (PyPI `1.88`) → `d7e4b8b19399668b09442a5b35765d9186b5f665` | Permissive, with notice retention. Build-time only. Never in the serving image |
+
 ## 2. Per-repository detail
 
 ### 2.1 GraphPart — `graph-part/graph-part`
@@ -98,9 +110,10 @@ may be read and cited but never copied, vendored, bundled or served.
   large C++ tool with its own release cadence and index format, and running it
   out of process keeps its version pinned in the image rather than in our
   dependency graph.
-- **Open decision:** whether the frozen split uses GraphPart's needleall
-  alignment or MMseqs2 pre-clustering. Requires an ADR before the split is
-  frozen.
+- **Split backend — decided.** The frozen split uses GraphPart over
+  `needleall` alignments, not MMseqs2 pre-clustering
+  (`docs/adr/ADR-0002-graphpart-threshold-backend.md`, Accepted). This line
+  read "open decision" until 2026-09-15; the ADR had already closed it.
 
 ### 2.3 ESM — `facebookresearch/esm`
 
@@ -182,6 +195,42 @@ may be read and cited but never copied, vendored, bundled or served.
 - **Scope boundary:** development-time tooling only. It stores *project*
   context for coding sessions. It never touches protein data, never runs in the
   serving container, and never appears in a reproducibility manifest.
+
+### 2.10 UniProtKB/Swiss-Prot
+
+- **License:** CC BY 4.0, as UniProt states for its data. **Not yet verified at
+  pin.** On 2026-09-15 the cloud workspace could not reach `ftp.uniprot.org`
+  (the proxy refused the connection), so the licence was not read from the
+  release itself. `scripts/download_data.py` (Phase 3 §3.4) fetches the
+  release's licence file with the snapshot and records its SHA-256. This row
+  counts as verified only after that file has been read.
+- **Pinned by release, not by commit.** The release string comes from that
+  release's `reldate.txt`. It is never typed by hand.
+- **Why not the REST API:** it serves only the current release and paginates,
+  so it cannot provide a fixed snapshot. The FTP flat file can, and old
+  releases stay downloadable under `previous_releases/`.
+- **Attribution** belongs in the dataset card, the paper and any published copy
+  of the derived corpus.
+- **Contamination note:** SignalP 6.0, TargetP 2.0 and DeepLoc 2.0 were trained
+  on earlier Swiss-Prot releases. §3 applies.
+
+### 2.11 Biopython
+
+- **License:** the Biopython License Agreement. Some files are dual-licensed
+  under BSD-3-Clause, and each file's header says which applies. Both are
+  permissive, with copyright notices kept.
+- **Role:** reads the flat file's records only. Turning those records into
+  ProtLoc labels is our code, in `protloc/data`, governed by ADR-0006.
+- **Files copied:** none.
+
+### 2.12 DVC
+
+- **License:** Apache-2.0.
+- **Role:** tracks `data/raw/` and `data/processed/`. The pointer files are
+  `data/raw.dvc` and `data/processed.dvc`, placed beside those directories
+  rather than inside them (Phase 3 §4.5).
+- **Remote:** a local remote fits the ≤ 20 GB budget (decision D2). The HF data
+  repo (ADR-0005) becomes the shared remote in Phase 16.
 
 ---
 

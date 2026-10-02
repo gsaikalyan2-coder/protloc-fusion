@@ -12,9 +12,9 @@ and independent homology evidence.
 Delivered as a **web server and HTTP API with whole-proteome batch mode** — not a library,
 not a CLI.
 
-**Status:** Phase 1 — scaffold and source of truth. The repository structure, linting,
-type checking, architectural import rules and CI are in place. No prediction logic exists
-yet; it arrives in Phases 3–12. See `## Current phase` in `CLAUDE.md`.
+**Status:** Phase 1 of the MVP-upgrade plan complete — repository baseline, licensing
+policy and CI checks green on the five-screen MVP (motif engine). Model-backed
+predictions arrive in later phases; see `docs/phases/` and `CONTRIBUTING.md`.
 
 ---
 

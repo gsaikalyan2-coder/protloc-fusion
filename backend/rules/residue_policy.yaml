@@ -1,0 +1,34 @@
+# Residue-code policy for the corpus.  Phase 3 §3.6; recorded in DATASET_CARD.md.
+#
+# This file decides what is DONE with each code. It does not decide which codes
+# the frozen alphabet contains — that is measured: the frozen alphabet is the set
+# of characters actually observed in the built corpus (after exclusions), written
+# to the dataset manifest by scripts/validate_sequences.py.
+#
+# Normalisation (sequence_raw → sequence_normalized) is uppercase + strip
+# whitespace only. No code is substituted: replacing U with C, or X with a guess,
+# would edit the biology the model is trained on.
+#
+# Every character in a sequence must fall in `keep` or `exclude_record`. Anything
+# else — a digit, a '*', a lowercase letter surviving normalisation — fails the
+# build, because it means the input is not what the parser assumed.
+
+version: 1.0.0
+
+keep:
+  # The twenty standard residues.
+  standard: [A, C, D, E, F, G, H, I, K, L, M, N, P, Q, R, S, T, V, W, Y]
+  # Genetically encoded, non-standard: real residues, kept verbatim.
+  #   U selenocysteine · O pyrrolysine
+  encoded_nonstandard: [U, O]
+  # Ambiguity codes kept verbatim.
+  #   X unknown · B D-or-N · Z E-or-Q
+  # Kept because the ESM-2 vocabulary has a token for each (read from the ESM
+  # alphabet documentation, NOT verified against the pinned checkpoint — Phase 5
+  # verifies it, and a mismatch reopens this file).
+  ambiguous: [X, B, Z]
+
+exclude_record:
+  # J (I-or-L) has no ESM-2 token (same caveat as above). A record containing it
+  # is excluded rather than rewritten, and counted in the manifest.
+  - J
