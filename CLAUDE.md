@@ -261,7 +261,7 @@ sequences under different accessions are real) · `length` · `is_fragment` ·
   codes for GO terms. The old single `annotation_evidence_code` column is removed.
 - `cluster_id` moved to the split registry (it is produced in Phase 4).
 - The corpus is canonical JSON Lines — `data/processed/corpus.jsonl` — and its
-  SHA-256 is the dataset hash (`docs/phases/PHASE_03_data.md` §4.1).
+  SHA-256 is the dataset hash (`docs/phases/05.md`).
 
 **Split registry** — `split_version` · `accession` (FK, indexed) · `partition` ·
 `cluster_id` (indexed) · `partitioner` · `identity_threshold`.

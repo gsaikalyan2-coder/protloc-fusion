@@ -8,8 +8,8 @@ time, the source URLs, and the SHA-256 and size of each file.
 
 The snapshot is written once. If ``data/raw/`` already holds a snapshot, the
 script refuses to run: a new release is a new decision, not a re-run
-(``docs/phases/PHASE_03_data.md`` §4.4). After it succeeds, run
-``dvc add data/raw``.
+(``docs/phases/05.md``). The raw file stays out of git: ``data/raw/`` is ignored and
+the manifest records its SHA-256.
 
 If ``UNIPROT_RELEASE`` is set in the environment and differs from
 ``reldate.txt``, the script stops before downloading the large file. That
@@ -130,7 +130,7 @@ def main() -> int:
     sys.stdout.write(
         f"snapshot: Swiss-Prot {release} ({release_date}), "
         f"{files[data.relative_to(REPO_ROOT).as_posix()]}\n"
-        "next: dvc add data/raw\n"
+        "next: python scripts/build_dataset.py\n"
     )
     return 0
 
