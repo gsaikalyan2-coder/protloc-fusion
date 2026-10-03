@@ -341,8 +341,8 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 4   — Motif-engine test harness & golden set        MVP   3.0 h   done 2026-10-02 (v0.4.0)
 [x] Phase 5   — Swiss-Prot corpus, labels, manifest           MVP   8.0 h   done 2026-10-02 (branch; you tag v0.5.0)
 [x] Phase 6   — GraphPart splits & leakage gate               MVP   5.0 h   done 2026-10-03 (branch; you tag v0.6.0)
-[ ] Phase 7   — ESM-2 embedding cache                         MVP   6.0 h   <-- NEXT
-[ ] Phase 8   — Classical baselines (metric floor)            ENH   3.0 h
+[x] Phase 7   — ESM-2 embedding cache                         MVP   6.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.7.0)
+[ ] Phase 8   — Classical baselines (metric floor)            ENH   3.0 h   <-- NEXT
 [ ] Phase 9   — Localization head (attention pooling + MLP)   MVP   7.0 h
 [ ] Phase 10  — Calibration & per-label thresholds            MVP   5.0 h
 [ ] Phase 11  — Signal-peptide CRF head                       ENH   8.0 h
@@ -426,6 +426,16 @@ leakage report passes with 0 duplicates and 0 cross-partition pairs. Raw GraphPa
 deterministic; the frozen split uses sorted edges (§4). The calibration split must be made from whole
 `cluster_id` clusters. UNVERIFIED: the leakage zero is bounded by a heuristic search; cross-machine
 reproducibility. Detail: `docs/phases/06.md`.
+
+### Phase 7 close — 2026-10-03
+
+ESM-2 150M pinned at `a695f6045e2e32885fa60af20c13cb35398ce30c` (ADR-0009, hidden size 640, 1022-residue context,
+sliding window for the 2,060 longer sequences). **Only a 500-sequence subset is embedded**, spread over the length
+distribution (partitions 144/77/89/92/98); the full 33,461-sequence cache is outstanding (about 19 h on the CPU,
+an estimate; `scripts/embed.py --pack`/`--bundle` prepare a free-GPU run). Measured on a Windows CPU, torch
+2.14.1+cpu: 2.011 s/sequence; subset cache 1,315,501 bytes; one sequence byte-identical across two processes and
+after a real kill and resume; padding changes a vector by at most 9.5e-07. Byte identity is claimed for that machine
+and device only. Manifest `data/manifests/embedding_manifest.json` says `subset`. Detail: `docs/phases/07.md`.
 
 ### Two things a cold session must know
 

@@ -1,0 +1,123 @@
+{
+  "cache": {
+    "bytes": 1315501,
+    "seconds_per_sequence_full_run": 2.0106845799996518,
+    "shard_count": 1,
+    "shard_index_sha256": "67f5b168135711acb3a439d3db7275260137b0dc48ba08de0916232ce4088e01"
+  },
+  "cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+  "hardware": {
+    "batch_windows": 8,
+    "cpu_count": 12,
+    "deterministic_algorithms": true,
+    "device": "cpu",
+    "device_name": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.9",
+    "torch": "2.14.1+cpu",
+    "torch_threads": 10,
+    "transformers": "5.18.0"
+  },
+  "input": {
+    "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+    "pack_sha256": "25869b92eb668e4cecab67ab8115802b6f4f1c347be2ce8250156b2c1d0b4a29",
+    "registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+    "source": "pack"
+  },
+  "measure": {
+    "cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+    "embed_seconds": 161.633,
+    "estimate_full_run_seconds": 90140.11386910663,
+    "estimate_note": "ESTIMATE: sample mean times distinct-sequence count; not measured",
+    "hardware": {
+      "batch_windows": 8,
+      "cpu_count": 12,
+      "deterministic_algorithms": true,
+      "device": "cpu",
+      "device_name": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "python": "3.11.9",
+      "torch": "2.14.1+cpu",
+      "torch_threads": 10,
+      "transformers": "5.18.0"
+    },
+    "input": {
+      "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+      "pack_sha256": "25869b92eb668e4cecab67ab8115802b6f4f1c347be2ce8250156b2c1d0b4a29",
+      "registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+      "source": "pack"
+    },
+    "length_max": 1496,
+    "length_median": 387,
+    "length_min": 4,
+    "letters_checked": 20,
+    "model_load_seconds": 9.183,
+    "residues_per_second": 167.6388785346202,
+    "seconds_per_sequence": 2.693885833331539,
+    "sequences": 60,
+    "windowed_in_sample": 4
+  },
+  "per_residue_storage_estimate_bytes": 19116847360,
+  "registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+  "schema_version": 1,
+  "sequences": {
+    "accessions": 33879,
+    "cached": 500,
+    "distinct": 33461,
+    "excluded": 0,
+    "long_sequence_policy": "sliding_window",
+    "scope": "subset",
+    "subset_size": 500,
+    "windowed": 2060,
+    "windowed_in_cache": 31
+  },
+  "spec": {
+    "checkpoint": "facebook/esm2_t30_150M_UR50D",
+    "dtype": "float32",
+    "embedding_dim": 640,
+    "long_sequence_policy": "sliding_window",
+    "max_residues": 1022,
+    "pooling": "mean",
+    "revision": "a695f6045e2e32885fa60af20c13cb35398ce30c",
+    "window_stride": 511
+  },
+  "verify": {
+    "alphabet_checked": "ABCDEFGHIKLMNPQRSTUVWXYZ",
+    "byte_identical_across_processes": true,
+    "byte_identical_after_kill_and_resume": true,
+    "cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+    "cpu_vs_cuda_max_abs_diff": null,
+    "hardware": {
+      "batch_windows": 8,
+      "cpu_count": 12,
+      "deterministic_algorithms": true,
+      "device": "cpu",
+      "device_name": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "python": "3.11.9",
+      "torch": "2.14.1+cpu",
+      "torch_threads": 10,
+      "transformers": "5.18.0"
+    },
+    "input": {
+      "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+      "pack_sha256": "25869b92eb668e4cecab67ab8115802b6f4f1c347be2ce8250156b2c1d0b4a29",
+      "registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+      "source": "pack"
+    },
+    "kill_and_resume": {
+      "clean_shard_index_sha256": "1b46ee27056faa9fc3cf553e042e3293ea4ae023b1609ce8eadfd06a7bd20f06",
+      "identical": true,
+      "interrupted_before_complete": true,
+      "resumed_cache_problems": [],
+      "resumed_shard_index_sha256": "1b46ee27056faa9fc3cf553e042e3293ea4ae023b1609ce8eadfd06a7bd20f06",
+      "tmp_files_left_by_kill": []
+    },
+    "padding_max_abs_diff_alone_vs_batch": 9.5367431640625e-07,
+    "probe_length": 388,
+    "probe_output_sha256_run_1": "797b5c9af44208778291eda5246eef96a7b788426458b866661dc7f7b5599cab",
+    "probe_output_sha256_run_2": "797b5c9af44208778291eda5246eef96a7b788426458b866661dc7f7b5599cab",
+    "probe_sha256": "2f211dd0ca350457284df3a5fa7495ce020f68c502e8251f61230c6e83671bce",
+    "scope": "same machine, same device, same torch build only"
+  }
+}

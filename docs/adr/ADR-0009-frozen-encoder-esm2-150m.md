@@ -1,7 +1,7 @@
 # ADR-0009 — Frozen encoder, trained heads; ESM-2 150M
 
-- **Status:** **Accepted** (2026-10-03). The measured cost figures in §4 are filled in at
-  the Phase 7 close (`docs/phases/07.md`); the decision does not depend on them.
+- **Status:** **Accepted** (2026-10-03). Measured figures in §4 are from a 500-sequence subset
+  (`docs/phases/07.md`); the full-cache numbers are still outstanding.
 - **Deciders:** Saikalyan
 - **Related:** ADR-0001 (queue everything), ADR-0007 (hosting), ADR-0008 (batch mode)
 
@@ -71,8 +71,17 @@ Computed from the corpus (`scripts/embed.py --facts`, registry SHA-256 `37ca5e05
 | Per-residue float16 / float32, if ever stored | 19.1 GB / 38.2 GB |
 | Sequences containing B, O, U, X or Z | 166 (all letters in the working set are in the ESM-2 vocabulary) |
 
-Seconds per sequence, measured cache bytes, the two byte-identity hashes and the hardware are in
-`data/manifests/embedding_manifest.json` and `docs/phases/07.md`.
+Measured on a Windows CPU (12 logical cores, torch 2.14.1+cpu, transformers 5.18.0), 500 real
+registry sequences spread over the length distribution:
+
+| | Value |
+|---|---|
+| Extraction time | 2.011 s per sequence (1,005.3 s for 500). Full run would be about 18.7 h: an estimate |
+| Cache size, 500 sequences | 1,315,501 bytes |
+| Padding effect (alone vs batched) | at most 9.54e-07 absolute |
+| Byte identity | same output across two processes (`797b5c9a…cab`) and after a real kill and resume (`1b46ee27…f06`), on this machine only |
+
+The full 33,461-sequence cache is not built. GPU timing and CPU-vs-GPU difference are not measured.
 
 ## 5. Consequences
 
