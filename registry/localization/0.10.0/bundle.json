@@ -1,0 +1,35 @@
+{
+  "bundle_sha256": "c341da61936383928ff07765a28577b40a1e66860ede8629455f687830beb62c",
+  "bundle_version": "0.10.0",
+  "calibrator": {
+    "calibration_version": "0.10.0+1be9afbf3c1f",
+    "file": "calibrator.json",
+    "sha256": "3975030de8265ffe13a74bfbc20dc2be4108921ec466436d500a0378d7ec2cfd"
+  },
+  "head": {
+    "classes": [
+      "cell_membrane",
+      "cytoplasm",
+      "endoplasmic_reticulum",
+      "extracellular",
+      "golgi_apparatus",
+      "lysosome_vacuole",
+      "mitochondrion",
+      "nucleus",
+      "peroxisome",
+      "plastid"
+    ],
+    "frozen_sha256": "719c9866603640a781bf13193e38ee5d27c7fd13426aa44c5221a1e4099c9dae",
+    "head_config_sha256": "723fb0d45b638260c2390748b94106b485eebff10678b8c9416c61087ff2a18a",
+    "weights_file": "final_weights.npz",
+    "weights_sha256": "7bd18e3a93510369c7676439a22b70af763361d42c1e2caca127fef1e2ccb8ca"
+  },
+  "rules": {
+    "baseline_class_map_sha256": "c1ffefe085392bc6cee8d35010f6dfe08de81a6586413717238db9f247a190dc",
+    "consistency_sha256": "fa0eec2137f30b38658671931d5ab3072637da8afc28787a407ca28b5e02241e"
+  },
+  "schema_version": 1,
+  "scope": "subset",
+  "scope_label": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+  "task": "localization"
+}

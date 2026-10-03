@@ -1,0 +1,51 @@
+# Phase 10 calibration and per-label thresholds for the Phase 9 localization head.
+#
+# Data, not code. Every setting of the calibrator and of the ECE lives here;
+# backend/protloc/training/calibration.py reads this file and repeats none of it, and
+# tests/unit/test_calibration.py fails if the two ever disagree. scripts/calibrate.py hashes this
+# file into the frozen manifest, so changing it after --freeze is caught by
+# `scripts/calibrate.py --check`. Confirmed at the Phase 10 gates (ADR-0012).
+
+name: calibration
+task: localization
+
+# Must equal `seed` in configs/config.yaml (a unit test asserts it).
+seed: 20260909
+
+# Which calibrator a label gets. Counted on the rows the calibrator is fitted on (a fold's
+# calibrator counts the other three validation partitions, the frozen one counts all four).
+# A label below every minimum is "uncalibrated": identity, flagged calibrated: false, never dropped.
+eligibility:
+  isotonic_min_positives: 20
+  isotonic_min_negatives: 20
+  fallback: platt
+  fallback_min_positives: 5
+  fallback_min_negatives: 5
+
+# Platt scaling: p = sigmoid(slope * logit(score) + intercept), Newton with step halving on
+# Platt's smoothed targets. `logit_eps` keeps a score of exactly 0 or 1 finite.
+platt:
+  logit_eps: 1.0e-6
+  max_iter: 100
+  max_halvings: 40
+  tolerance: 1.0e-10
+
+# Expected calibration error. Equal-mass (adaptive) bins; the count is lowered so that every
+# bin holds at least `min_bin_rows` rows, and a run of tied scores is never split across bins.
+ece:
+  kind: equal_mass
+  bins: 10
+  min_bin_rows: 20
+
+# Where the frozen calibrator and thresholds are written: registry/<task>/<version>/ (ADR-0012).
+bundle:
+  version: 0.10.0
+  directory: registry/localization
+
+# Partition 5 was scored once by Phase 9 (head_metrics.json, touches: 1). Phase 10 does not read it.
+test_partition:
+  policy: untouched
+
+# `scripts/calibrate.py --smoke`: every 4th row, a code check only, never frozen.
+smoke:
+  stride: 4
