@@ -30,6 +30,13 @@ r"""Phase 8: classical baselines, the metric floor. One job per mode.
 --smoke runs every stage on every 25th row into data/baselines/smoke. Smoke output is a
 code check only: it can never be frozen and no number from it is reported.
 
+--subset (with --train, --evaluate, --freeze, --evaluate --test, --check) runs the same protocol
+on the 500 sequences of the Phase 7 embedding subset, reading the same feature table with every
+other row masked out. Output goes to data/baselines/subset/ and its own manifest
+data/baselines/subset/baseline_metrics.json; the frozen Phase 8 manifest is never touched. Every
+number it produces is labelled "subset (500), not comparable to DeepLoc or to the Phase 8
+full-corpus numbers". It is the floor the Phase 9 head is compared with.
+
 Run from the repository root inside the project venv (pip install -e "backend[baselines]").
 """
 
@@ -44,6 +51,7 @@ from typing import Any
 
 import yaml
 
+from protloc.data.embeddings import read_pack
 from protloc.data.manifest import sha256_file, write_json
 from protloc.data.splits import read_registry
 from protloc.features.classical import extract
@@ -54,6 +62,8 @@ from protloc.training.baselines import (
     MODEL_NAMES,
     RULES_NAME,
     SCHEMA_VERSION,
+    SUBSET_LABEL,
+    SUBSET_SCOPE,
     TASKS,
     TEST_PARTITION,
     VALIDATION_PARTITIONS,
@@ -61,7 +71,9 @@ from protloc.training.baselines import (
     BaselineError,
     ClassMap,
     assert_protocol,
+    cache_lengths,
     check_manifest,
+    check_subset_block,
     digest,
     grid_items,
     label_vector,
@@ -70,6 +82,7 @@ from protloc.training.baselines import (
     pinned_sklearn,
     read_manifest,
     rule_vector,
+    subset_digest,
     vectorise,
 )
 
@@ -85,6 +98,11 @@ PYPROJECT = REPO_ROOT / "backend" / "pyproject.toml"
 ROOT_CONFIG = REPO_ROOT / "configs" / "config.yaml"
 EVAL_CONFIG = REPO_ROOT / "configs" / "evaluation" / "default.yaml"
 BASELINES = REPO_ROOT / "data" / "baselines"
+SUBSET_DIR = "subset"
+EMBEDDING_MANIFEST = REPO_ROOT / "data" / "manifests" / "embedding_manifest.json"
+EMBED_ROOT = REPO_ROOT / "data" / "embeddings"
+PACK = EMBED_ROOT / "input_pack.tsv"
+CACHE_DIR_HEX = 16
 SMOKE_STRIDE = 25
 PROGRESS_EVERY = 5000
 MAX_JOBS = 10
@@ -95,12 +113,22 @@ def _say(text: str) -> None:
     sys.stdout.flush()
 
 
-def _out_dir(smoke: bool) -> Path:
-    return BASELINES / "smoke" if smoke else BASELINES
+def _out_dir(args: argparse.Namespace) -> Path:
+    base = BASELINES / SUBSET_DIR if args.subset else BASELINES
+    return base / "smoke" if args.smoke else base
 
 
-def _stride(smoke: bool) -> int:
-    return SMOKE_STRIDE if smoke else 1
+def _manifest_path(args: argparse.Namespace) -> Path:
+    return BASELINES / SUBSET_DIR / MANIFEST.name if args.subset else MANIFEST
+
+
+def _stride(args: argparse.Namespace) -> int:
+    return SMOKE_STRIDE if args.smoke else 1
+
+
+def _announce(args: argparse.Namespace) -> None:
+    if args.subset:
+        _say(f"scope: {SUBSET_LABEL}")
 
 
 def _yaml(path: Path) -> dict[str, Any]:
@@ -252,8 +280,55 @@ def run_features(args: argparse.Namespace) -> int:
     return 0
 
 
-def _load(smoke: bool) -> tuple[dict[str, Any], dict[str, Any], ClassMap]:
-    """The feature table, its metadata and the class map, after checking they belong together."""
+def _embedding_manifest() -> dict[str, Any]:
+    manifest = read_manifest(EMBEDDING_MANIFEST)
+    if manifest["sequences"]["scope"] != SUBSET_SCOPE:
+        raise BaselineError(
+            "the embedding manifest does not say 'subset'; --subset needs the subset cache"
+        )
+    return manifest
+
+
+def _subset_block(table: dict[str, Any]) -> tuple[Any, dict[str, Any]]:
+    """The subset as indices into the feature table, and the facts the manifest records."""
+    embedding = _embedding_manifest()
+    key = str(embedding["cache_key"])
+    sequences = embedding["sequences"]
+    directory = EMBED_ROOT / f"{key[:CACHE_DIR_HEX]}_subset{sequences['subset_size']}"
+    lengths = cache_lengths(directory)
+    if len(lengths) != int(sequences["cached"]):
+        raise BaselineError(
+            "the cache tables and the embedding manifest disagree on the count"
+        )
+    if sha256_file(PACK)[0] != embedding["input"]["pack_sha256"]:
+        raise BaselineError(
+            "input_pack.tsv is not the pack the embedding manifest records"
+        )
+    items, _header = read_pack(PACK)
+    indices = bm.locate_sequences(table, [item.sha256 for item in items], lengths)
+    restricted = bm.restrict_to_sequences(table, indices)
+    labelled = {t: int(restricted[f"M_{t}"].sum()) for t in TASKS}
+    in_subset = bm.in_sequences(table, indices)
+    by_partition = {
+        str(p): int(((table["partition"] == p) & in_subset).sum())
+        for p in (*VALIDATION_PARTITIONS, TEST_PARTITION)
+    }
+    return indices, {
+        "sequences": len(lengths),
+        "sequences_sha256": subset_digest(list(lengths)),
+        "embedding_cache_key": key,
+        "cache_directory": directory.name,
+        "accessions_by_partition": by_partition,
+        "labelled_rows_per_task": labelled,
+    }
+
+
+def _load(subset: bool) -> tuple[dict[str, Any], dict[str, Any], ClassMap]:
+    """The feature table, its metadata and the class map, after checking they belong together.
+
+    With ``subset`` the table is the same one with every row outside the embedding subset
+    masked out, and the metadata gains a ``subset`` entry describing it.
+    """
     meta = read_manifest(BASELINES / "features.json")
     cmap = load_class_map(CLASS_MAP)
     registry_pin, corpus_pin = _pinned_hashes()
@@ -268,17 +343,22 @@ def _load(smoke: bool) -> tuple[dict[str, Any], dict[str, Any], ClassMap]:
     table_path = BASELINES / "features.npz"
     if sha256_file(table_path)[0] != meta["table_sha256"]:
         raise BaselineError("features.npz does not match features.json")
-    return bm.load_table(table_path), dict(meta), cmap
+    table = bm.load_table(table_path)
+    if not subset:
+        return table, dict(meta), cmap
+    indices, block = _subset_block(table)
+    return bm.restrict_to_sequences(table, indices), {**meta, "subset": block}, cmap
 
 
 # -- --train ---------------------------------------------------------------------------
 def run_train(args: argparse.Namespace) -> int:
     """Leave-one-partition-out over partitions 1-4; the test partition is never read."""
     began = time.perf_counter()
-    table, _meta, cmap = _load(args.smoke)
+    _announce(args)
+    table, _meta, cmap = _load(args.subset)
     folds = lopo_folds()
     assert_protocol(folds)
-    out = _out_dir(args.smoke) / "train"
+    out = _out_dir(args) / "train"
     out.mkdir(parents=True, exist_ok=True)
     seed, jobs = _seed(), _jobs(args.jobs)
     reports: list[str] = []
@@ -299,7 +379,7 @@ def run_train(args: argparse.Namespace) -> int:
                 classes=cmap.classes[task],
                 seed=seed,
                 n_jobs=jobs,
-                stride=_stride(args.smoke),
+                stride=_stride(args),
             )
             report, oof, final = bm.train_model(
                 table, spec, list(grid_items(model)), folds, _say
@@ -316,6 +396,9 @@ def run_train(args: argparse.Namespace) -> int:
         "versions": bm.versions(),
         "finished": reports,
     }
+    if args.subset:
+        stage["scope"] = SUBSET_SCOPE
+        stage["label"] = SUBSET_LABEL
     write_json(out / "stage.json", stage)
     _say(f"train stage: {stage['seconds']:.1f} s")
     return 0
@@ -334,12 +417,13 @@ def _validation_block(
 def run_validation(args: argparse.Namespace) -> int:
     """Validation metrics for every trained model and for the untrained rules."""
     began = time.perf_counter()
-    table, _meta, cmap = _load(args.smoke)
-    out = _out_dir(args.smoke)
+    _announce(args)
+    table, _meta, cmap = _load(args.subset)
+    out = _out_dir(args)
     samples, seed = _bootstrap_samples(), _seed()
     tasks: dict[str, Any] = {}
     for task in args.tasks:
-        rows = bm.task_rows(table, task, VALIDATION_PARTITIONS, _stride(args.smoke))
+        rows = bm.task_rows(table, task, VALIDATION_PARTITIONS, _stride(args))
         models: dict[str, Any] = {}
         for model in args.models:
             stem = f"{task}__{model}"
@@ -373,23 +457,51 @@ def run_validation(args: argparse.Namespace) -> int:
             },
         }
     stage = {"seconds": time.perf_counter() - began, "samples": samples, "seed": seed}
-    write_json(out / "validation.json", {"stage": stage, "tasks": tasks})
+    document: dict[str, Any] = {"stage": stage, "tasks": tasks}
+    if args.subset:
+        document["scope"] = SUBSET_SCOPE
+        document["label"] = SUBSET_LABEL
+    write_json(out / "validation.json", document)
     _say(f"validation stage: {stage['seconds']:.1f} s")
     return 0
 
 
 # -- --freeze --------------------------------------------------------------------------
+def _manifest_problems(
+    args: argparse.Namespace,
+    manifest: dict[str, Any],
+    registry_pin: str,
+    corpus_pin: str,
+) -> list[str]:
+    """Every disagreement of a manifest with the repository; the subset adds its own checks."""
+    problems = check_manifest(
+        manifest,
+        registry_sha256=registry_pin,
+        corpus_sha256=corpus_pin,
+        sklearn_pin=pinned_sklearn(PYPROJECT.read_text(encoding="utf-8")),
+    )
+    if args.subset:
+        frozen = manifest.get("frozen")
+        key = str(read_manifest(EMBEDDING_MANIFEST)["cache_key"])
+        if isinstance(frozen, dict):
+            problems += check_subset_block(frozen, cache_key=key)
+    return problems
+
+
 def run_freeze(args: argparse.Namespace) -> int:
     """Write the manifest: every value the test will be scored with, fixed before it is read."""
     if args.smoke:
         _say("--smoke output can never be frozen")
         return 1
-    if MANIFEST.exists():
-        _say(f"{MANIFEST.name} exists; a frozen manifest is never rewritten")
+    manifest_path = _manifest_path(args)
+    if manifest_path.exists():
+        _say(f"{manifest_path.name} exists; a frozen manifest is never rewritten")
         return 1
-    _table, meta, cmap = _load(False)
-    validation = read_manifest(BASELINES / "validation.json")
-    stage = read_manifest(BASELINES / "train" / "stage.json")
+    _announce(args)
+    out = _out_dir(args)
+    table, meta, cmap = _load(args.subset)
+    validation = read_manifest(out / "validation.json")
+    stage = read_manifest(out / "train" / "stage.json")
     tasks = validation["tasks"]
     if set(tasks) != set(TASKS) or any(
         set(t["models"]) != set(MODEL_NAMES) for t in tasks.values()
@@ -399,7 +511,18 @@ def run_freeze(args: argparse.Namespace) -> int:
         )
         return 1
     versions = bm.versions()
-    frozen = {
+    rows_per_task = meta["rows_per_task"]
+    rows_by_partition = meta["rows_by_partition"]
+    if args.subset:
+        rows_per_task = {t: int(table[f"M_{t}"].sum()) for t in TASKS}
+        rows_by_partition = {
+            t: {
+                str(p): int(((table["partition"] == p) & table[f"M_{t}"]).sum())
+                for p in (*VALIDATION_PARTITIONS, TEST_PARTITION)
+            }
+            for t in TASKS
+        }
+    frozen: dict[str, Any] = {
         "protocol": {
             "adr": "ADR-0010",
             "validation_partitions": list(VALIDATION_PARTITIONS),
@@ -433,8 +556,8 @@ def run_freeze(args: argparse.Namespace) -> int:
             "count": len(FEATURE_NAMES),
             "names": list(FEATURE_NAMES),
             "vectoriser_version": VECTORISER_VERSION,
-            "rows_per_task": meta["rows_per_task"],
-            "rows_by_partition": meta["rows_by_partition"],
+            "rows_per_task": rows_per_task,
+            "rows_by_partition": rows_by_partition,
         },
         "software": {"scikit_learn": versions["scikit_learn"], "versions": versions},
         "hardware": {
@@ -447,44 +570,47 @@ def run_freeze(args: argparse.Namespace) -> int:
         },
         "tasks": tasks,
     }
+    if args.subset:
+        frozen["scope"] = SUBSET_SCOPE
+        frozen["scope_label"] = SUBSET_LABEL
+        frozen["subset"] = meta["subset"]
     manifest = {
         "schema_version": SCHEMA_VERSION,
-        "phase": 8,
+        "phase": 9 if args.subset else 8,
         "frozen": frozen,
         "frozen_sha256": digest(frozen),
         "test": None,
     }
     registry_pin, corpus_pin = _pinned_hashes()
-    problems = check_manifest(
-        manifest,
-        registry_sha256=registry_pin,
-        corpus_sha256=corpus_pin,
-        sklearn_pin=pinned_sklearn(PYPROJECT.read_text(encoding="utf-8")),
-    )
+    problems = _manifest_problems(args, manifest, registry_pin, corpus_pin)
     if problems:
         for problem in problems:
             _say(f"  {problem}")
         return 1
-    write_json(MANIFEST, manifest)
-    _say(f"froze {MANIFEST.name}, frozen_sha256 {manifest['frozen_sha256'][:12]}")
+    write_json(manifest_path, manifest)
+    _say(f"froze {manifest_path}, frozen_sha256 {manifest['frozen_sha256'][:12]}")
     return 0
 
 
 # -- --evaluate --test -----------------------------------------------------------------
+def _say_test_row(task: str, model: str, block: dict[str, Any]) -> None:
+    macro, jaccard = block["macro_f1"], block["jaccard"]
+    _say(
+        f"  test {task}/{model}: macro F1 {macro['value']:.4f} "
+        f"[{macro['ci_low']:.4f}, {macro['ci_high']:.4f}] Jaccard {jaccard['value']:.4f}"
+    )
+
+
 def run_test(args: argparse.Namespace) -> int:
     """Score partition 5 once, under the thresholds the manifest froze."""
     if args.smoke:
         _say("--smoke never touches the test partition")
         return 1
     began = time.perf_counter()
-    manifest = read_manifest(MANIFEST)
+    manifest_path = _manifest_path(args)
+    manifest = read_manifest(manifest_path)
     registry_pin, corpus_pin = _pinned_hashes()
-    problems = check_manifest(
-        manifest,
-        registry_sha256=registry_pin,
-        corpus_sha256=corpus_pin,
-        sklearn_pin=pinned_sklearn(PYPROJECT.read_text(encoding="utf-8")),
-    )
+    problems = _manifest_problems(args, manifest, registry_pin, corpus_pin)
     if problems or manifest["test"] is not None:
         _say(
             "refusing: the manifest has problems or the test partition was already scored"
@@ -492,7 +618,8 @@ def run_test(args: argparse.Namespace) -> int:
         for problem in problems:
             _say(f"  {problem}")
         return 1
-    table, _meta, cmap = _load(False)
+    _announce(args)
+    table, _meta, cmap = _load(args.subset)
     boot = bm.Bootstrap(_bootstrap_samples(), _seed())
     scored: dict[str, Any] = {}
     for task in TASKS:
@@ -504,12 +631,13 @@ def run_test(args: argparse.Namespace) -> int:
         classes = cmap.classes[task]
         for model in MODEL_NAMES:
             fitted = bm.load_model(
-                BASELINES / "train" / f"{task}__{model}__final.joblib"
+                _out_dir(args) / "train" / f"{task}__{model}__final.joblib"
             )
             thresholds = body["models"][model]["thresholds"]
             scored[task][model] = bm.score_test(
                 bm.model_scores(fitted, x), split, thresholds, classes, boot
             )
+            _say_test_row(task, model, scored[task][model])
         scored[task][RULES_NAME] = bm.score_test(
             bm.rule_scores(table, task, rows),
             split,
@@ -517,6 +645,7 @@ def run_test(args: argparse.Namespace) -> int:
             classes,
             boot,
         )
+        _say_test_row(task, RULES_NAME, scored[task][RULES_NAME])
         _say(f"{task}: scored {len(rows)} test rows")
     manifest["test"] = {
         "touches": 1,
@@ -525,13 +654,16 @@ def run_test(args: argparse.Namespace) -> int:
         "hardware": bm.hardware(),
         "tasks": scored,
     }
-    write_json(MANIFEST, manifest)
+    if args.subset:
+        manifest["test"]["scope"] = SUBSET_SCOPE
+        manifest["test"]["label"] = SUBSET_LABEL
+    write_json(manifest_path, manifest)
     _say(f"test partition scored once in {manifest['test']['seconds']:.1f} s")
     return 0
 
 
 # -- --check ---------------------------------------------------------------------------
-def run_check(_args: argparse.Namespace) -> int:
+def run_check(args: argparse.Namespace) -> int:
     """No data bytes: protocol pins, scikit-learn pin and, when present, the manifest."""
     problems: list[str] = []
     cmap = load_class_map(CLASS_MAP)
@@ -543,16 +675,16 @@ def run_check(_args: argparse.Namespace) -> int:
         problems.append(
             "baseline_class_map localization classes differ from uniprot_label_map"
         )
-    if MANIFEST.exists():
-        problems += check_manifest(
-            read_manifest(MANIFEST),
-            registry_sha256=registry_pin,
-            corpus_sha256=corpus_pin,
-            sklearn_pin=pin,
+    manifest_path = _manifest_path(args)
+    if manifest_path.exists():
+        problems += _manifest_problems(
+            args, read_manifest(manifest_path), registry_pin, corpus_pin
         )
-        state = "manifest present"
+        state = f"{manifest_path.name} present"
     else:
-        state = "manifest absent (pins only)"
+        state = f"{manifest_path.name} absent (pins only)"
+    if args.subset:
+        state += f"; scope: {SUBSET_LABEL}"
     for problem in problems:
         _say(f"FAIL {problem}")
     _say(
@@ -572,6 +704,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--smoke", action="store_true", help="every 25th row, never frozen"
     )
+    parser.add_argument(
+        "--subset",
+        action="store_true",
+        help="the 500-sequence embedding subset; output in data/baselines/subset",
+    )
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--jobs", type=int, default=0)
     parser.add_argument("--tasks", nargs="+", choices=TASKS, default=list(TASKS))
@@ -583,7 +720,10 @@ def _parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     """Dispatch one mode."""
-    args = _parser().parse_args(argv)
+    parser = _parser()
+    args = parser.parse_args(argv)
+    if args.subset and (args.smoke or args.features):
+        parser.error("--subset cannot be combined with --smoke or --features")
     try:
         if args.features:
             return run_features(args)
