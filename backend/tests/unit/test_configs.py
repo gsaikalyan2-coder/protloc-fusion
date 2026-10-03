@@ -26,16 +26,15 @@ CONFIG_DIR = Path(__file__).resolve().parents[3] / "configs"
 # Group options that must exist and compose, by group.
 GROUP_OPTIONS: dict[str, list[str]] = {
     "data": ["uniprot_swissprot"],
-    "model": ["trunk_esm2_650m"],
+    "model": ["trunk_esm2_150m"],
     "training": ["frozen_trunk", "lora"],
     "evaluation": ["default"],
     "deployment": ["local", "hf_spaces"],
 }
 
-# Values produced by a later phase. Each must be MISSING, never defaulted.
-SCHEDULED_VALUES: list[tuple[str, str]] = [
-    ("model.trunk.revision", "Phase 5 — the HuggingFace commit hash pulled"),
-]
+# Values produced by a later phase. Each must be MISSING, never defaulted. Phase 7 pinned
+# model.trunk.revision (the HuggingFace commit hash), so none is scheduled right now.
+SCHEDULED_VALUES: list[tuple[str, str]] = []
 
 MANIFEST = CONFIG_DIR.parent / "data" / "manifests" / "dataset_manifest.json"
 SPLIT_MANIFEST = CONFIG_DIR.parent / "data" / "manifests" / "split_manifest.json"
@@ -94,6 +93,17 @@ def test_frozen_data_values_equal_the_manifest() -> None:
     assert cfg.data.sequence.max_length == manifest["policy"]["max_sequence_length"]
     assert cfg.data.sequence.alphabet == manifest["policy"]["alphabet"]
     assert cfg.data.labels.accepted_evidence_codes == manifest["build"]["accepted_evidence_codes"]
+
+
+def test_the_trunk_is_pinned_to_a_real_revision() -> None:
+    """Phase 7: the cache key needs the commit hash, and the dimension is measured."""
+    trunk = _compose().model.trunk
+    assert trunk.checkpoint == "facebook/esm2_t30_150M_UR50D"
+    assert len(trunk.revision) == 40
+    assert set(trunk.revision) <= set("0123456789abcdef")
+    assert trunk.embedding_dim == 640
+    assert trunk.max_residues == 1022
+    assert trunk.long_sequence_policy == "sliding_window"
 
 
 def test_the_seed_is_recorded() -> None:

@@ -63,7 +63,7 @@ pytorch: <VERSION>
 cuda: <VERSION>
 gpu: <MODEL>
 seed: 42
-esm_checkpoint: facebook/esm2_t33_650M_UR50D
+esm_checkpoint: facebook/esm2_t30_150M_UR50D
 esm_revision: <HASH>
 checkpoint_sha256: <HASH>
 started_at: 2026-09-09T14:03:11Z

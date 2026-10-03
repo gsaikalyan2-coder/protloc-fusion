@@ -30,7 +30,7 @@ this file is the live register.
 |---|-----------|------------------------|---------|-----------|---------------|----------------|
 | 1 | `graph-part/graph-part` | Homology-aware split generation | BSD-3-Clause | `f470726216bc7ec4cb60f6424548bfd60c550e42` (2023-10-26) | no | Permissive — safe to vendor and ship |
 | 2 | `soedinglab/MMseqs2` | Clustering backend / alternative to GraphPart's alignment step | **MIT** — see §1.1 | `d401e78c2d18a822cdb1527d7464a043f6035a15` (2026-09-13) | no | Permissive. Still invoked as an external binary, for operational reasons rather than licensing ones |
-| 3 | `facebookresearch/esm` | ESM-2 embeddings (primary representation) | MIT | `2b369911bb5b4b0dda914521b9475cad1656b2ac` (2023-06-27) | **yes** — ESM-2 650M | Permissive; still cite and record checkpoint revision |
+| 3 | `facebookresearch/esm` | ESM-2 embeddings (primary representation) | MIT | `2b369911bb5b4b0dda914521b9475cad1656b2ac` (2023-06-27) | **yes** — ESM-2 150M (`a695f604…`, ADR-0009) | Permissive; still cite and record checkpoint revision |
 | 4 | `efs-opensource/calibration-framework` (netcal) | Temperature / vector scaling, ECE, reliability diagrams | Apache-2.0 | `34b677f42b83803aa35503c5b6fefb1387ea9167` (2026-04-16) | no | Permissive — safe to ship |
 | 5 | `huggingface/peft` | LoRA adaptation of the PLM trunk | Apache-2.0 | `e99fdd275075068d093f8996a59bc0eb865f71a2` (2026-09-14) | no | Permissive — safe to ship |
 | 6 | `fteufel/signalp-6.0` | Reference implementation for SP + cleavage-site modelling; benchmark baseline | **CC BY-NC-ND 2.0** — see §1.1 | `9bcd1b25fbbf8d8e97d048ec1122f70390253de3` (2025-02-04) | **do not redistribute** | **Restricted.** Non-commercial *and* no-derivatives. Study the method; do not bundle weights, do not adapt the code, do not serve it |
@@ -117,12 +117,15 @@ it has a row. Versions below were read on **2026-09-15**. The tag SHAs came from
 
 ### 2.3 ESM — `facebookresearch/esm`
 
-- **Role:** primary representation. ESM-2 650M is the named candidate
-  checkpoint.
+- **Role:** primary representation. ESM-2 150M (`facebook/esm2_t30_150M_UR50D`,
+  MIT) is the chosen checkpoint, pinned at revision
+  `a695f6045e2e32885fa60af20c13cb35398ce30c` (ADR-0009). The weights are
+  downloaded from the HuggingFace Hub through `transformers`; the `esm` repository
+  itself is not a dependency.
 - **Critical requirement:** the embedding cache key must include the checkpoint
   identity *and* revision (Blueprint §8.5). An embedding produced by one
   revision is not interchangeable with another. Record the exact HuggingFace
-  revision hash, not just `esm2_t33_650M_UR50D`.
+  revision hash, not just `esm2_t30_150M_UR50D`.
 
 ### 2.4 netcal — `efs-opensource/calibration-framework`
 

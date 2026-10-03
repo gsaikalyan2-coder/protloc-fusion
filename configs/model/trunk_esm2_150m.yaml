@@ -4,16 +4,27 @@
 # before Phase 8 generalises to seven. The head list is here so that the task
 # vocabulary lives in one place; the head implementations arrive with their phase.
 
-name: trunk_esm2_650m
+name: trunk_esm2_150m
 
 trunk:
   # The cache key for an embedding includes checkpoint AND revision: a name on
   # its own does not identify the weights that produced a vector.
-  checkpoint: ${oc.env:ESM_CHECKPOINT,facebook/esm2_t33_650M_UR50D}
-  revision: ???
-  # Measured in Phase 5, not assumed from the model card.
-  embedding_dim: null
+  # ADR-0009: frozen encoder, trained heads, ESM-2 150M.
+  checkpoint: ${oc.env:ESM_CHECKPOINT,facebook/esm2_t30_150M_UR50D}
+  # Commit hash of the pinned revision (huggingface.co/api/models, 2026-10-03).
+  revision: a695f6045e2e32885fa60af20c13cb35398ce30c
+  # config.json hidden_size of the pinned revision. extract/measure refuse to run if the
+  # loaded model disagrees.
+  embedding_dim: 640
   pooling: mean
+  dtype: float32
+  # 1024 tokens (max_position_embeddings 1026 less the 2-position offset) hold the
+  # <cls> and <eos> tokens plus 1022 residues. Longer sequences use overlapping
+  # windows whose residue states are averaged before pooling (ADR-0009). Nothing is
+  # truncated.
+  max_residues: 1022
+  long_sequence_policy: sliding_window
+  window_stride: 511
 
 # The seven task heads named in PROJECT_PLAN.md §3, in the order the domain enum
 # declares them. `applies_to` is what makes a head masked rather than scored for
