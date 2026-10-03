@@ -86,7 +86,9 @@ def build_manifest(spec: CacheSpec, registry_sha256: str, measured: Measured) ->
             raise EmbeddingManifestError(f"{name} was run on inputs from a different registry")
     if facts.get("registry_sha256") != registry_sha256:
         raise EmbeddingManifestError("facts were computed on a different registry")
-    if index["sequence_count"] != facts["distinct_sequences"]:
+    subset = extract_run.get("subset")
+    expected = facts["distinct_sequences"] if subset is None else subset
+    if index["sequence_count"] != expected:
         raise EmbeddingManifestError(
             "cache holds a different number of sequences than the registry"
         )
@@ -103,7 +105,11 @@ def build_manifest(spec: CacheSpec, registry_sha256: str, measured: Measured) ->
         "sequences": {
             "accessions": facts["accessions"],
             "distinct": facts["distinct_sequences"],
+            "cached": index["sequence_count"],
+            "scope": "full" if subset is None else "subset",
+            "subset_size": subset,
             "windowed": facts["windowed_sequences"],
+            "windowed_in_cache": extract_run.get("windowed_in_cache", facts["windowed_sequences"]),
             "excluded": 0,
             "long_sequence_policy": LONG_SEQUENCE_POLICY,
         },
@@ -113,7 +119,7 @@ def build_manifest(spec: CacheSpec, registry_sha256: str, measured: Measured) ->
             "shard_index_sha256": index["shard_index_sha256"],
             "seconds_per_sequence_full_run": extract_run["seconds_per_sequence"],
         },
-        "measure_200": measure,
+        "measure": measure,
         "verify": verify,
         "hardware": extract_run["hardware"],
         "per_residue_storage_estimate_bytes": facts["per_residue_float16_bytes"],

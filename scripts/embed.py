@@ -26,6 +26,10 @@ r"""Phase 7: the ESM-2 embedding cache. One job per mode.
         at a time. Safe to kill and rerun: finished shards are kept. The script
         records its own time, so do NOT wrap it in Measure-Command or time.
 
+    --extract --subset N embeds only N sequences (spread evenly over the length
+        distribution, as --measure samples them) into its own cache directory and
+        labels the manifest "subset". The full run stays outstanding.
+
     python scripts/embed.py --verify [--device cpu|cuda]
         Padding invariance, tokeniser coverage, byte identity of one sequence across
         two separate processes, and byte identity after a real kill and resume.
@@ -107,8 +111,10 @@ def _spec() -> CacheSpec:
     )
 
 
-def _cache_dir(spec: CacheSpec) -> Path:
-    return EMBED_ROOT / spec.key()[:16]
+def _cache_dir(spec: CacheSpec, subset: int | None = None) -> Path:
+    """Full cache under the key; a subset cache gets its own directory, never mixed in."""
+    suffix = "" if subset is None else f"_subset{subset}"
+    return EMBED_ROOT / (spec.key()[:16] + suffix)
 
 
 def _say(text: str) -> None:
@@ -228,7 +234,9 @@ def _measure(args: argparse.Namespace) -> int:
 def _extract(args: argparse.Namespace) -> int:
     spec = _spec()
     items, source = _load_unique(args)
-    directory = _cache_dir(spec)
+    if args.subset:
+        items = stratified_sample(items, args.subset)
+    directory = _cache_dir(spec, args.subset)
     encoder = _encoder(spec, args)
     seconds_file = REPORTS / "shard_seconds.json"
     recorded: dict[str, object] = (
@@ -257,6 +265,10 @@ def _extract(args: argparse.Namespace) -> int:
         "input": source,
         "cache_bytes": cache_size_bytes(directory),
         "sequences": len(items),
+        "subset": args.subset,
+        "windowed_in_cache": sum(
+            1 for item in items if len(item.sequence) > MAX_RESIDUES
+        ),
         "shard_seconds_total": total_seconds,
         "seconds_per_sequence": total_seconds / len(items),
         "shard_size": args.shard_size,
@@ -436,7 +448,9 @@ def _bundle(_: argparse.Namespace) -> int:
 
 def _freeze(_: argparse.Namespace) -> int:
     spec = _spec()
-    directory = _cache_dir(spec)
+    run = read_json_object(REPORTS / "extract_run.json")
+    subset = run.get("subset")
+    directory = _cache_dir(spec, int(str(subset)) if subset else None)
     problems = verify_cache(directory)
     if problems:
         raise EmbeddingError("cache failed verification: " + "; ".join(problems))
@@ -444,7 +458,7 @@ def _freeze(_: argparse.Namespace) -> int:
     measured = Measured(
         facts=read_json_object(REPORTS / "facts.json"),
         measure=read_json_object(REPORTS / "measure.json"),
-        extract_run=read_json_object(REPORTS / "extract_run.json"),
+        extract_run=run,
         index=read_index(directory),
         verify=read_json_object(REPORTS / "verify.json"),
     )
@@ -489,6 +503,11 @@ def main() -> int:
         mode.add_argument(f"--{name}", action="store_true")
     parser.add_argument("--device", default="cpu", choices=["cpu", "cuda"])
     parser.add_argument("--n", type=int, default=200)
+    parser.add_argument(
+        "--subset",
+        type=int,
+        help="extract only this many sequences, spread over length",
+    )
     parser.add_argument("--batch-windows", type=int, default=8)
     parser.add_argument("--shard-size", type=int, default=512)
     parser.add_argument("--local-files-only", action="store_true")

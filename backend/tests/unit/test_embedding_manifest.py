@@ -96,6 +96,19 @@ def test_a_manifest_is_refused_when_inputs_disagree() -> None:
         build_manifest(spec, "r" * 64, _measured(spec.key(), sequences=4))
 
 
+def test_a_subset_cache_is_labelled_and_checked_against_its_own_size() -> None:
+    """A partial cache is allowed only if the manifest says so and the counts agree."""
+    spec = read_pins(CONFIG, ENV)
+    measured = _measured(spec.key())
+    measured.extract_run["subset"] = 3
+    manifest = build_manifest(spec, "r" * 64, measured)
+    assert manifest["sequences"]["scope"] == "subset"  # type: ignore[index]
+    assert manifest["sequences"]["cached"] == 3  # type: ignore[index]
+    measured.extract_run["subset"] = 5
+    with pytest.raises(EmbeddingManifestError):
+        build_manifest(spec, "r" * 64, measured)
+
+
 def test_a_run_on_another_registry_is_refused() -> None:
     """A pack built from a different registry must not be frozen into this manifest."""
     spec = read_pins(CONFIG, ENV)
