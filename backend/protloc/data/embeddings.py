@@ -47,6 +47,7 @@ WINDOW_STRIDE = 511
 SHARD_SIZE = 512
 _FLOAT_BYTES = 4
 _ACCESSION_PREFIX = b'{"accession":"'
+PACK_MAGIC = "#protloc-embedding-input-v1"
 _REVISION = re.compile(r"[0-9a-f]{40}")
 _SHA256 = re.compile(r"[0-9a-f]{64}")
 
@@ -199,6 +200,50 @@ def select_unique(corpus: Path, registry: Path) -> list[UniqueSequence]:
     if seen != len(wanted):
         raise EmbeddingError(f"registry names {len(wanted)} accessions, corpus has {seen}")
     return [UniqueSequence(sha, found[sha][0], found[sha][1]) for sha in sorted(found)]
+
+
+def write_pack(
+    items: Sequence[UniqueSequence], path: Path, registry_sha256: str, corpus_sha256: str
+) -> str:
+    """Write the distinct sequences as one small TSV and return its SHA-256.
+
+    The pack lets a machine without the 1 GB corpus (a free GPU notebook) run the
+    extraction. The header records the registry and corpus hashes it was built
+    from; rows are sorted by sequence hash, so the same inputs give the same bytes.
+    """
+    ordered = sorted(items, key=lambda item: item.sha256)
+    header = (
+        f"{PACK_MAGIC}\tregistry_sha256={registry_sha256}\tcorpus_sha256={corpus_sha256}"
+        f"\tdistinct={len(ordered)}\taccessions={sum(i.accessions for i in ordered)}"
+    )
+    rows = [header] + [f"{i.sha256}\t{i.accessions}\t{i.sequence}" for i in ordered]
+    data = ("\n".join(rows) + "\n").encode("ascii")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    _write_atomic(path, data)
+    return hashlib.sha256(data).hexdigest()
+
+
+def read_pack(path: Path) -> tuple[list[UniqueSequence], dict[str, str]]:
+    """Read a pack, re-checking every sequence against its hash and the header counts."""
+    lines = path.read_text(encoding="ascii").splitlines()
+    fields = lines[0].split("\t") if lines else []
+    if not fields or fields[0] != PACK_MAGIC:
+        raise EmbeddingError(f"{path} is not an embedding input pack")
+    header = dict(field.split("=", 1) for field in fields[1:])
+    items: list[UniqueSequence] = []
+    for row in lines[1:]:
+        sha, count, sequence = row.split("\t")
+        if hashlib.sha256(sequence.encode("ascii")).hexdigest() != sha:
+            raise EmbeddingError(f"pack row {sha[:12]} does not match its sequence")
+        items.append(UniqueSequence(sha, sequence, int(count)))
+    shas = [item.sha256 for item in items]
+    if shas != sorted(set(shas)):
+        raise EmbeddingError("pack rows are not unique and sorted by hash")
+    if len(items) != int(header["distinct"]):
+        raise EmbeddingError("pack row count differs from its header")
+    if sum(item.accessions for item in items) != int(header["accessions"]):
+        raise EmbeddingError("pack accession count differs from its header")
+    return items, header
 
 
 def stratified_sample(items: Sequence[UniqueSequence], n: int) -> list[UniqueSequence]:
@@ -424,6 +469,7 @@ __all__ = [
     "DTYPE",
     "LONG_SEQUENCE_POLICY",
     "MAX_RESIDUES",
+    "PACK_MAGIC",
     "POOLING",
     "SHARD_SIZE",
     "WINDOW_STRIDE",
@@ -439,6 +485,7 @@ __all__ = [
     "pack_vector",
     "plan_shards",
     "read_index",
+    "read_pack",
     "read_vector",
     "residue_weights",
     "select_unique",
@@ -447,4 +494,5 @@ __all__ = [
     "unpack_vector",
     "verify_cache",
     "windows",
+    "write_pack",
 ]

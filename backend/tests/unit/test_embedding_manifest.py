@@ -54,7 +54,7 @@ def test_inconsistent_pins_are_rejected(config: str, env: str) -> None:
 
 
 def _measured(key: str, sequences: int = 3) -> Measured:
-    keyed = {"cache_key": key}
+    keyed = {"cache_key": key, "input": {"source": "pack", "registry_sha256": "r" * 64}}
     return Measured(
         facts={
             "registry_sha256": "r" * 64,
@@ -72,6 +72,7 @@ def _measured(key: str, sequences: int = 3) -> Measured:
         },
         index={**keyed, "sequence_count": 3, "shard_count": 1, "shard_index_sha256": "s" * 64},
         verify={
+            **keyed,
             "byte_identical_across_processes": True,
             "byte_identical_after_kill_and_resume": True,
         },
@@ -93,6 +94,15 @@ def test_a_manifest_is_refused_when_inputs_disagree() -> None:
         build_manifest(spec, "x" * 64, _measured(spec.key()))
     with pytest.raises(EmbeddingManifestError):
         build_manifest(spec, "r" * 64, _measured(spec.key(), sequences=4))
+
+
+def test_a_run_on_another_registry_is_refused() -> None:
+    """A pack built from a different registry must not be frozen into this manifest."""
+    spec = read_pins(CONFIG, ENV)
+    measured = _measured(spec.key())
+    measured.extract_run["input"] = {"source": "pack", "registry_sha256": "x" * 64}
+    with pytest.raises(EmbeddingManifestError):
+        build_manifest(spec, "r" * 64, measured)
 
 
 def test_a_manifest_for_another_revision_fails_the_check() -> None:

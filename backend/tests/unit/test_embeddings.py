@@ -27,6 +27,7 @@ from protloc.data.embeddings import (
     pack_vector,
     plan_shards,
     read_index,
+    read_pack,
     read_vector,
     residue_weights,
     select_unique,
@@ -34,6 +35,7 @@ from protloc.data.embeddings import (
     unpack_vector,
     verify_cache,
     windows,
+    write_pack,
 )
 
 REVISION = "a695f6045e2e32885fa60af20c13cb35398ce30c"
@@ -286,3 +288,28 @@ def test_a_missing_hash_is_an_error(tmp_path: Path) -> None:
     extract(_items(3), tmp_path, _spec(), FakeEncoder())
     with pytest.raises(EmbeddingError):
         read_vector(tmp_path, "f" * 64)
+
+
+# ── input pack ───────────────────────────────────────────────────────────────
+
+
+def test_a_pack_round_trips_and_is_deterministic(tmp_path: Path) -> None:
+    items = _items(7)
+    first = write_pack(items, tmp_path / "a.tsv", "r" * 64, "c" * 64)
+    second = write_pack(list(reversed(items)), tmp_path / "b.tsv", "r" * 64, "c" * 64)
+    assert first == second
+    read, header = read_pack(tmp_path / "a.tsv")
+    assert read == sorted(items, key=lambda item: item.sha256)
+    assert header["registry_sha256"] == "r" * 64
+    assert header["distinct"] == "7"
+
+
+def test_a_tampered_pack_is_refused(tmp_path: Path) -> None:
+    write_pack(_items(4), tmp_path / "p.tsv", "r" * 64, "c" * 64)
+    text = (tmp_path / "p.tsv").read_text(encoding="ascii")
+    (tmp_path / "p.tsv").write_text(text[:-2] + "W\n", encoding="ascii")
+    with pytest.raises(EmbeddingError):
+        read_pack(tmp_path / "p.tsv")
+    (tmp_path / "q.tsv").write_text("not a pack\n", encoding="ascii")
+    with pytest.raises(EmbeddingError):
+        read_pack(tmp_path / "q.tsv")

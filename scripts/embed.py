@@ -5,6 +5,18 @@ r"""Phase 7: the ESM-2 embedding cache. One job per mode.
         1022-residue context, letters used, and the size per-residue storage would
         need. Writes data/embeddings/reports/facts.json.
 
+    python scripts/embed.py --pack
+        Writes data/embeddings/input_pack.tsv: the 33,461 distinct sequences in one small
+        file, with the registry and corpus hashes in its header. Verifies the corpus
+        hash first. Lets a free GPU notebook run the steps below without the corpus.
+
+    python scripts/embed.py --bundle
+        Zips the code, model config and input pack needed on a GPU notebook into
+        data/embeddings/gpu_bundle.zip.
+
+    Every mode below also accepts --input data/embeddings/input_pack.tsv to read the
+    sequences from the pack instead of the corpus.
+
     python scripts/embed.py --measure [--n 200] [--device cpu|cuda]
         Times the encoder on 200 real registry sequences, spread evenly over the
         length distribution (no random draw). Writes reports/measure.json.
@@ -40,6 +52,7 @@ import shutil
 import statistics
 import sys
 import time
+import zipfile
 
 from protloc.data.embedding_manifest import (
     Measured,
@@ -57,9 +70,11 @@ from protloc.data.embeddings import (
     extract,
     max_abs_diff,
     read_index,
+    read_pack,
     select_unique,
     stratified_sample,
     verify_cache,
+    write_pack,
 )
 from protloc.data.esm_encoder import (
     TorchEncoder,
@@ -87,7 +102,8 @@ POLL_SECONDS = 0.05
 
 def _spec() -> CacheSpec:
     return read_pins(
-        MODEL_CONFIG.read_text(encoding="utf-8"), ENV_EXAMPLE.read_text(encoding="utf-8")
+        MODEL_CONFIG.read_text(encoding="utf-8"),
+        ENV_EXAMPLE.read_text(encoding="utf-8"),
     )
 
 
@@ -100,15 +116,34 @@ def _say(text: str) -> None:
     sys.stdout.flush()
 
 
-def _load_unique() -> list[UniqueSequence]:
-    registry_sha, _ = sha256_file(REGISTRY)
+def _load_unique(
+    args: argparse.Namespace,
+) -> tuple[list[UniqueSequence], dict[str, object]]:
+    """Distinct sequences and where they came from, from the pack or the corpus."""
+    if args.input:
+        path = Path(args.input)
+        items, header = read_pack(path)
+        pack_sha, _size = sha256_file(path)
+        registry = header["registry_sha256"]
+        _say(f"input pack {path.name} sha256 {pack_sha[:12]}, registry {registry[:12]}")
+        return items, {
+            "source": "pack",
+            "pack_sha256": pack_sha,
+            "registry_sha256": header["registry_sha256"],
+            "corpus_sha256": header["corpus_sha256"],
+        }
+    registry_sha, _size = sha256_file(REGISTRY)
     _say(f"registry sha256 {registry_sha}")
-    corpus_sha, _ = sha256_file(CORPUS)
+    corpus_sha, _size = sha256_file(CORPUS)
     expected = read_json_object(DATASET_MANIFEST)["build"]
     if not isinstance(expected, dict) or corpus_sha != expected["corpus_sha256"]:
         raise EmbeddingError("corpus.jsonl does not match dataset_manifest.json")
     _say(f"corpus sha256 verified {corpus_sha[:12]}…")
-    return select_unique(CORPUS, REGISTRY)
+    return select_unique(CORPUS, REGISTRY), {
+        "source": "corpus",
+        "registry_sha256": registry_sha,
+        "corpus_sha256": corpus_sha,
+    }
 
 
 def _encoder(spec: CacheSpec, args: argparse.Namespace) -> TorchEncoder:
@@ -120,10 +155,10 @@ def _encoder(spec: CacheSpec, args: argparse.Namespace) -> TorchEncoder:
     )
 
 
-def _facts(_: argparse.Namespace) -> int:
+def _facts(args: argparse.Namespace) -> int:
     spec = _spec()
-    items = _load_unique()
-    registry_sha, _size = sha256_file(REGISTRY)
+    items, source = _load_unique(args)
+    registry_sha = str(source["registry_sha256"])
     lengths = [len(item.sequence) for item in items]
     letters = sorted({letter for item in items for letter in item.sequence})
     total = sum(lengths)
@@ -154,12 +189,14 @@ def _facts(_: argparse.Namespace) -> int:
 
 def _measure(args: argparse.Namespace) -> int:
     spec = _spec()
-    items = _load_unique()
+    items, source = _load_unique(args)
     sample = stratified_sample(items, args.n)
     loading = time.perf_counter()
     encoder = _encoder(spec, args)
     load_seconds = time.perf_counter() - loading
-    ids = encoder.check_alphabet("".join(sorted({c for i in sample for c in i.sequence})))
+    ids = encoder.check_alphabet(
+        "".join(sorted({c for i in sample for c in i.sequence}))
+    )
     shortest = min(sample, key=lambda item: len(item.sequence))
     encoder.embed_batch([shortest.sequence])  # warm-up, not timed
     started = time.perf_counter()
@@ -168,6 +205,7 @@ def _measure(args: argparse.Namespace) -> int:
     lengths = [len(item.sequence) for item in sample]
     report = {
         "cache_key": spec.key(),
+        "input": source,
         "sequences": len(sample),
         "model_load_seconds": round(load_seconds, 3),
         "embed_seconds": round(seconds, 3),
@@ -189,7 +227,7 @@ def _measure(args: argparse.Namespace) -> int:
 
 def _extract(args: argparse.Namespace) -> int:
     spec = _spec()
-    items = _load_unique()
+    items, source = _load_unique(args)
     directory = _cache_dir(spec)
     encoder = _encoder(spec, args)
     seconds_file = REPORTS / "shard_seconds.json"
@@ -216,6 +254,7 @@ def _extract(args: argparse.Namespace) -> int:
     total_seconds = sum(float(str(v)) for v in recorded.values())
     run = {
         "cache_key": spec.key(),
+        "input": source,
         "cache_bytes": cache_size_bytes(directory),
         "sequences": len(items),
         "shard_seconds_total": total_seconds,
@@ -242,7 +281,8 @@ def _spawn(target: object, *arguments: object) -> multiprocessing.Process:
 
 def _padding_check(encoder: TorchEncoder, sample: Sequence[UniqueSequence]) -> float:
     picked = [
-        sample[i * (len(sample) - 1) // (PADDING_SEQUENCES - 1)] for i in range(PADDING_SEQUENCES)
+        sample[i * (len(sample) - 1) // (PADDING_SEQUENCES - 1)]
+        for i in range(PADDING_SEQUENCES)
     ]
     together = encoder.embed_batch([item.sequence for item in picked])
     worst = 0.0
@@ -255,7 +295,10 @@ def _padding_check(encoder: TorchEncoder, sample: Sequence[UniqueSequence]) -> f
 def _device_check(
     spec: CacheSpec, args: argparse.Namespace, sample: Sequence[UniqueSequence]
 ) -> object:
-    if args.device != "cuda" or not importlib.import_module("torch").cuda.is_available():
+    if (
+        args.device != "cuda"
+        or not importlib.import_module("torch").cuda.is_available()
+    ):
         return None
     cpu = TorchEncoder(spec, device="cpu", local_files_only=args.local_files_only)
     gpu = TorchEncoder(spec, device="cuda", local_files_only=args.local_files_only)
@@ -266,15 +309,21 @@ def _device_check(
     )
 
 
-def _probe(spec: CacheSpec, args: argparse.Namespace, item: UniqueSequence) -> list[str]:
+def _probe(
+    spec: CacheSpec, args: argparse.Namespace, item: UniqueSequence
+) -> list[str]:
     scratch = EMBED_ROOT / "_verify"
     hashes: list[str] = []
     for run in (1, 2):
         out = scratch / f"probe_{run}.f32"
-        process = _spawn(probe_worker, spec.as_dict(), item.sequence, str(out), args.device)
+        process = _spawn(
+            probe_worker, spec.as_dict(), item.sequence, str(out), args.device
+        )
         process.join()
         if process.exitcode != 0:
-            raise EmbeddingError(f"probe process {run} failed with exit code {process.exitcode}")
+            raise EmbeddingError(
+                f"probe process {run} failed with exit code {process.exitcode}"
+            )
         hashes.append(sha256_file(out)[0])
     return hashes
 
@@ -295,7 +344,9 @@ def _kill_and_resume(
     victim.join()
     interrupted = not (killed / "index.json").exists()
     if not interrupted:
-        raise EmbeddingError("the run finished before it could be killed; raise RESUME_SUBSET")
+        raise EmbeddingError(
+            "the run finished before it could be killed; raise RESUME_SUBSET"
+        )
     leftovers = sorted(p.name for p in killed.glob("*.tmp"))
     resumed = _spawn(extract_worker, *run, str(killed), RESUME_SHARD, args.device)
     resumed.join()
@@ -306,13 +357,14 @@ def _kill_and_resume(
         "clean_shard_index_sha256": clean_index["shard_index_sha256"],
         "resumed_shard_index_sha256": killed_index["shard_index_sha256"],
         "resumed_cache_problems": verify_cache(killed),
-        "identical": clean_index["shard_index_sha256"] == killed_index["shard_index_sha256"],
+        "identical": clean_index["shard_index_sha256"]
+        == killed_index["shard_index_sha256"],
     }
 
 
 def _verify(args: argparse.Namespace) -> int:
     spec = _spec()
-    items = _load_unique()
+    items, source = _load_unique(args)
     sample = stratified_sample(items, args.n)
     encoder = _encoder(spec, args)
     letters = "".join(sorted({c for item in items for c in item.sequence}))
@@ -327,6 +379,7 @@ def _verify(args: argparse.Namespace) -> int:
     resume = _kill_and_resume(spec, args, stratified_sample(items, RESUME_SUBSET))
     report = {
         "cache_key": spec.key(),
+        "input": source,
         "alphabet_checked": letters,
         "padding_max_abs_diff_alone_vs_batch": padding,
         "cpu_vs_cuda_max_abs_diff": device_diff,
@@ -343,6 +396,42 @@ def _verify(args: argparse.Namespace) -> int:
     write_json(REPORTS / "verify.json", report)
     _say(json.dumps(report, indent=2, sort_keys=True))
     return 0 if report["byte_identical_across_processes"] and resume["identical"] else 1
+
+
+PACK = EMBED_ROOT / "input_pack.tsv"
+BUNDLE = EMBED_ROOT / "gpu_bundle.zip"
+BUNDLE_FILES = (
+    "backend/protloc/__init__.py",
+    "backend/protloc/data/__init__.py",
+    "backend/protloc/data/manifest.py",
+    "backend/protloc/data/embeddings.py",
+    "backend/protloc/data/esm_encoder.py",
+    "backend/protloc/data/embedding_manifest.py",
+    "scripts/embed.py",
+    "configs/model/trunk_esm2_150m.yaml",
+    ".env.example",
+)
+
+
+def _pack(args: argparse.Namespace) -> int:
+    args.input = None
+    items, source = _load_unique(args)
+    pack_sha = write_pack(
+        items, PACK, str(source["registry_sha256"]), str(source["corpus_sha256"])
+    )
+    _say(f"wrote {PACK} ({PACK.stat().st_size} bytes) sha256 {pack_sha}")
+    return 0
+
+
+def _bundle(_: argparse.Namespace) -> int:
+    if not PACK.exists():
+        raise EmbeddingError("run --pack first")
+    with zipfile.ZipFile(BUNDLE, "w", zipfile.ZIP_DEFLATED) as archive:
+        for name in BUNDLE_FILES:
+            archive.write(REPO_ROOT / name, name)
+        archive.write(PACK, "data/embeddings/input_pack.tsv")
+    _say(f"wrote {BUNDLE} ({BUNDLE.stat().st_size} bytes)")
+    return 0
 
 
 def _freeze(_: argparse.Namespace) -> int:
@@ -365,7 +454,9 @@ def _freeze(_: argparse.Namespace) -> int:
 
 
 def _check(_: argparse.Namespace) -> int:
-    manifest = read_json_object(EMBEDDING_MANIFEST) if EMBEDDING_MANIFEST.exists() else None
+    manifest = (
+        read_json_object(EMBEDDING_MANIFEST) if EMBEDDING_MANIFEST.exists() else None
+    )
     problems = check_documents(
         manifest,
         MODEL_CONFIG.read_text(encoding="utf-8"),
@@ -381,18 +472,32 @@ def _check(_: argparse.Namespace) -> int:
 
 def main() -> int:
     """Parse the mode and run it."""
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0] if __doc__ else "")
+    parser = argparse.ArgumentParser(
+        description=__doc__.splitlines()[0] if __doc__ else ""
+    )
     mode = parser.add_mutually_exclusive_group(required=True)
-    for name in ("facts", "measure", "extract", "verify", "freeze", "check"):
+    for name in (
+        "facts",
+        "pack",
+        "bundle",
+        "measure",
+        "extract",
+        "verify",
+        "freeze",
+        "check",
+    ):
         mode.add_argument(f"--{name}", action="store_true")
     parser.add_argument("--device", default="cpu", choices=["cpu", "cuda"])
     parser.add_argument("--n", type=int, default=200)
     parser.add_argument("--batch-windows", type=int, default=8)
     parser.add_argument("--shard-size", type=int, default=512)
     parser.add_argument("--local-files-only", action="store_true")
+    parser.add_argument("--input", help="input pack written by --pack")
     args = parser.parse_args()
     modes = {
         "facts": _facts,
+        "pack": _pack,
+        "bundle": _bundle,
         "measure": _measure,
         "extract": _extract,
         "verify": _verify,

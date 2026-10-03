@@ -80,6 +80,10 @@ def build_manifest(spec: CacheSpec, registry_sha256: str, measured: Measured) ->
     for name, document in (("index", index), ("measure", measure), ("extract_run", extract_run)):
         if document.get("cache_key") != key:
             raise EmbeddingManifestError(f"{name} was produced under a different cache key")
+    for name, document in (("measure", measure), ("extract_run", extract_run), ("verify", verify)):
+        source = document.get("input")
+        if not isinstance(source, dict) or source.get("registry_sha256") != registry_sha256:
+            raise EmbeddingManifestError(f"{name} was run on inputs from a different registry")
     if facts.get("registry_sha256") != registry_sha256:
         raise EmbeddingManifestError("facts were computed on a different registry")
     if index["sequence_count"] != facts["distinct_sequences"]:
@@ -95,6 +99,7 @@ def build_manifest(spec: CacheSpec, registry_sha256: str, measured: Measured) ->
         "cache_key": key,
         "spec": spec.as_dict(),
         "registry_sha256": registry_sha256,
+        "input": extract_run["input"],
         "sequences": {
             "accessions": facts["accessions"],
             "distinct": facts["distinct_sequences"],
