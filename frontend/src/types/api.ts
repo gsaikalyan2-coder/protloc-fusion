@@ -43,6 +43,15 @@ export type JobStatus = Schemas["JobStatus"];
 /** How a biological-consistency violation is reported. */
 export type Severity = Schemas["Severity"];
 
+/** Which engine produced a prediction-bearing field: the motif engine or a trained model. */
+export type EngineSource = Schemas["EngineSource"];
+
+/** Coarse reading of how far a probability clears its threshold; `none` is below it. */
+export type ConfidenceBand = Schemas["ConfidenceBand"];
+
+/** How the decision thresholds in a result were chosen. */
+export type ThresholdPolicy = Schemas["ThresholdPolicy"];
+
 // ── Envelope ────────────────────────────────────────────────────────────────
 
 /**

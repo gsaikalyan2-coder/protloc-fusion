@@ -1,8 +1,7 @@
 # ADR-0006 — Label semantics: four states, per-label evidence, and where a negative comes from
 
-- **Status:** **Proposed** (2026-09-15). Becomes Accepted when Saikalyan has reviewed
-  §3.3 (the negative rule for each task) and changes this line. Phase 3's exit gate
-  (check 12) requires Accepted.
+- **Status:** **Accepted** (2026-10-02; proposed 2026-09-15). Saikalyan reviewed §3.3
+  against the real per-task counts of the Swiss-Prot 2026_03 corpus (`docs/phases/05.md`).
 - **Deciders:** Saikalyan
 - **Blocks:** Phase 3 (the corpus build), and after it Phase 8 (the multi-task loss
   reads these states) and Phase 14 (every per-task count in the paper)

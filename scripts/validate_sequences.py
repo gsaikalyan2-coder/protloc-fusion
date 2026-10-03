@@ -14,7 +14,7 @@ Three modes, run from the repository root inside ``.venv``:
           * the frozen values in ``configs/data/uniprot_swissprot.yaml``.
         ``--reference-context`` is optional. It is the trunk's context length
         as read from documentation, and the card reports how many records
-        exceed it, labelled as unverified until Phase 5 measures it.
+        exceed it, labelled as unverified until Phase 7 checks it against the pinned encoder.
 
     python scripts/validate_sequences.py --check-documents
         The subset of --check that needs no data bytes (manifest, committed
@@ -190,7 +190,7 @@ def render_card(manifest: dict[str, object], report: dict[str, object]) -> str:
     if isinstance(reference, dict):
         parts += [
             f"Trunk context reference: {reference['length']} residues, from "
-            f"{reference['source']}. **Not verified. Phase 5 measures it.** "
+            f"{reference['source']}. **UNVERIFIED. Phase 7 checks it against the pinned encoder.** "
             f"{reference['records_over']} records exceed it.",
             "",
         ]
@@ -219,7 +219,7 @@ def render_card(manifest: dict[str, object], report: dict[str, object]) -> str:
         "",
         "`keep`: U (selenocysteine) and O (pyrrolysine) are real encoded residues. "
         "X, B and Z are ambiguity codes that the ESM-2 vocabulary tokenises, which "
-        "was read from the ESM documentation and is verified in Phase 5. "
+        "was read from the ESM documentation and is verified in Phase 7. "
         "`exclude_record`: J has no ESM-2 token under the same caveat. A record "
         "containing it is dropped and counted above. A character outside the policy "
         "file stops the build.",

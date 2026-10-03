@@ -1,9 +1,12 @@
 # ProtLoc Fusion — Master Project Plan
 
-> Plan of record, ideation → production. Companion to `CLAUDE.md` (the execution
-> contract) and `FOLDER_STRUCTURE.md` (the repository blueprint).
+> Plan of record, MVP → deployment. Companion to `CLAUDE.md` (the execution contract)
+> and `docs/phases/NN.md` (per-phase detail).
 >
-> Version 1.0 · 2026-09-09
+> **Version 2.0 · 2026-10-02.** Version 1.0 (2026-09-09) planned 17 phases from
+> scratch and was abandoned at Phase 3 for lack of calendar time. This version keeps
+> the working five-screen app as the base and replaces its motif engine with trained
+> models over 20 phases.
 
 ---
 
@@ -107,34 +110,47 @@ and saved history (see §7).
 
 ## 4. Phase roadmap
 
-Seventeen phases. Every exit criterion is binary — objectively true or false, verified
-before the next phase starts.
+Twenty phases. Each leaves the app runnable, each has a binary exit criterion, and each
+ends with an **optional** push — the branch work is local, the push is the only step that
+leaves the machine. `MVP` is the minimum viable path; `ENH` is droppable without leaving
+the app broken.
 
-| # | Phase | Objective | Key deliverables | Exit criterion (binary) |
-|---|---|---|---|---|
-| 0 | Research & prior art | Understand the five tools being replaced and their limitations | Research Build Blueprint; literature review; `DESIGN.md`; `THIRD_PARTY.md`; `EXTERNAL_WORKFLOW.md` | **COMPLETE** — blueprint written, scope frozen, provenance register open |
-| 1 | Scaffold & source of truth | Lock repo skeleton, conventions, CI | Full tree per `FOLDER_STRUCTURE.md`; `CLAUDE.md`; `.env.example`; ruff + mypy + eslint + prettier; `ci.yml`; both Dockerfiles | `git clone` → install → lint → CI green on empty scaffold, frontend and backend both build |
-| 2 | Contracts & wireframes | Turn the blueprint into interface contracts before any implementation | OpenAPI spec (request/response schemas from Blueprint §21); `ARCHITECTURE.md`; request sequence diagram; wireframes for the 5 screens; data schema draft | Every planned feature maps to an endpoint; every endpoint maps to a schema; a reviewer can predict any response shape from the spec alone |
-| 3 | Data corpus & manifest | Build the immutable, hashed dataset | `download_data.py`, `build_dataset.py`, `validate_sequences.py`; dataset manifest with SHA-256; dataset card; frozen length/alphabet policy | Manifest exists with a real release, date and hash; rerunning the build from the snapshot reproduces the identical corpus hash |
-| 4 | Homology splits & leakage gates | Make generalization measurable | GraphPart wrapper; split registry; `leakage_report.json`; ADR on threshold + backend | Leakage report shows 0 cross-split duplicates and 0 cross-split homology clusters; `sequences_removed` recorded |
-| 5 | Feature layer | Produce the shared representation | `generate_embeddings.py`; content-addressed embedding cache keyed by sequence hash + checkpoint + revision; classical feature extractors | Embedding for a known sequence is byte-identical across two runs; cache hit rate reported |
-| 6 | Baselines | Establish the metric floor | LogReg, SVM, RF on classical features; frozen ESM-2 + linear head | All four baselines trained on the frozen split with recorded metrics; the floor is a number in a table |
-| 7 | **Vertical slice** | One task end-to-end through the real served path | Shared trunk + localization head only; registry bundle v0; `/predict` returning a real response | A single sequence submitted to the running API returns a localization prediction, and its metrics come from that path — not a direct model call |
-| 8 | Full multi-task + LoRA | Generalize the slice to seven heads | All 7 heads with task masking; multi-task loss with validated λ; runs A/B/C (frozen / LoRA / full FT) | All 7 heads produce valid outputs on the golden set; the LoRA trade-off table is populated with real numbers |
-| 9 | Calibration & abstention | Make probabilities mean something | netcal calibrator per head; ECE/Brier/NLL; reliability diagrams; frozen τ; coverage–risk curve | Post-calibration ECE recorded for all 7 heads; τ frozen and stored in the registry, not in code |
-| 10 | Trust & evidence layers | Self-auditing, explainable output | YAML consistency engine + rule set v1; per-residue attribution; homology + GO evidence service with graceful degradation | Every consistency test in §23.2 passes; killing the evidence service still returns a complete prediction |
-| 11 | Backend service & batch | Complete, deployable backend | Registry packaging; FastAPI app; all endpoints; resumable chunked batch jobs with pause/cancel/resume | A 1,000-sequence FASTA runs to completion, survives a mid-run worker restart, and resumes without duplicated work |
-| 12 | Frontend | The interface a biologist actually uses | React + Vite + TS app; all 5 Core screens; design tokens from `DESIGN.md`; empty/error/degraded states | Every screen renders against the live backend in both themes; keyboard navigation works on the sequence viewer |
-| 13 | Integration & performance | Prove the whole stack under realistic load | End-to-end happy path; p50/p95/p99 latency; throughput; memory profile; cold vs warm start | One real end-to-end transaction succeeds through every layer, and the latency targets in §1 are either met or formally revised with evidence |
-| 14 | Evaluation & external benchmarking | Produce the paper's numbers | Eval suite calling the served path; external baselines run offline; `label_mapping.yaml`; error analysis; per-class + failure taxonomy | Every reported metric is reproducible by one command against the served path; baseline comparison table complete with contamination caveat stated |
-| 15 | Observability & security | Debuggable and safe under public traffic | JSON logging with correlation IDs; spans across feature/model/calibration/evidence; metrics dashboard; rate limiting; input size caps; dependency scan in CI | A deliberately failed request is traceable end-to-end from the dashboard, and no component holds permission it does not use |
-| 16 | Governance, cost & release readiness | Controls that keep it alive and affordable | Cost per request measured; queue + quota limits; abuse handling; runbook; rehearsed rollback; SemVer tag; IaC | A rollback to the previous registry version has been performed and timed; cost per prediction is a known number |
-| 17 | Release & post-launch | Ship, monitor, iterate | Production deploy; health checks; alerting to a real channel; drift monitoring; feedback capture; scaling trigger | Production health check green, an alert has fired to a real channel in a test, and a scaling trigger is defined |
+Commit subjects are conventional-commit with a `(phase-NN)` scope, so
+`git log --oneline --grep "phase-07"` reconstructs a phase. Tags are annotated `v0.NN.0`.
 
-**The Phase 7 rule.** Phase 7 is the spine of this plan and the blueprint's own §29.1
-instruction. Do not build seven heads before one head works end-to-end through the API.
-The three hardest components — attribution viewer, consistency panel, evidence drawer —
-are built in Phases 10 and 12 against a working slice, not against seven speculative ones.
+| # | Phase | Track | h | Objective | Exit criterion (binary) |
+|---|---|---|---|---|---|
+| 0 | Cleanup & restructure | — | — | One repo; MVP promoted into it | **COMPLETE 2026-09-28** — `protloc-fusion` is the only tree, the five screens run from it |
+| 1 | Repository init & licensing | MVP | 2.0 | git init, CI green, redistribution policy stated before data lands | `ruff`, `pytest` and the pushed `ci.yml` all green; `LICENSE`, `THIRD_PARTY_NOTICES.md`, `docs/DATA_LICENSING.md` present; the app still serves five screens |
+| 2 | Host decision | MVP | 3.0 | Replace the invalidated hosting decision with a measured one | ADR-0005 marked superseded; ADR-0007 and ADR-0008 written; a hello-world container answers 200 on a public URL, with the measured cold-start time recorded in the ADR |
+| 3 | Widen the contract | MVP | 2.5 | Add provenance, per-label threshold, calibration and abstention fields, additively | Round-trip and backward-compatibility tests pass; regenerated spec and TS diff clean; a no-threshold-cleared sequence shows the no-confident-call state |
+| 4 | Motif-engine test harness | MVP | 3.0 | Lock today's behaviour before changing it | A golden set of ≥40 sequences with recorded motif-era outputs; any later engine change shows as an explicit diff, not a silent drift |
+| 5 | Swiss-Prot corpus & labels | MVP | 8.0 | Build the immutable labelled dataset — real data, no synthetic | Manifest with release `2026_03`, date and SHA-256; rerunning the build reproduces the identical hash; class counts recorded against the DeepLoc scale (≈25k sequences, 10 localization / 4 membrane / 9 signal classes) |
+| 6 | GraphPart splits & leakage gate | MVP | 5.0 | Make generalization measurable | `leakage_report.json` shows 0 cross-partition duplicates and 0 cross-partition homology clusters at 30% identity; 5 partitions; `sequences_removed` recorded |
+| 7 | ESM-2 embedding cache | MVP | 6.0 | Produce the shared representation and measure its cost | A known sequence's embedding is byte-identical across two runs; mean-pooled cache size and per-sequence extraction time are recorded numbers, not estimates; ADR-0009 written |
+| 8 | Classical baselines | ENH | 3.0 | Establish the metric floor | LogReg / SVM / RF on the motif features, trained on the frozen split, metrics in a table. Fallback if dropped: cite DeepLoc's published numbers as the floor |
+| 9 | Localization head | MVP | 7.0 | The first genuinely trained output | Attention-pooling + MLP head trained on the frozen split; Macro F1 and per-compartment MCC on the held-out partition recorded against the DeepLoc targets (Macro F1 ≈ 0.46, Jaccard ≈ 0.53) |
+| 10 | Calibration & thresholds | MVP | 5.0 | Make the probabilities mean something | Per-label isotonic fitted on a homology-partitioned calibration split; ECE before and after recorded; per-label MCC-tuned thresholds frozen in the registry, not in code |
+| 11 | Signal-peptide CRF head | ENH | 8.0 | Per-residue sorting signal + cleavage site | Frozen per-residue embeddings → CNN/BiLSTM → linear-chain CRF; cleavage accuracy recorded against TargetP's 83% SP / 46–49% transit. Fallback if dropped: keep the motif h-region detector, labelled `source: "motif"` |
+| 12 | GO head | ENH | 4.0 | Functional annotation from the same representation | Top-k GO terms with a recorded precision@k. Fallback: keep the PROSITE-style motif hits |
+| 13 | Homology evidence | ENH | 5.0 | A second, independent verdict | MMseqs2 index over Swiss-Prot queried off the request path; index size, RAM and p95 query latency measured. Fallback: the existing k-mer search over a real (not synthetic) reference slice |
+| 14 | Swap the engine | MVP | 6.0 | Model behind the unchanged API | Every field the trained heads cover returns `source: "model"`; all five screens render unchanged; the synthetic-data banner is replaced by a real model-version banner; `reference_demo.py` deleted |
+| 15 | Real attribution | ENH | 4.0 | Explain the model, not the motifs | Per-residue attribution from pooling attention and CRF marginals, not hydropathy. Note: FlashAttention discards the attention matrix, so the explain path must not use it |
+| 16 | Frontend upgrade | MVP | 7.0 | The interface a biologist will actually use | Landing page, example gallery, richer result page, downloads (JSON/CSV/FASTA), light **and** dark; every screen renders against the deployed backend; keyboard navigation works on the sequence viewer |
+| 17 | Limits, errors, degraded states | ENH | 3.0 | Behave under abuse and partial failure | Oversized input, malformed FASTA, a killed evidence service and a cold cache each produce a correct, legible state rather than a stack trace |
+| 18 | Nightingale visual rebuild | ENH | 5.0 | Standard feature tracks | Nightingale tracks replace the hand-rolled `SequenceTrack`; `nightingale-structure` and `molstar` are dynamically imported, never in the main chunk |
+| 19 | Deploy | MVP | 5.0 | Publicly reachable | Backend and frontend both live on the Phase 2 hosts; weights pulled from the HF model repo at a pinned SHA; a cold-start request succeeds from a device outside the home network |
+| 20 | Eval report, docs, release | MVP | 4.0 | The numbers and the paper trail | Every reported metric reproducible by one command against the **served** path; README, OpenAPI page and citation block current; `v1.0.0` tagged and released |
+
+**The Phase 14 rule.** Phase 14 is the spine of this plan. One trained head swapped in
+behind the unchanged API beats seven heads that never reach the served path. If the week
+compresses, cut heads (11, 12) and visuals (18), never Phase 14 — an app still running the
+motif engine at the deadline has no result to report.
+
+**The freeze rule still holds.** Any value the report quotes — split threshold, τ, loss
+weights, per-label thresholds — is frozen on the calibration split *before* the held-out
+partition is touched. The calibrator must respect the same GraphPart clustering as the
+train/test split; fitted without it, the ECE is optimistically low and meaningless.
 
 ---
 
@@ -181,15 +197,23 @@ timed* in Phase 16, not merely documented.
 ## 6. Risks & failure modes
 
 **The infrastructure conflict — read this first.** The scale target is a public web
-server; the stated infrastructure is Colab/Kaggle for training and a free tier for
-serving. These are in tension, and pretending otherwise would produce a plan that fails
-in Phase 17.
+server; the infrastructure is Colab/Kaggle for embedding extraction and a free or
+near-free tier for serving. These are in tension, and pretending otherwise produces a
+plan that fails at Phase 19.
 
-- ESM-2 650M needs roughly 2.5 GB in fp32 or 1.3 GB in fp16 just for weights. Typical
-  free serving tiers cap RAM well below that and cold-start containers on idle. A public
-  endpoint that loads a 650M PLM per request will time out.
-- Colab and Kaggle sessions terminate. Any training run longer than a session limit must
-  checkpoint to durable storage and resume, or it will be lost — repeatedly.
+- **Resolved by dropping to ESM-2 150M** (ADR-0009, Phase 7): roughly 600 MB in fp32
+  against 650M's ~2.5 GB, which fits a 2 GiB Cloud Run instance or HF CPU Basic's 16 GB
+  with room for the heads. The old 650M pick would have timed out or OOMed on every
+  free-tier candidate.
+- **Docker Spaces stopped being free** around 8–9 July 2026 — PRO is $9/mo and only
+  Static Spaces remain free, which invalidated ADR-0005 outright. Phase 2 picks the
+  replacement and records the measured cold start.
+- **Disk is ephemeral on every candidate.** Weights are re-pulled from the HF model repo
+  at a pinned SHA on cold start, and the in-memory job queue loses jobs on restart —
+  which is why ADR-0008 scopes batch mode to client-side chunking.
+- **Colab and Kaggle sessions terminate.** Embedding extraction checkpoints per shard and
+  resumes, or a six-hour run is lost repeatedly. Head training is a minutes-long CPU job
+  once the cache exists, so the GPU is only ever needed for extraction.
 
 **RESOLVED — `docs/adr/ADR-0001-serving-strategy.md`, Accepted 2026-09-09: queue
 everything.** No synchronous prediction. Every submission becomes a job and the user gets
@@ -277,11 +301,12 @@ guessed.
 
 Every phase ends with three artifacts, so a cold session with no chat history can resume:
 
-1. **Project Summary** — what the system is, current architecture, what exists.
-2. **Session Summary** — what this phase built, what was decided and why, what broke.
-3. **`docs/handover/handover_phase_X.txt`** — self-contained: files touched, commands to
-   verify, exact state of the exit criterion, and the first three actions for the next
-   phase.
+1. **`docs/phases/NN.md`** — the phase note, self-contained: objective, deliverables with
+   paths, the acceptance test and its result, files touched, what was deferred, and the
+   first three actions for the next phase. It doubles as the GitHub Release body.
+2. **A ticked box in `CLAUDE.md` §Current phase**, with the result recorded beneath.
+3. **An ADR in `docs/adr/`** if the phase made a decision that would cost a retrain or a
+   re-split to undo.
 
-All dates absolute (`2026-09-09`), never relative (`last week`). Do not begin Phase N+1
+All dates absolute (`2026-10-02`), never relative (`last week`). Do not begin Phase N+1
 until Phase N's exit criterion has been verified and the handover written.

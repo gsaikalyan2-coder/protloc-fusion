@@ -14,6 +14,7 @@ is how an invented number reaches a paper. Reading one raises
 ``MissingMandatoryValue``, which is the behaviour being asserted.
 """
 
+import json
 from pathlib import Path
 
 from hydra import compose, initialize_config_dir
@@ -33,10 +34,11 @@ GROUP_OPTIONS: dict[str, list[str]] = {
 
 # Values produced by a later phase. Each must be MISSING, never defaulted.
 SCHEDULED_VALUES: list[tuple[str, str]] = [
-    ("data.source.release", "Phase 3 — the UniProt release on the snapshot day"),
-    ("data.sequence.max_length", "Phase 3 — from the corpus length distribution"),
     ("model.trunk.revision", "Phase 5 — the HuggingFace commit hash pulled"),
 ]
+
+MANIFEST = CONFIG_DIR.parent / "data" / "manifests" / "dataset_manifest.json"
+SPLIT_MANIFEST = CONFIG_DIR.parent / "data" / "manifests" / "split_manifest.json"
 
 
 def _compose(*overrides: str) -> DictConfig:
@@ -84,9 +86,30 @@ def test_scheduled_values_are_missing_not_defaulted(dotted_path: str, owner: str
         OmegaConf.select(cfg, dotted_path, throw_on_missing=True)
 
 
+def test_frozen_data_values_equal_the_manifest() -> None:
+    """Phase 5 froze these; the manifest is the record and the config must agree."""
+    manifest = json.loads(MANIFEST.read_bytes())
+    cfg = _compose()
+    assert cfg.data.source.release == manifest["snapshot"]["release"]
+    assert cfg.data.sequence.max_length == manifest["policy"]["max_sequence_length"]
+    assert cfg.data.sequence.alphabet == manifest["policy"]["alphabet"]
+    assert cfg.data.labels.accepted_evidence_codes == manifest["build"]["accepted_evidence_codes"]
+
+
 def test_the_seed_is_recorded() -> None:
     """A run that cannot state its seed cannot be repeated."""
     assert isinstance(_compose().seed, int)
+
+
+def test_frozen_split_values_equal_the_split_manifest() -> None:
+    """Phase 6 froze these; the split manifest is the record and the config must agree."""
+    manifest = json.loads(SPLIT_MANIFEST.read_bytes())
+    splits = _compose().data.splits
+    assert splits.alignment_backend == manifest["alignment_backend"]
+    assert splits.partitioner_version == manifest["partitioner_version"]
+    assert splits.removal_rate == manifest["removal_rate"]
+    assert splits.max_identity == manifest["identity_threshold"]
+    assert splits.partitions == manifest["partitions"]
 
 
 def test_the_serving_mode_is_queue_everywhere() -> None:
@@ -97,14 +120,14 @@ def test_the_serving_mode_is_queue_everywhere() -> None:
 
 
 def test_the_split_settings_match_adr_0002() -> None:
-    """30% maximum global identity, needleall, five partitions.
+    """30% maximum global identity, the mmseqs2needle backend, five partitions.
 
     Changing any of these means re-splitting and re-training, so the numbers are
     asserted against the ADR rather than trusted to stay put.
     """
     splits = _compose().data.splits
     assert splits.partitioner == "graphpart"
-    assert splits.alignment_backend == "needleall"
+    assert splits.alignment_backend == "mmseqs2needle"
     assert splits.max_identity == 0.30
     assert splits.partitions == 5
 

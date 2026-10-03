@@ -275,6 +275,17 @@ export interface components {
       status: components["schemas"]["JobStatus"];
     };
     /**
+     * ConfidenceBand
+     * @description A coarse reading of how far a probability clears its threshold.
+     *
+     *     :attr:`NONE` means below the threshold: the system is abstaining on that
+     *     label. The band styles a row; the probability stays the datum
+     *     (``docs/DESIGN.md``), because a band reads as more certain than the number
+     *     behind it.
+     * @enum {string}
+     */
+    ConfidenceBand: "high" | "medium" | "low" | "none";
+    /**
      * ConsistencyViolation
      * @description A rule the prediction set broke.
      *
@@ -302,6 +313,16 @@ export interface components {
        */
       tasks: components["schemas"]["TaskName"][];
     };
+    /**
+     * EngineSource
+     * @description Which engine produced a prediction-bearing field.
+     *
+     *     The five screens show this rather than hide it: a model probability and a
+     *     motif score are not the same kind of number (``docs/phases/03.md`` §1). Phases
+     *     9-14 move each field from :attr:`MOTIF` to :attr:`MODEL` without a schema change.
+     * @enum {string}
+     */
+    EngineSource: "motif" | "model";
     /**
      * ErrorResponse
      * @description Every non-2xx body the service produces.
@@ -912,6 +933,11 @@ export interface components {
        */
       attributions: components["schemas"]["TaskAttribution"][];
       /**
+       * Calibration Version
+       * @description Identifies the fitted calibrator that scored this result. null while no calibrator has been fitted.
+       */
+      calibration_version?: string | null;
+      /**
        * Consistency
        * @description Violations found. Empty means the rule set checked and found none.
        */
@@ -933,6 +959,12 @@ export interface components {
        * @description Residue count after normalization.
        */
       length: number;
+      /**
+       * No Confident Call
+       * @description True when no label of any task clears its threshold. The screen then says so instead of showing the top-scoring label. An explicit boolean, not the absence of labels, so a reader can tell a declined call from a missing one.
+       * @default false
+       */
+      no_confident_call: boolean;
       /** @description The group this sequence was scored under. */
       organism_group: components["schemas"]["OrganismGroup"];
       /**
@@ -950,6 +982,11 @@ export interface components {
        * @description SHA-256 of the normalized sequence. The cache and dedup key.
        */
       sequence_sha256: string;
+      /**
+       * @description How the thresholds in this result were chosen, so the Trust Console can state it: fixed, or per_label_mcc once Phase 10 lands.
+       * @default fixed
+       */
+      threshold_policy: components["schemas"]["ThresholdPolicy"];
     };
     /**
      * Severity
@@ -1021,10 +1058,21 @@ export interface components {
        */
       abstention_threshold: number;
       /**
+       * Calibrated
+       * @description Whether a fitted calibrator was applied. A raw score or a sigmoid is not calibrated and is not displayed as if it were.
+       * @default false
+       */
+      calibrated: boolean;
+      /**
        * Cleavage Site
        * @description 1-based residue position of the predicted cleavage site, for the signal- and transit-peptide heads. null for every other task and when no site is predicted.
        */
       cleavage_site?: number | null;
+      /**
+       * @description Coarse band for the UI. none means below the threshold (abstaining) or, for a pre-Phase-3 payload, not banded: abstention is always read from abstained. The probability stays the datum; the band only styles it.
+       * @default none
+       */
+      confidence_band: components["schemas"]["ConfidenceBand"];
       /**
        * Labels
        * @description Predicted labels, empty when abstained. Multi-label for localization and GO function, single-element otherwise. The label vocabulary comes from the registry bundle, not from this schema.
@@ -1037,9 +1085,29 @@ export interface components {
       probabilities: {
         [key: string]: number;
       };
+      /**
+       * @description Which engine produced this task's numbers: motif (the interpretable rule engine) or model (a trained head). The UI shows it. Defaults to motif because every pre-Phase-3 result came from the motif engine.
+       * @default motif
+       */
+      source: components["schemas"]["EngineSource"];
       /** @description Which of the seven heads produced this. */
       task: components["schemas"]["TaskName"];
+      /**
+       * Threshold
+       * @description The decision threshold actually applied to this task's labels. Equal to abstention_threshold under the fixed policy; the per-label thresholds a trained head uses arrive with Phase 10. When a pre-Phase-3 payload omits it, it is read from abstention_threshold.
+       */
+      threshold: number;
     };
+    /**
+     * ThresholdPolicy
+     * @description How the decision thresholds in a result were chosen.
+     *
+     *     :attr:`FIXED` is one threshold for every label. :attr:`PER_LABEL_MCC` is one
+     *     threshold per label, tuned on a calibration split and frozen in the registry
+     *     bundle (Phase 10).
+     * @enum {string}
+     */
+    ThresholdPolicy: "fixed" | "per_label_mcc";
     /** ValidationError */
     ValidationError: {
       /** Context */

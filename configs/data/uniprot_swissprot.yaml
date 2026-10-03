@@ -9,15 +9,15 @@ source:
   # Set in Phase 3 from the UniProt download page on the day of the snapshot.
   # MISSING until Phase 3: reading it before it is set raises rather than
   # silently substituting a default.
-  release: ???
+  release: "2026_03"  # frozen from data/manifests/dataset_manifest.json
   # Reviewed entries only: an unreviewed annotation is not a label.
   reviewed_only: true
 
 sequence:
   # Frozen in Phase 3 from the corpus length distribution.
-  max_length: ???
+  max_length: 1496  # frozen from data/manifests/dataset_manifest.json
   # The 20 standard residues plus the ambiguity codes UniProt actually uses.
-  alphabet: ACDEFGHIKLMNPQRSTVWYBXZUO
+  alphabet: ABCDEFGHIKLMNOPQRSTUVWXYZ  # frozen from data/manifests/dataset_manifest.json
   # Normalisation is recorded so that sequence_sha256 is reproducible.
   uppercase: true
   strip_whitespace: true
@@ -33,15 +33,15 @@ labels:
   # Conflating them silently corrupts the multi-task loss (CLAUDE.md, data schema).
   unknown_is_distinct_from_negative: true
   # Which UniProt evidence codes count as a label. Set in Phase 3.
-  accepted_evidence_codes: null
+  accepted_evidence_codes: all  # frozen from data/manifests/dataset_manifest.json
 
 splits:
-  # ADR-0002: GraphPart over needleall alignments, 30% maximum global identity,
-  # five partitions. Changing any of these means re-splitting and re-training.
+  # ADR-0002: GraphPart, 30% maximum global identity (the backend is mmseqs2needle, see
+  # docs/phases/06.md), five partitions. Changing any of these means re-splitting and re-training.
   partitioner: graphpart
-  alignment_backend: needleall
+  alignment_backend: mmseqs2needle  # frozen from data/manifests/split_manifest.json
   max_identity: 0.30
   partitions: 5
-  # Produced by the Phase 4 GraphPart run and recorded in the split manifest.
-  partitioner_version: null
-  removal_rate: null
+  # Produced by the Phase 6 GraphPart run and recorded in the split manifest.
+  partitioner_version: "1.0.2"  # frozen from data/manifests/split_manifest.json
+  removal_rate: 0.044127  # frozen from data/manifests/split_manifest.json

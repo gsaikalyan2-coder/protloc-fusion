@@ -21,7 +21,9 @@ biological constant in code, which ``CLAUDE.md`` calls a bug.
 
 **No thresholds.** ``abstention_threshold`` is reported as whatever the calibrator
 metadata held at prediction time. There is no default, because a default would be a
-hardcoded tau.
+hardcoded tau. Phase 3's ``threshold`` follows the same rule: it has no literal
+default either. When a payload from before Phase 3 omits it, it is read from that
+payload's own ``abstention_threshold`` — the value the decision actually used.
 
 **No invented values.** The four reproducibility fields are ``str | None`` and are
 ``None`` exactly when no registry bundle is loaded. A sentinel string would be
@@ -29,12 +31,20 @@ indistinguishable from a real version to any client reading it.
 """
 
 from datetime import UTC, datetime
-from typing import Literal
+from typing import Any, Literal
 from uuid import UUID
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
 
-from protloc.domain.types import JobStatus, OrganismGroup, Severity, TaskName
+from protloc.domain.types import (
+    ConfidenceBand,
+    EngineSource,
+    JobStatus,
+    OrganismGroup,
+    Severity,
+    TaskName,
+    ThresholdPolicy,
+)
 
 #: SemVer of the HTTP contract, independent of the service package's own version.
 #: It changes when a client would have to change — a removed field, a renamed one,
@@ -251,6 +261,50 @@ class TaskPrediction(BaseModel):
             "when no site is predicted."
         ),
     )
+    source: EngineSource = Field(
+        default=EngineSource.MOTIF,
+        description=(
+            "Which engine produced this task's numbers: motif (the interpretable "
+            "rule engine) or model (a trained head). The UI shows it. Defaults to "
+            "motif because every pre-Phase-3 result came from the motif engine."
+        ),
+    )
+    threshold: float = Field(
+        description=(
+            "The decision threshold actually applied to this task's labels. Equal "
+            "to abstention_threshold under the fixed policy; the per-label "
+            "thresholds a trained head uses arrive with Phase 10. When a "
+            "pre-Phase-3 payload omits it, it is read from abstention_threshold."
+        ),
+    )
+    calibrated: bool = Field(
+        default=False,
+        description=(
+            "Whether a fitted calibrator was applied. A raw score or a sigmoid is "
+            "not calibrated and is not displayed as if it were."
+        ),
+    )
+    confidence_band: ConfidenceBand = Field(
+        default=ConfidenceBand.NONE,
+        description=(
+            "Coarse band for the UI. none means below the threshold (abstaining) "
+            "or, for a pre-Phase-3 payload, not banded: abstention is always read "
+            "from abstained. The probability stays the datum; the band only "
+            "styles it."
+        ),
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _read_threshold_from_abstention_threshold(cls, data: Any) -> Any:
+        """Back-compat: a payload from before Phase 3 has no ``threshold``.
+
+        Its decision threshold was ``abstention_threshold``, so that is what it
+        reads as. No literal is introduced, so no tau is hardcoded.
+        """
+        if isinstance(data, dict) and "threshold" not in data and "abstention_threshold" in data:
+            return {**data, "threshold": data["abstention_threshold"]}
+        return data
 
 
 class ConsistencyViolation(BaseModel):
@@ -437,6 +491,29 @@ class SequenceResult(BaseModel):
             "Why this sequence failed, when a batch job completed but this member "
             "did not. null on success. A failed member never carries a partial "
             "prediction."
+        ),
+    )
+    no_confident_call: bool = Field(
+        default=False,
+        description=(
+            "True when no label of any task clears its threshold. The screen "
+            "then says so instead of showing the top-scoring label. An explicit "
+            "boolean, not the absence of labels, so a reader can tell a declined "
+            "call from a missing one."
+        ),
+    )
+    calibration_version: str | None = Field(
+        default=None,
+        description=(
+            "Identifies the fitted calibrator that scored this result. null while "
+            "no calibrator has been fitted."
+        ),
+    )
+    threshold_policy: ThresholdPolicy = Field(
+        default=ThresholdPolicy.FIXED,
+        description=(
+            "How the thresholds in this result were chosen, so the Trust Console "
+            "can state it: fixed, or per_label_mcc once Phase 10 lands."
         ),
     )
 

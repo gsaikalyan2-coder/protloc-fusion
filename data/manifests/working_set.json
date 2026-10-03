@@ -1,0 +1,84 @@
+{
+  "command": "python scripts/working_set.py --write --reading eukarya_localization_eco",
+  "corpus_records": 548702,
+  "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+  "distinct_sequences": 34965,
+  "excluded_by_reason": {
+    "length_over_max": 5478,
+    "localization_not_experimental": 113092,
+    "not_eukarya_with_annotated_localization": 394689
+  },
+  "excluded_total": 513259,
+  "fragments": 922,
+  "fragments_by_group": {
+    "eukarya": 922
+  },
+  "in_set": 35443,
+  "list_file": "data/processed/splits/working_set.txt",
+  "list_sha256": "b1f3426162b92d6840325f9cce4d61a4aabb3bd831bdb54cdaee84d639552412",
+  "max_sequence_length": 1496,
+  "per_group": {
+    "eukarya": 35443
+  },
+  "reading": "eukarya_localization_eco",
+  "records_in_shared_sequences": 850,
+  "sequences_shared_by_several_accessions": 372,
+  "task_states": {
+    "chloroplast_transit_peptide": {
+      "eukarya": {
+        "annotated": 941,
+        "negative": 31928,
+        "not_applicable": 0,
+        "unknown": 2574
+      }
+    },
+    "go_function": {
+      "eukarya": {
+        "annotated": 27667,
+        "negative": 0,
+        "not_applicable": 0,
+        "unknown": 7776
+      }
+    },
+    "localization": {
+      "eukarya": {
+        "annotated": 35443,
+        "negative": 0,
+        "not_applicable": 0,
+        "unknown": 0
+      }
+    },
+    "membrane_type": {
+      "eukarya": {
+        "annotated": 9018,
+        "negative": 23586,
+        "not_applicable": 0,
+        "unknown": 2839
+      }
+    },
+    "mitochondrial_transit_peptide": {
+      "eukarya": {
+        "annotated": 1407,
+        "negative": 31928,
+        "not_applicable": 0,
+        "unknown": 2108
+      }
+    },
+    "prokaryotic_localization": {
+      "eukarya": {
+        "annotated": 0,
+        "negative": 0,
+        "not_applicable": 35443,
+        "unknown": 0
+      }
+    },
+    "signal_peptide": {
+      "eukarya": {
+        "annotated": 6147,
+        "negative": 28367,
+        "not_applicable": 0,
+        "unknown": 929
+      }
+    }
+  }
+}

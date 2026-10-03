@@ -9,7 +9,7 @@ With the default output directory, it also writes the manifest's ``build``
 section, which drops any ``policy`` section measured on an earlier corpus.
 Pointing ``--out-dir`` anywhere else leaves the manifest untouched. That is how
 determinism is proven: build twice into two scratch directories and compare the
-hashes (``docs/phases/PHASE_03_data.md`` §5, check 1).
+hashes (``docs/phases/05.md``, determinism proof).
 
 Run from the repository root, inside ``.venv``::
 
@@ -46,7 +46,7 @@ def _verified_snapshot(snapshot: dict[str, object]) -> tuple[Path, str]:
         raise BuildError(f"manifest snapshot does not list {DATA_FILE}")
     path = REPO_ROOT / DATA_FILE
     if not path.is_file():
-        raise BuildError(f"{DATA_FILE} is missing; run `dvc pull` or scripts/download_data.py")
+        raise BuildError(f"{DATA_FILE} is missing; run scripts/download_data.py")
     digest, size = sha256_file(path)
     if digest != entry.get("sha256") or size != entry.get("bytes"):
         raise BuildError(f"{DATA_FILE} does not match the SHA-256 recorded in the manifest")
@@ -96,7 +96,10 @@ def main() -> int:
     # A committed copy, so the dataset card can be regenerated and checked in CI
     # without the corpus bytes. Its hash is build.report_sha256.
     shutil.copyfile(out_dir / REPORT_FILE, REPORT_COPY)
-    sys.stdout.write("manifest build section written; next: dvc add data/processed\n")
+    sys.stdout.write(
+        "manifest build section written; next: "
+        "python scripts/validate_sequences.py --freeze --length-quantile <q>\n"
+    )
     return 0
 
 

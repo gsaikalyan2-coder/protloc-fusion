@@ -133,4 +133,55 @@ class LabelState(StrEnum):
     NOT_APPLICABLE = "not_applicable"
 
 
-__all__ = ["JobStatus", "LabelState", "OrganismGroup", "Severity", "TaskName"]
+@unique
+class EngineSource(StrEnum):
+    """Which engine produced a prediction-bearing field.
+
+    The five screens show this rather than hide it: a model probability and a
+    motif score are not the same kind of number (``docs/phases/03.md`` §1). Phases
+    9-14 move each field from :attr:`MOTIF` to :attr:`MODEL` without a schema change.
+    """
+
+    MOTIF = "motif"
+    MODEL = "model"
+
+
+@unique
+class ConfidenceBand(StrEnum):
+    """A coarse reading of how far a probability clears its threshold.
+
+    :attr:`NONE` means below the threshold: the system is abstaining on that
+    label. The band styles a row; the probability stays the datum
+    (``docs/DESIGN.md``), because a band reads as more certain than the number
+    behind it.
+    """
+
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    NONE = "none"
+
+
+@unique
+class ThresholdPolicy(StrEnum):
+    """How the decision thresholds in a result were chosen.
+
+    :attr:`FIXED` is one threshold for every label. :attr:`PER_LABEL_MCC` is one
+    threshold per label, tuned on a calibration split and frozen in the registry
+    bundle (Phase 10).
+    """
+
+    FIXED = "fixed"
+    PER_LABEL_MCC = "per_label_mcc"
+
+
+__all__ = [
+    "ConfidenceBand",
+    "EngineSource",
+    "JobStatus",
+    "LabelState",
+    "OrganismGroup",
+    "Severity",
+    "TaskName",
+    "ThresholdPolicy",
+]

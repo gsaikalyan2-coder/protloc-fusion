@@ -247,8 +247,12 @@ def test_no_model_hardcodes_a_biological_vocabulary():
 
 def test_no_model_declares_a_default_threshold():
     """No hardcoded tau. The threshold is reported, never defaulted."""
-    field = _declared_models()["TaskPrediction"].model_fields["abstention_threshold"]
-    assert field.is_required(), "abstention_threshold must have no default"
+    fields = _declared_models()["TaskPrediction"].model_fields
+    assert fields["abstention_threshold"].is_required(), "abstention_threshold must have no default"
+    assert fields["threshold"].is_required(), (
+        "threshold must have no literal default: a pre-Phase-3 payload reads it from "
+        "abstention_threshold (see TaskPrediction._read_threshold_from_abstention_threshold)"
+    )
 
 
 @pytest.mark.parametrize(

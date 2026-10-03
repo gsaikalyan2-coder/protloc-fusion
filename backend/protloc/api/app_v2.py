@@ -98,6 +98,8 @@ def version() -> dict:
         "location_names": LOC_NAMES,
         "tau": service.TRUST["tau"],
         "temperature": service.TRUST["temperature"],
+        "threshold_policy": service.THRESHOLD_POLICY,
+        "calibration_version": service.CALIBRATION_VERSION,
         "max_batch": MAX_BATCH,
         "rules": service.RULES["rules"],
         "disclaimer": "Demo predictor: interpretable motif engine, not the trained ProtLoc Fusion model. "

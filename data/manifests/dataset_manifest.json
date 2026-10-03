@@ -1,0 +1,151 @@
+{
+  "build": {
+    "accepted_evidence_codes": "all",
+    "command": "python scripts/build_dataset.py",
+    "corpus_bytes": 1027036757,
+    "corpus_file": "data/processed/corpus.jsonl",
+    "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+    "entries_read": 575748,
+    "excluded": {
+      "organism_group:atypical_envelope": 3910,
+      "organism_group:unmapped_bacterial_phylum": 1136,
+      "organism_group:virus": 17529,
+      "organism_group:wall_less_bacterium": 4471
+    },
+    "label_states": {
+      "chloroplast_transit_peptide": {
+        "annotated": 2924,
+        "negative": 183762,
+        "not_applicable": 347685,
+        "unknown": 14331
+      },
+      "go_function": {
+        "annotated": 464992,
+        "negative": 0,
+        "not_applicable": 0,
+        "unknown": 83710
+      },
+      "localization": {
+        "annotated": 152124,
+        "negative": 0,
+        "not_applicable": 347685,
+        "unknown": 48893
+      },
+      "membrane_type": {
+        "annotated": 103567,
+        "negative": 223685,
+        "not_applicable": 0,
+        "unknown": 221450
+      },
+      "mitochondrial_transit_peptide": {
+        "annotated": 5270,
+        "negative": 183762,
+        "not_applicable": 347685,
+        "unknown": 11985
+      },
+      "prokaryotic_localization": {
+        "annotated": 174539,
+        "negative": 0,
+        "not_applicable": 201017,
+        "unknown": 173146
+      },
+      "signal_peptide": {
+        "annotated": 42993,
+        "negative": 496642,
+        "not_applicable": 0,
+        "unknown": 9067
+      }
+    },
+    "parser": {
+      "biopython": "1.88"
+    },
+    "record_count": 548702,
+    "report_bytes": 15369,
+    "report_file": "data/processed/build_report.json",
+    "report_sha256": "8fffa8ee38e5d6dab17f5ca1f6acbe587885a7b9af6bbe68178956486c947b76",
+    "rules_sha256": {
+      "backend/rules/organism_groups.yaml": "ba80ace719b151999f7dd8c566bdb36f93c8e7710bc19b0330b22eeb8620dded",
+      "backend/rules/residue_policy.yaml": "bce78cbd87898560b895f2c9bfac81fdb71c352fc49b83d0d50348ea9ee689d5",
+      "backend/rules/uniprot_label_map.yaml": "be3e851f282c7b35ec2ef6cefd875013db14ba94bbf97ab8b8fef1e2eb2173c0"
+    }
+  },
+  "policy": {
+    "alphabet": "ABCDEFGHIKLMNOPQRSTUVWXYZ",
+    "alphabet_rule": "exactly the characters observed in the corpus",
+    "command": "python scripts/validate_sequences.py --freeze --length-quantile 0.99 --reference-context 1022",
+    "length_max": 35213,
+    "length_min": 2,
+    "length_percentiles": {
+      "0.5": 296,
+      "0.9": 660,
+      "0.95": 874,
+      "0.99": 1496,
+      "0.999": 3487
+    },
+    "length_quantile": 0.99,
+    "length_rule": "nearest-rank quantile of all record lengths",
+    "max_sequence_length": 1496,
+    "nonstandard_codes": {
+      "B": {
+        "action": "keep",
+        "records": 111,
+        "residues": 274
+      },
+      "J": {
+        "action": "exclude_record",
+        "records": 0,
+        "residues": 0
+      },
+      "O": {
+        "action": "keep",
+        "records": 29,
+        "residues": 29
+      },
+      "U": {
+        "action": "keep",
+        "records": 255,
+        "residues": 330
+      },
+      "X": {
+        "action": "keep",
+        "records": 2113,
+        "residues": 7886
+      },
+      "Z": {
+        "action": "keep",
+        "records": 86,
+        "residues": 248
+      }
+    },
+    "record_count": 548702,
+    "records_over_max_length": 5478,
+    "reference_context": {
+      "length": 1022,
+      "records_over": 16989,
+      "source": "the ESM-2 documentation"
+    },
+    "residue_policy_version": "1.0.0"
+  },
+  "schema_version": 1,
+  "snapshot": {
+    "downloaded_at_utc": "2026-10-02T15:53:15+00:00",
+    "files": {
+      "data/raw/reldate.txt": {
+        "bytes": 151,
+        "sha256": "733913b362b641ac2d8de42a6220e794abde0e47d57d6feb57e442c6bf3dac6e",
+        "source_url": "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/reldate.txt"
+      },
+      "data/raw/uniprot_sprot.dat.gz": {
+        "bytes": 700301138,
+        "sha256": "c87208822a56e8ae0d6bf5072c287b35e42a8b9f25e8bd771389abc5b7a29c38",
+        "source_url": "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.dat.gz"
+      }
+    },
+    "license": "CC BY 4.0",
+    "license_url": "https://www.uniprot.org/help/license",
+    "redownload_from": "https://ftp.uniprot.org/pub/databases/uniprot/previous_releases/release-2026_03/",
+    "release": "2026_03",
+    "release_date": "2026-09-02",
+    "source": "UniProtKB/Swiss-Prot"
+  }
+}
