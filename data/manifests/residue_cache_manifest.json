@@ -1,0 +1,42 @@
+{
+  "cache_bytes": 286068656,
+  "cache_key": "05c9bb393be0e8b25a1af2eddcea811bc3d19edafe18580c34eb547b444a3349",
+  "directory": "0e528d4a46831b05_subset500_residues",
+  "dtype": "float16",
+  "full_corpus_float16_bytes_estimate": 19116847360,
+  "hardware": {
+    "batch_windows": 8,
+    "cpu_count": 12,
+    "deterministic_algorithms": true,
+    "device": "cpu",
+    "device_name": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.9",
+    "torch": "2.14.1+cpu",
+    "torch_threads": 10,
+    "transformers": "5.18.0"
+  },
+  "input": {
+    "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+    "pack_sha256": "25869b92eb668e4cecab67ab8115802b6f4f1c347be2ce8250156b2c1d0b4a29",
+    "registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+    "source": "pack"
+  },
+  "pooled_cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+  "pooled_comparison": {
+    "max_abs_diff": 0.000859642028808949,
+    "mean_of_max_abs_diff": 6.443909856020042e-05,
+    "sequences": 500,
+    "tolerance": 0.005,
+    "within_tolerance": true,
+    "worst_sha256": "c818f29619979ca03de0a50c3a0cf31e3ef0278fd92545f3e6915d714155fac7"
+  },
+  "residues": 223461,
+  "schema_version": 1,
+  "scope": "subset",
+  "seconds_per_sequence": 1.691044900399167,
+  "seconds_total": 845.5224501995835,
+  "sequences": 500,
+  "shard_index_sha256": "aad8889f1b9a901f5adcf22dbc20ddddb2b1a21f2e315d9869620d3fc1696c29",
+  "shard_sequences": 50
+}
