@@ -4,7 +4,7 @@
 # specified by overriding groups on the command line rather than by copying and
 # editing a script:
 #
-#     python scripts/train.py training=lora model=trunk_esm2_650m
+#     python scripts/train.py training=lora model=trunk_esm2_150m
 #
 # The resolved configuration is hashed and written into the run manifest, which
 # is what makes `config_hash` in an API response mean something. Values that the
@@ -13,7 +13,7 @@
 
 defaults:
   - data: uniprot_swissprot
-  - model: trunk_esm2_650m
+  - model: trunk_esm2_150m
   - training: frozen_trunk
   - evaluation: default
   - deployment: local
