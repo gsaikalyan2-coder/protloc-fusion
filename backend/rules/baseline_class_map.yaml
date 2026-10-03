@@ -1,0 +1,73 @@
+# Phase 8 baseline class map.  Data, not code (CLAUDE.md: no inline biology).
+#
+# It says three things and nothing else:
+#   1. which engine group scores the untrained motif-rule reference row,
+#   2. how each baseline task's classes read the corpus labels (ADR-0006),
+#   3. how each class reads the motif engine's own output keys.
+#
+# The corpus build does not hash this file; the Phase 8 manifest does.
+
+version: 1.0.0
+
+# The corpus has one eukaryote group, `eukarya`; the engine splits it into
+# `eukaryote` (animal/fungi, no plastid) and `plant` (all ten classes). `plant` is
+# the only engine group that can emit plastid, so it scores the rule row.
+engine_group: plant
+
+tasks:
+  localization:
+    # Order is the column order of every label and score matrix. It must equal
+    # `localization.classes` in uniprot_label_map.yaml (a unit test asserts this).
+    classes:
+      - cell_membrane
+      - cytoplasm
+      - endoplasmic_reticulum
+      - extracellular
+      - golgi_apparatus
+      - lysosome_vacuole
+      - mitochondrion
+      - nucleus
+      - peroxisome
+      - plastid
+    # Class -> the key raw_scores() puts that class under.
+    engine_keys:
+      cell_membrane: MEM
+      cytoplasm: CYT
+      endoplasmic_reticulum: ER
+      extracellular: EXT
+      golgi_apparatus: GOL
+      lysosome_vacuole: LYS
+      mitochondrion: MIT
+      nucleus: NUC
+      peroxisome: PER
+      plastid: PLA
+
+  membrane_type:
+    # Four collapsed classes: every topology class is a transmembrane protein.
+    # `soluble` is the corpus `negative` state (ADR-0006 §3.3): a curated location,
+    # no topology term, no TRANSMEM or INTRAMEM feature. `unknown` rows are dropped.
+    classes: [transmembrane, lipid_anchor, peripheral, soluble]
+    from_registry:
+      multi_pass: transmembrane
+      single_pass: transmembrane
+      single_pass_type_i: transmembrane
+      single_pass_type_ii: transmembrane
+      single_pass_type_iii: transmembrane
+      single_pass_type_iv: transmembrane
+      lipid_anchor: lipid_anchor
+      peripheral: peripheral
+    negative_class: soluble
+    # Class -> the key membrane_type() puts that class under.
+    engine_keys:
+      transmembrane: transmembrane
+      lipid_anchor: lipid_anchored
+      peripheral: peripheral
+      soluble: soluble
+
+  signal_peptide:
+    # Presence only. `annotated` is a SIGNAL feature at residue 1, `negative` is a
+    # reviewed full-length entry with no SIGNAL feature (ADR-0006 §3.3). Two
+    # mutually exclusive columns so that every row carries one label.
+    classes: [signal_peptide, no_signal_peptide]
+    positive_class: signal_peptide
+    negative_class: no_signal_peptide

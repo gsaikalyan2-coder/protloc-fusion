@@ -45,6 +45,7 @@ data/raw/
 data/interim/
 data/processed/
 data/embeddings/
+data/baselines/
 data/evidence/
 !data/**/.gitkeep
 !data/manifests/

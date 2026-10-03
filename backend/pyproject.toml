@@ -50,6 +50,16 @@ data = [
   "biopython==1.88",
   "pyyaml==6.0.3",
 ]
+# Classical baselines (Phase 8). Exact pins like everything else; training/ is never
+# imported by the serving path, so none of this reaches the served image.
+baselines = [
+  "numpy==2.4.6",
+  "scipy==1.17.1",
+  "scikit-learn==1.9.1",
+  "joblib==1.6.0",
+  "threadpoolctl==3.7.0",
+  "pyyaml==6.0.3",
+]
 # Data versioning. Kept apart from `data` because CI never needs it and it pulls
 # in a large dependency tree.
 dvc = [
