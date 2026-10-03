@@ -340,8 +340,8 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 3   — Widen contract: provenance + calibration      MVP   2.5 h   done 2026-10-02 (v0.3.0)
 [x] Phase 4   — Motif-engine test harness & golden set        MVP   3.0 h   done 2026-10-02 (v0.4.0)
 [x] Phase 5   — Swiss-Prot corpus, labels, manifest           MVP   8.0 h   done 2026-10-02 (branch; you tag v0.5.0)
-[ ] Phase 6   — GraphPart splits & leakage gate               MVP   5.0 h   <-- NEXT
-[ ] Phase 7   — ESM-2 embedding cache                         MVP   6.0 h
+[x] Phase 6   — GraphPart splits & leakage gate               MVP   5.0 h   done 2026-10-03 (branch; you tag v0.6.0)
+[ ] Phase 7   — ESM-2 embedding cache                         MVP   6.0 h   <-- NEXT
 [ ] Phase 8   — Classical baselines (metric floor)            ENH   3.0 h
 [ ] Phase 9   — Localization head (attention pooling + MLP)   MVP   7.0 h
 [ ] Phase 10  — Calibration & per-label thresholds            MVP   5.0 h
@@ -413,6 +413,19 @@ identical across three builds; `MAX_SEQUENCE_LENGTH` frozen at 1496 (quantile 0.
 records longer, kept in the corpus). Manifest, dataset card, build report and class counts are in
 `data/manifests/`; the bytes are gitignored. ADR-0006 is Accepted. UNVERIFIED: the ESM-2 context
 (1022) and cross-platform hash reproducibility. Detail: `docs/phases/05.md`.
+
+### Phase 6 close — 2026-10-03
+
+Working set: 35,443 accessions (34,965 distinct sequences), the eukaryotic localization records with
+ECO:0000269 evidence (narrower than the plan; deviation, `docs/phases/06.md` §3). GraphPart 1.0.2
+(`mmseqs2needle` backend, 30% identity, 5 partitions) removed 1,557 accessions; the independent leakage
+check then found 7 cross-partition pairs above 30% global identity, so 7 more were removed by a recorded
+rule: 1,564 removed in all (4.41%). Partitions 9,373 / 6,060 / 6,008 / 5,885 / 6,553 (33,879 accessions).
+Registry SHA-256 `37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a` (gitignored); the
+leakage report passes with 0 duplicates and 0 cross-partition pairs. Raw GraphPart runs are not
+deterministic; the frozen split uses sorted edges (§4). The calibration split must be made from whole
+`cluster_id` clusters. UNVERIFIED: the leakage zero is bounded by a heuristic search; cross-machine
+reproducibility. Detail: `docs/phases/06.md`.
 
 ### Two things a cold session must know
 
