@@ -1,0 +1,3179 @@
+{
+  "frozen": {
+    "bundle": {
+      "bundle_sha256": "c341da61936383928ff07765a28577b40a1e66860ede8629455f687830beb62c",
+      "calibration_version": "0.10.0+1be9afbf3c1f",
+      "directory": "registry/localization/0.10.0",
+      "version": "0.10.0"
+    },
+    "classes": [
+      "cell_membrane",
+      "cytoplasm",
+      "endoplasmic_reticulum",
+      "extracellular",
+      "golgi_apparatus",
+      "lysosome_vacuole",
+      "mitochondrion",
+      "nucleus",
+      "peroxisome",
+      "plastid"
+    ],
+    "fold_thresholds": {
+      "1": [
+        0.5805741192303601,
+        0.4,
+        0.36363636363636365,
+        0.7112663536252497,
+        0.12236798265698345,
+        0.06847166542991658,
+        0.4246179295360838,
+        0.4,
+        0.01749824918806553,
+        0.13479307528306822
+      ],
+      "2": [
+        0.5502614945428494,
+        0.07692307692307693,
+        0.2857142857142857,
+        0.6,
+        0.5577376779860375,
+        0.07875074015499484,
+        0.7150355544192778,
+        0.36666666666666664,
+        0.00899254364851714,
+        0.32151455525612194
+      ],
+      "3": [
+        0.75,
+        0.09415788471104532,
+        0.2727272727272727,
+        0.5,
+        0.05834086850367838,
+        0.06714635422646395,
+        0.375,
+        0.25,
+        0.20482409000396729,
+        0.10751253094234782
+      ],
+      "4": [
+        0.6,
+        0.09090909090909091,
+        0.136310238744581,
+        0.6,
+        0.22076360423558608,
+        0.09236792980474583,
+        0.38997272939848293,
+        0.36,
+        0.10726328061180043,
+        0.22176930887191149
+      ]
+    },
+    "hardware": {
+      "fit": {
+        "logical_cpus": 12,
+        "machine": "AMD64",
+        "platform": "Windows-10-10.0.26200-SP0",
+        "python": "3.11.9"
+      },
+      "fit_seconds": 5.0216973999049515
+    },
+    "inputs": {
+      "calibration_config_sha256": "ae3195043c621a32b3894c2803d2c1f27e662dcaa614bc3d38652c378e81f7b8",
+      "calibrator_sha256": "3975030de8265ffe13a74bfbc20dc2be4108921ec466436d500a0378d7ec2cfd",
+      "class_map_sha256": "c1ffefe085392bc6cee8d35010f6dfe08de81a6586413717238db9f247a190dc",
+      "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+      "embedding_cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+      "feature_table_sha256": "2f3d36d78519776c7ae542923820accf13b67953397fc07582da49c2749dfaa8",
+      "head_frozen_sha256": "719c9866603640a781bf13193e38ee5d27c7fd13426aa44c5221a1e4099c9dae",
+      "head_weights_sha256": "7bd18e3a93510369c7676439a22b70af763361d42c1e2caca127fef1e2ccb8ca",
+      "oof_sha256": "1be9afbf3c1f59968a917fbac2c65a2c56e58b9a3a8f7dd43c80b59eb5c319a3",
+      "registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+      "residue_cache_key": "05c9bb393be0e8b25a1af2eddcea811bc3d19edafe18580c34eb547b444a3349"
+    },
+    "labels": [
+      {
+        "calibrated": true,
+        "intercept": 0.0,
+        "knots_x": [
+          0.00012686109403148293,
+          0.0004868216346949339,
+          0.000754683162085712,
+          0.060921527445316315,
+          0.06418971717357635,
+          0.2574060559272766,
+          0.26139605045318604,
+          0.6081876754760742,
+          0.6162122488021851,
+          0.7490501999855042,
+          0.7549107074737549,
+          0.7885023355484009,
+          0.7927332520484924,
+          0.9408347606658936,
+          0.9440699219703674,
+          0.9940699338912964
+        ],
+        "knots_y": [
+          0.0,
+          0.0,
+          0.026785714285714284,
+          0.026785714285714284,
+          0.06756756756756757,
+          0.06756756756756757,
+          0.07446808510638298,
+          0.07446808510638298,
+          0.14285714285714285,
+          0.14285714285714285,
+          0.25,
+          0.25,
+          0.75,
+          0.75,
+          1.0,
+          1.0
+        ],
+        "label": "cell_membrane",
+        "logit_eps": 0.0,
+        "method": "isotonic",
+        "negatives": 363,
+        "positives": 45,
+        "slope": 0.0,
+        "threshold": 0.6666666666666666
+      },
+      {
+        "calibrated": true,
+        "intercept": 0.0,
+        "knots_x": [
+          0.0004370055685285479,
+          0.0005365616525523365,
+          0.14562208950519562,
+          0.14721393585205078,
+          0.28786444664001465,
+          0.2890987694263458,
+          0.37393131852149963,
+          0.3855764865875244,
+          0.45705080032348633,
+          0.45744383335113525,
+          0.6686868667602539,
+          0.6739111542701721,
+          0.6968110203742981,
+          0.6976460218429565,
+          0.7469256520271301,
+          0.7471632957458496,
+          0.8050909638404846,
+          0.8052102327346802,
+          0.9109388589859009,
+          0.9205278158187866,
+          0.9898578524589539
+        ],
+        "knots_y": [
+          0.0,
+          0.0234375,
+          0.0234375,
+          0.038461538461538464,
+          0.038461538461538464,
+          0.13043478260869565,
+          0.13043478260869565,
+          0.42857142857142855,
+          0.42857142857142855,
+          0.4923076923076924,
+          0.4923076923076924,
+          0.5,
+          0.5,
+          0.6785714285714286,
+          0.6785714285714286,
+          0.7586206896551724,
+          0.7586206896551724,
+          0.7647058823529411,
+          0.7647058823529411,
+          0.8333333333333334,
+          0.8333333333333334
+        ],
+        "label": "cytoplasm",
+        "logit_eps": 0.0,
+        "method": "isotonic",
+        "negatives": 272,
+        "positives": 136,
+        "slope": 0.0,
+        "threshold": 0.3684210526315789
+      },
+      {
+        "calibrated": true,
+        "intercept": 0.0,
+        "knots_x": [
+          7.728321361355484e-05,
+          0.00038206949830055237,
+          0.00042312091682106256,
+          0.01615544967353344,
+          0.016207190230488777,
+          0.16459810733795166,
+          0.16699083149433136,
+          0.38900861144065857,
+          0.39738085865974426,
+          0.5647639632225037,
+          0.5652334690093994,
+          0.688017725944519,
+          0.6888951063156128,
+          0.9262562990188599,
+          0.9549976587295532,
+          0.9966101050376892
+        ],
+        "knots_y": [
+          0.0,
+          0.0,
+          0.03333333333333333,
+          0.03333333333333333,
+          0.05454545454545454,
+          0.05454545454545454,
+          0.06060606060606061,
+          0.06060606060606061,
+          0.11627906976744186,
+          0.11627906976744186,
+          0.2727272727272727,
+          0.2727272727272727,
+          0.38235294117647056,
+          0.38235294117647056,
+          0.5,
+          0.5
+        ],
+        "label": "endoplasmic_reticulum",
+        "logit_eps": 0.0,
+        "method": "isotonic",
+        "negatives": 367,
+        "positives": 41,
+        "slope": 0.0,
+        "threshold": 0.18181818181818182
+      },
+      {
+        "calibrated": true,
+        "intercept": 0.0,
+        "knots_x": [
+          7.18861774657853e-05,
+          0.014593689702451229,
+          0.014698363840579987,
+          0.03823203966021538,
+          0.03866761177778244,
+          0.07864032685756683,
+          0.08079030364751816,
+          0.40881872177124023,
+          0.4091542065143585,
+          0.5511053800582886,
+          0.5647171139717102,
+          0.5855233669281006,
+          0.5976316928863525,
+          0.6154100894927979,
+          0.6155661344528198,
+          0.661192774772644,
+          0.6650056838989258,
+          0.6966314911842346,
+          0.7017775177955627,
+          0.8611183762550354,
+          0.8620994687080383,
+          0.9119971394538879,
+          0.9135684967041016,
+          0.996745228767395,
+          0.9969720840454102,
+          0.9988211989402771
+        ],
+        "knots_y": [
+          0.0,
+          0.0,
+          0.023255813953488372,
+          0.023255813953488372,
+          0.025,
+          0.025,
+          0.05555555555555555,
+          0.05555555555555555,
+          0.09523809523809523,
+          0.09523809523809523,
+          0.125,
+          0.125,
+          0.5,
+          0.5,
+          0.6666666666666666,
+          0.6666666666666666,
+          0.75,
+          0.75,
+          0.8,
+          0.8,
+          0.9090909090909091,
+          0.9090909090909091,
+          0.9782608695652174,
+          0.9782608695652174,
+          1.0,
+          1.0
+        ],
+        "label": "extracellular",
+        "logit_eps": 0.0,
+        "method": "isotonic",
+        "negatives": 322,
+        "positives": 86,
+        "slope": 0.0,
+        "threshold": 0.5
+      },
+      {
+        "calibrated": true,
+        "intercept": -2.01852125970135,
+        "knots_x": [],
+        "knots_y": [],
+        "label": "golgi_apparatus",
+        "logit_eps": 1e-06,
+        "method": "platt",
+        "negatives": 390,
+        "positives": 18,
+        "slope": 0.5122317268330153,
+        "threshold": 0.0845876665924274
+      },
+      {
+        "calibrated": true,
+        "intercept": -2.850120449431083,
+        "knots_x": [],
+        "knots_y": [],
+        "label": "lysosome_vacuole",
+        "logit_eps": 1e-06,
+        "method": "platt",
+        "negatives": 391,
+        "positives": 17,
+        "slope": 0.11173589310410803,
+        "threshold": 0.15749617938610383
+      },
+      {
+        "calibrated": true,
+        "intercept": 0.0,
+        "knots_x": [
+          8.505611913278699e-05,
+          0.0004898928455077112,
+          0.0006106470827944577,
+          0.007439811713993549,
+          0.007445859722793102,
+          0.033369340002536774,
+          0.0335838720202446,
+          0.15817095339298248,
+          0.1586773842573166,
+          0.22142137587070465,
+          0.22436420619487762,
+          0.5127281546592712,
+          0.5171050429344177,
+          0.6575695276260376,
+          0.6992934346199036,
+          0.8350803852081299,
+          0.8372330665588379,
+          0.8699735999107361,
+          0.8753962516784668,
+          0.9431829452514648,
+          0.9453891515731812,
+          0.9813701510429382,
+          0.9831053614616394,
+          0.999011754989624
+        ],
+        "knots_y": [
+          0.0,
+          0.0,
+          0.012345679012345678,
+          0.012345679012345678,
+          0.017543859649122806,
+          0.017543859649122806,
+          0.024096385542168676,
+          0.024096385542168676,
+          0.029411764705882353,
+          0.029411764705882353,
+          0.09638554216867469,
+          0.09638554216867469,
+          0.13333333333333333,
+          0.13333333333333333,
+          0.4444444444444444,
+          0.4444444444444444,
+          0.5,
+          0.5,
+          0.6666666666666666,
+          0.6666666666666666,
+          0.9,
+          0.9,
+          1.0,
+          1.0
+        ],
+        "label": "mitochondrion",
+        "logit_eps": 0.0,
+        "method": "isotonic",
+        "negatives": 362,
+        "positives": 46,
+        "slope": 0.0,
+        "threshold": 0.3333333333333333
+      },
+      {
+        "calibrated": true,
+        "intercept": 0.0,
+        "knots_x": [
+          0.0005956494132988155,
+          0.010407808236777782,
+          0.0109549630433321,
+          0.02332472801208496,
+          0.02406965382397175,
+          0.06295297294855118,
+          0.0631515383720398,
+          0.18573957681655884,
+          0.18708977103233337,
+          0.22768007218837738,
+          0.23692654073238373,
+          0.30528974533081055,
+          0.30847999453544617,
+          0.36127278208732605,
+          0.3627905249595642,
+          0.5574449896812439,
+          0.5729392170906067,
+          0.6186322569847107,
+          0.6204272508621216,
+          0.6336677670478821,
+          0.6351650357246399,
+          0.7182329893112183,
+          0.7206430435180664,
+          0.7280425429344177,
+          0.7286863923072815,
+          0.823523759841919,
+          0.8250389099121094,
+          0.9772458672523499,
+          0.9873682856559753,
+          0.9964272379875183
+        ],
+        "knots_y": [
+          0.0,
+          0.0,
+          0.043478260869565216,
+          0.043478260869565216,
+          0.047619047619047616,
+          0.047619047619047616,
+          0.05357142857142857,
+          0.05357142857142857,
+          0.0625,
+          0.0625,
+          0.2608695652173913,
+          0.2608695652173913,
+          0.2857142857142857,
+          0.2857142857142857,
+          0.41379310344827586,
+          0.41379310344827586,
+          0.4444444444444444,
+          0.4444444444444444,
+          0.5384615384615384,
+          0.5384615384615384,
+          0.5405405405405406,
+          0.5405405405405406,
+          0.6,
+          0.6,
+          0.6285714285714286,
+          0.6285714285714286,
+          0.6666666666666666,
+          0.6666666666666666,
+          1.0,
+          1.0
+        ],
+        "label": "nucleus",
+        "logit_eps": 0.0,
+        "method": "isotonic",
+        "negatives": 283,
+        "positives": 125,
+        "slope": 0.0,
+        "threshold": 0.48214285714285715
+      },
+      {
+        "calibrated": true,
+        "intercept": -3.6479861019099893,
+        "knots_x": [],
+        "knots_y": [],
+        "label": "peroxisome",
+        "logit_eps": 1e-06,
+        "method": "platt",
+        "negatives": 402,
+        "positives": 6,
+        "slope": 0.1688231814887155,
+        "threshold": 0.04212053865194321
+      },
+      {
+        "calibrated": true,
+        "intercept": -2.089721390293362,
+        "knots_x": [],
+        "knots_y": [],
+        "label": "plastid",
+        "logit_eps": 1e-06,
+        "method": "platt",
+        "negatives": 395,
+        "positives": 13,
+        "slope": 0.8091203273416938,
+        "threshold": 0.1189345110888453
+      }
+    ],
+    "methods": {
+      "consistent": {
+        "cell_membrane": true,
+        "cytoplasm": true,
+        "endoplasmic_reticulum": true,
+        "extracellular": true,
+        "golgi_apparatus": true,
+        "lysosome_vacuole": true,
+        "mitochondrion": true,
+        "nucleus": true,
+        "peroxisome": false,
+        "plastid": true
+      },
+      "fold": {
+        "1": [
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "platt",
+          "platt",
+          "isotonic",
+          "isotonic",
+          "uncalibrated",
+          "platt"
+        ],
+        "2": [
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "platt",
+          "platt",
+          "isotonic",
+          "isotonic",
+          "platt",
+          "platt"
+        ],
+        "3": [
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "platt",
+          "platt",
+          "isotonic",
+          "isotonic",
+          "uncalibrated",
+          "platt"
+        ],
+        "4": [
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "platt",
+          "platt",
+          "isotonic",
+          "isotonic",
+          "platt",
+          "platt"
+        ]
+      },
+      "frozen": [
+        "isotonic",
+        "isotonic",
+        "isotonic",
+        "isotonic",
+        "platt",
+        "platt",
+        "isotonic",
+        "isotonic",
+        "platt",
+        "platt"
+      ],
+      "inner": {
+        "1": {
+          "2": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "platt"
+          ],
+          "3": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "platt"
+          ],
+          "4": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "platt"
+          ]
+        },
+        "2": {
+          "1": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt"
+          ],
+          "3": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt"
+          ],
+          "4": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt"
+          ]
+        },
+        "3": {
+          "1": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "platt"
+          ],
+          "2": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "platt"
+          ],
+          "4": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "platt"
+          ]
+        },
+        "4": {
+          "1": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt"
+          ],
+          "2": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt"
+          ],
+          "3": [
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt",
+            "isotonic",
+            "isotonic",
+            "platt",
+            "platt"
+          ]
+        }
+      }
+    },
+    "phase9_reference": {
+      "thresholds_on_raw_scores": [
+        0.7927332520484924,
+        0.3855764865875244,
+        0.5652334690093994,
+        0.5976316928863525,
+        0.3837727904319763,
+        0.7342265844345093,
+        0.6992934346199036,
+        0.3627905249595642,
+        0.01749824918806553,
+        0.7448931932449341
+      ],
+      "validation_jaccard": {
+        "ci_high": 0.5309996949640431,
+        "ci_low": 0.39432100238479173,
+        "value": 0.46956699346405223
+      },
+      "validation_macro_f1": {
+        "ci_high": 0.516163309971824,
+        "ci_low": 0.4279041497941392,
+        "value": 0.4763343487904311
+      }
+    },
+    "protocol": {
+      "adr": "ADR-0012 (protocol of ADR-0010 and ADR-0011)",
+      "bootstrap": {
+        "samples": 1000,
+        "seed": 20260909,
+        "unit": "cluster_id"
+      },
+      "ece": {
+        "bins": 10,
+        "kind": "equal_mass",
+        "min_bin_rows": 20
+      },
+      "eligibility": {
+        "fallback_min_negatives": 5,
+        "fallback_min_positives": 5,
+        "isotonic_min_negatives": 20,
+        "isotonic_min_positives": 20
+      },
+      "fallback": "platt",
+      "folds": [
+        {
+          "train": [
+            2,
+            3,
+            4
+          ],
+          "validate": 1
+        },
+        {
+          "train": [
+            1,
+            3,
+            4
+          ],
+          "validate": 2
+        },
+        {
+          "train": [
+            1,
+            2,
+            4
+          ],
+          "validate": 3
+        },
+        {
+          "train": [
+            1,
+            2,
+            3
+          ],
+          "validate": 4
+        }
+      ],
+      "head_test_touches": 1,
+      "label_states": "annotated rows only (ADR-0006); unknown and not_applicable dropped",
+      "platt": {
+        "logit_eps": 1e-06,
+        "max_halvings": 40,
+        "max_iter": 100,
+        "tolerance": 1e-10
+      },
+      "split": "cross-fitted on the out-of-fold validation scores of the Phase 9 head",
+      "test_partition": 5,
+      "test_partition_policy": "untouched",
+      "threshold_rule": "per label, the calibrated score maximising MCC; fold k is scored with thresholds tuned on cross-fitted calibrated scores of the other validation partitions whose calibrators never saw fold k; the frozen thresholds are tuned on the cross-fitted scores of all rows",
+      "validation_partitions": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "scope": "subset",
+    "scope_label": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+    "software": {
+      "numpy": "2.4.6",
+      "pyyaml": "6.0.3",
+      "scikit-learn": "1.9.0"
+    },
+    "subset": {
+      "accessions_by_partition": {
+        "1": 146,
+        "2": 77,
+        "3": 93,
+        "4": 92,
+        "5": 99
+      },
+      "cache_directory": "0e528d4a46831b05_subset500",
+      "embedding_cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+      "labelled_rows_per_task": {
+        "localization": 507,
+        "membrane_type": 475,
+        "signal_peptide": 495
+      },
+      "sequences": 500,
+      "sequences_sha256": "4fe25aca277748e5662afbe07ea2820bcd42f5f3f487e3dee9ba73cc40e9d5e3"
+    },
+    "validation": {
+      "calibrated": {
+        "fold_thresholds": {
+          "1": [
+            0.5805741192303601,
+            0.4,
+            0.36363636363636365,
+            0.7112663536252497,
+            0.12236798265698345,
+            0.06847166542991658,
+            0.4246179295360838,
+            0.4,
+            0.01749824918806553,
+            0.13479307528306822
+          ],
+          "2": [
+            0.5502614945428494,
+            0.07692307692307693,
+            0.2857142857142857,
+            0.6,
+            0.5577376779860375,
+            0.07875074015499484,
+            0.7150355544192778,
+            0.36666666666666664,
+            0.00899254364851714,
+            0.32151455525612194
+          ],
+          "3": [
+            0.75,
+            0.09415788471104532,
+            0.2727272727272727,
+            0.5,
+            0.05834086850367838,
+            0.06714635422646395,
+            0.375,
+            0.25,
+            0.20482409000396729,
+            0.10751253094234782
+          ],
+          "4": [
+            0.6,
+            0.09090909090909091,
+            0.136310238744581,
+            0.6,
+            0.22076360423558608,
+            0.09236792980474583,
+            0.38997272939848293,
+            0.36,
+            0.10726328061180043,
+            0.22176930887191149
+          ]
+        },
+        "folds": [
+          {
+            "macro_f1": 0.49387964677775076,
+            "per_class": {
+              "cell_membrane": {
+                "f1": 0.48,
+                "mcc": 0.500914502841798,
+                "support": 18,
+                "undefined": false
+              },
+              "cytoplasm": {
+                "f1": 0.7422680412371134,
+                "mcc": 0.641678617168323,
+                "support": 40,
+                "undefined": false
+              },
+              "endoplasmic_reticulum": {
+                "f1": 0.3333333333333333,
+                "mcc": 0.2736318407960199,
+                "support": 12,
+                "undefined": false
+              },
+              "extracellular": {
+                "f1": 0.9174311926605505,
+                "mcc": 0.868350506338707,
+                "support": 55,
+                "undefined": false
+              },
+              "golgi_apparatus": {
+                "f1": 0.2857142857142857,
+                "mcc": 0.2714575870675667,
+                "support": 3,
+                "undefined": false
+              },
+              "lysosome_vacuole": {
+                "f1": 0.2222222222222222,
+                "mcc": 0.1711273317112733,
+                "support": 9,
+                "undefined": false
+              },
+              "mitochondrion": {
+                "f1": 0.5555555555555556,
+                "mcc": 0.6023231982363461,
+                "support": 13,
+                "undefined": false
+              },
+              "nucleus": {
+                "f1": 0.6486486486486487,
+                "mcc": 0.5312403824057306,
+                "support": 35,
+                "undefined": false
+              },
+              "peroxisome": {
+                "f1": 0.08695652173913043,
+                "mcc": 0.17943514064131835,
+                "support": 2,
+                "undefined": false
+              },
+              "plastid": {
+                "f1": 0.6666666666666666,
+                "mcc": 0.0,
+                "support": 1,
+                "undefined": true
+              }
+            },
+            "rows": 146,
+            "validate": 1
+          },
+          {
+            "macro_f1": 0.40613138003548954,
+            "per_class": {
+              "cell_membrane": {
+                "f1": 0.6666666666666666,
+                "mcc": 0.6384976525821596,
+                "support": 6,
+                "undefined": false
+              },
+              "cytoplasm": {
+                "f1": 0.6493506493506493,
+                "mcc": 0.4517345399698341,
+                "support": 26,
+                "undefined": false
+              },
+              "endoplasmic_reticulum": {
+                "f1": 0.5454545454545454,
+                "mcc": 0.4834835706848496,
+                "support": 9,
+                "undefined": false
+              },
+              "extracellular": {
+                "f1": 0.6666666666666666,
+                "mcc": 0.6874610823355948,
+                "support": 8,
+                "undefined": false
+              },
+              "golgi_apparatus": {
+                "f1": 0.0,
+                "mcc": 0.0,
+                "support": 5,
+                "undefined": false
+              },
+              "lysosome_vacuole": {
+                "f1": 0.0,
+                "mcc": 0.0,
+                "support": 3,
+                "undefined": false
+              },
+              "mitochondrion": {
+                "f1": 0.6,
+                "mcc": 0.5577816789190845,
+                "support": 8,
+                "undefined": false
+              },
+              "nucleus": {
+                "f1": 0.6575342465753424,
+                "mcc": 0.5086846840791568,
+                "support": 24,
+                "undefined": false
+              },
+              "peroxisome": {
+                "f1": 0.02564102564102564,
+                "mcc": 0.0,
+                "support": 1,
+                "undefined": true
+              },
+              "plastid": {
+                "f1": 0.25,
+                "mcc": 0.3627381250550058,
+                "support": 7,
+                "undefined": false
+              }
+            },
+            "rows": 77,
+            "validate": 2
+          },
+          {
+            "macro_f1": 0.4581701953387496,
+            "per_class": {
+              "cell_membrane": {
+                "f1": 0.6,
+                "mcc": 0.5902037509808481,
+                "support": 13,
+                "undefined": false
+              },
+              "cytoplasm": {
+                "f1": 0.7088607594936709,
+                "mcc": 0.4984076392680625,
+                "support": 37,
+                "undefined": false
+              },
+              "endoplasmic_reticulum": {
+                "f1": 0.2,
+                "mcc": 0.10361445783132531,
+                "support": 10,
+                "undefined": false
+              },
+              "extracellular": {
+                "f1": 0.8,
+                "mcc": 0.7769282067495051,
+                "support": 14,
+                "undefined": false
+              },
+              "golgi_apparatus": {
+                "f1": 0.3333333333333333,
+                "mcc": 0.28735632183908044,
+                "support": 6,
+                "undefined": false
+              },
+              "lysosome_vacuole": {
+                "f1": 0.0,
+                "mcc": 0.0,
+                "support": 1,
+                "undefined": true
+              },
+              "mitochondrion": {
+                "f1": 0.8421052631578947,
+                "mcc": 0.8256154365748793,
+                "support": 10,
+                "undefined": false
+              },
+              "nucleus": {
+                "f1": 0.5974025974025974,
+                "mcc": 0.32082512013553516,
+                "support": 35,
+                "undefined": false
+              },
+              "peroxisome": {
+                "f1": 0.0,
+                "mcc": -0.03333333333333333,
+                "support": 3,
+                "undefined": false
+              },
+              "plastid": {
+                "f1": 0.5,
+                "mcc": 0.489010989010989,
+                "support": 2,
+                "undefined": false
+              }
+            },
+            "rows": 93,
+            "validate": 3
+          },
+          {
+            "macro_f1": 0.422436655821749,
+            "per_class": {
+              "cell_membrane": {
+                "f1": 0.7142857142857143,
+                "mcc": 0.6996611002644991,
+                "support": 8,
+                "undefined": false
+              },
+              "cytoplasm": {
+                "f1": 0.673469387755102,
+                "mcc": 0.482010132597841,
+                "support": 33,
+                "undefined": false
+              },
+              "endoplasmic_reticulum": {
+                "f1": 0.35714285714285715,
+                "mcc": 0.26791621109843294,
+                "support": 10,
+                "undefined": false
+              },
+              "extracellular": {
+                "f1": 0.8888888888888888,
+                "mcc": 0.8768406961178046,
+                "support": 9,
+                "undefined": false
+              },
+              "golgi_apparatus": {
+                "f1": 0.0,
+                "mcc": -0.02234950781338371,
+                "support": 4,
+                "undefined": false
+              },
+              "lysosome_vacuole": {
+                "f1": 0.0,
+                "mcc": 0.0,
+                "support": 4,
+                "undefined": false
+              },
+              "mitochondrion": {
+                "f1": 0.6666666666666666,
+                "mcc": 0.6153871128820448,
+                "support": 15,
+                "undefined": false
+              },
+              "nucleus": {
+                "f1": 0.6739130434782609,
+                "mcc": 0.5081967213114754,
+                "support": 31,
+                "undefined": false
+              },
+              "peroxisome": {
+                "f1": 0.0,
+                "mcc": 0.0,
+                "support": 0,
+                "undefined": true
+              },
+              "plastid": {
+                "f1": 0.25,
+                "mcc": 0.22593861697862647,
+                "support": 3,
+                "undefined": false
+              }
+            },
+            "rows": 92,
+            "validate": 4
+          }
+        ],
+        "frozen_thresholds": [
+          0.6666666666666666,
+          0.3684210526315789,
+          0.18181818181818182,
+          0.5,
+          0.0845876665924274,
+          0.15749617938610383,
+          0.3333333333333333,
+          0.48214285714285715,
+          0.04212053865194321,
+          0.1189345110888453
+        ],
+        "mean_fold_macro_f1": 0.4451544694934347,
+        "pooled": {
+          "jaccard": {
+            "ci_high": 0.5615892916482056,
+            "ci_low": 0.4405856229639191,
+            "value": 0.5087826797385621
+          },
+          "macro_f1": {
+            "ci_high": 0.4981719304091058,
+            "ci_low": 0.40045154917859654,
+            "value": 0.4577500705315818
+          },
+          "per_class": {
+            "cell_membrane": {
+              "f1": {
+                "ci_high": 0.7462786069651741,
+                "ci_low": 0.43001057641459545,
+                "value": 0.5915492957746479
+              },
+              "mcc": {
+                "ci_high": 0.7308637379529043,
+                "ci_low": 0.4251131669107537,
+                "value": 0.5808130986584842
+              },
+              "support": 45,
+              "undefined": false
+            },
+            "cytoplasm": {
+              "f1": {
+                "ci_high": 0.745413272040417,
+                "ci_low": 0.6390474390474391,
+                "value": 0.6951566951566952
+              },
+              "mcc": {
+                "ci_high": 0.6015183923253564,
+                "ci_low": 0.40954056511075165,
+                "value": 0.5241602284164842
+              },
+              "support": 136,
+              "undefined": false
+            },
+            "endoplasmic_reticulum": {
+              "f1": {
+                "ci_high": 0.48,
+                "ci_low": 0.2417383820998279,
+                "value": 0.3617021276595745
+              },
+              "mcc": {
+                "ci_high": 0.4167157110121111,
+                "ci_low": 0.1424140346739555,
+                "value": 0.2830762995124658
+              },
+              "support": 41,
+              "undefined": false
+            },
+            "extracellular": {
+              "f1": {
+                "ci_high": 0.9246863756604065,
+                "ci_low": 0.686545842217484,
+                "value": 0.8780487804878049
+              },
+              "mcc": {
+                "ci_high": 0.8953025317807528,
+                "ci_low": 0.6656714297387842,
+                "value": 0.8490470770700181
+              },
+              "support": 86,
+              "undefined": false
+            },
+            "golgi_apparatus": {
+              "f1": {
+                "ci_high": 0.3783783783783784,
+                "ci_low": 0.0,
+                "value": 0.20689655172413793
+              },
+              "mcc": {
+                "ci_high": 0.3729803018014787,
+                "ci_low": -0.032648468025155725,
+                "value": 0.18530503025335973
+              },
+              "support": 18,
+              "undefined": false
+            },
+            "lysosome_vacuole": {
+              "f1": {
+                "ci_high": 0.35294117647058826,
+                "ci_low": 0.0,
+                "value": 0.13793103448275862
+              },
+              "mcc": {
+                "ci_high": 0.34227006355600614,
+                "ci_low": -0.03399543411163647,
+                "value": 0.10889310129609417
+              },
+              "support": 17,
+              "undefined": false
+            },
+            "mitochondrion": {
+              "f1": {
+                "ci_high": 0.7692307692307693,
+                "ci_low": 0.534802767147483,
+                "value": 0.6666666666666666
+              },
+              "mcc": {
+                "ci_high": 0.7459680551156244,
+                "ci_low": 0.4800480259317574,
+                "value": 0.6323681648601047
+              },
+              "support": 46,
+              "undefined": false
+            },
+            "nucleus": {
+              "f1": {
+                "ci_high": 0.7034969816060287,
+                "ci_low": 0.584184944302221,
+                "value": 0.6455696202531646
+              },
+              "mcc": {
+                "ci_high": 0.5415737842200818,
+                "ci_low": 0.3456722920198895,
+                "value": 0.463322425353263
+              },
+              "support": 125,
+              "undefined": false
+            },
+            "peroxisome": {
+              "f1": {
+                "ci_high": 0.09024265208475733,
+                "ci_low": 0.0,
+                "value": 0.046153846153846156
+              },
+              "mcc": {
+                "ci_high": 0.14647046392402008,
+                "ci_low": -0.06738089978340887,
+                "value": 0.05208139077211302
+              },
+              "support": 6,
+              "undefined": false
+            },
+            "plastid": {
+              "f1": {
+                "ci_high": 0.5885294117647056,
+                "ci_low": 0.09988095238095239,
+                "value": 0.34782608695652173
+              },
+              "mcc": {
+                "ci_high": 0.5998610872691864,
+                "ci_low": 0.07344766599161683,
+                "value": 0.33224478484301906
+              },
+              "support": 13,
+              "undefined": false
+            }
+          },
+          "rows": 408
+        }
+      },
+      "calibration": {
+        "bootstrap": {
+          "samples": 1000,
+          "seed": 20260909,
+          "unit": "cluster_id"
+        },
+        "macro": {
+          "brier_calibrated": {
+            "ci_high": 0.08385393235793116,
+            "ci_low": 0.05854769506303511,
+            "value": 0.06878817778602676
+          },
+          "brier_delta": {
+            "ci_high": -0.01712711008336092,
+            "ci_low": -0.03207132954254168,
+            "value": -0.0240445084144117
+          },
+          "brier_raw": {
+            "ci_high": 0.11094841189659546,
+            "ci_low": 0.0778106587823483,
+            "value": 0.09283268620043846
+          },
+          "ece_calibrated": {
+            "ci_high": 0.06710577576990914,
+            "ci_low": 0.03500669159205343,
+            "value": 0.04209006433380198
+          },
+          "ece_delta": {
+            "ci_high": -0.05828724998195944,
+            "ci_low": -0.08990638401420609,
+            "value": -0.07502003193175107
+          },
+          "ece_raw": {
+            "ci_high": 0.1474811574353722,
+            "ci_low": 0.09814338131218386,
+            "value": 0.11711009626555305
+          }
+        },
+        "per_label": {
+          "cell_membrane": {
+            "brier_calibrated": {
+              "ci_high": 0.10099470715783641,
+              "ci_low": 0.04684842761982112,
+              "value": 0.06833067448551429
+            },
+            "brier_delta": {
+              "ci_high": -0.025335201125977026,
+              "ci_low": -0.05607130500029692,
+              "value": -0.0388791897775182
+            },
+            "brier_raw": {
+              "ci_high": 0.13905065557878832,
+              "ci_low": 0.08606197374965073,
+              "value": 0.10720986426303249
+            },
+            "ece_calibrated": {
+              "ci_high": 0.09612985767122127,
+              "ci_low": 0.0365015216433963,
+              "value": 0.05844918192304651
+            },
+            "ece_delta": {
+              "ci_high": -0.07534511467642081,
+              "ci_low": -0.13528380614653482,
+              "value": -0.1032103733055526
+            },
+            "ece_raw": {
+              "ci_high": 0.2037177152227095,
+              "ci_low": 0.1303519138695613,
+              "value": 0.16165955522859912
+            }
+          },
+          "cytoplasm": {
+            "brier_calibrated": {
+              "ci_high": 0.18525934717860723,
+              "ci_low": 0.12118310004748035,
+              "value": 0.14787212131969002
+            },
+            "brier_delta": {
+              "ci_high": 0.022386557045759814,
+              "ci_low": -0.005854051345074586,
+              "value": 0.005772912849923678
+            },
+            "brier_raw": {
+              "ci_high": 0.1720717368866637,
+              "ci_low": 0.12018019803176289,
+              "value": 0.14209920846976634
+            },
+            "ece_calibrated": {
+              "ci_high": 0.13699976235565794,
+              "ci_low": 0.047331989600429586,
+              "value": 0.07521323766155816
+            },
+            "ece_delta": {
+              "ci_high": 0.03919340272291833,
+              "ci_low": -0.057034286045436186,
+              "value": -0.013802099684462513
+            },
+            "ece_raw": {
+              "ci_high": 0.13910541822983535,
+              "ci_low": 0.06840697829539567,
+              "value": 0.08901533734602067
+            }
+          },
+          "endoplasmic_reticulum": {
+            "brier_calibrated": {
+              "ci_high": 0.12052907933326829,
+              "ci_low": 0.05842001840594769,
+              "value": 0.08401994756517485
+            },
+            "brier_delta": {
+              "ci_high": -0.034006686780699374,
+              "ci_low": -0.07231437231254456,
+              "value": -0.051932139695493804
+            },
+            "brier_raw": {
+              "ci_high": 0.17692760986317,
+              "ci_low": 0.10571011400513802,
+              "value": 0.13595208726066865
+            },
+            "ece_calibrated": {
+              "ci_high": 0.09748159844820933,
+              "ci_low": 0.029227644072940977,
+              "value": 0.03924836363716319
+            },
+            "ece_delta": {
+              "ci_high": -0.0938111949308172,
+              "ci_low": -0.16297521109409963,
+              "value": -0.1451444005840126
+            },
+            "ece_raw": {
+              "ci_high": 0.23222760907560877,
+              "ci_low": 0.15120430195271953,
+              "value": 0.1843927642211758
+            }
+          },
+          "extracellular": {
+            "brier_calibrated": {
+              "ci_high": 0.062458113347764584,
+              "ci_low": 0.029536129230330714,
+              "value": 0.0473003697857761
+            },
+            "brier_delta": {
+              "ci_high": -5.7355355856189035e-05,
+              "ci_low": -0.03311488678163118,
+              "value": -0.014771117370611701
+            },
+            "brier_raw": {
+              "ci_high": 0.08256677345248031,
+              "ci_low": 0.04813027948591578,
+              "value": 0.0620714871563878
+            },
+            "ece_calibrated": {
+              "ci_high": 0.05653580915766549,
+              "ci_low": 0.01674137672576744,
+              "value": 0.03375903869865407
+            },
+            "ece_delta": {
+              "ci_high": -0.020311486554101164,
+              "ci_low": -0.08094130632276307,
+              "value": -0.04396716970154618
+            },
+            "ece_raw": {
+              "ci_high": 0.12868251527890043,
+              "ci_low": 0.04688984603921439,
+              "value": 0.07772620840020025
+            }
+          },
+          "golgi_apparatus": {
+            "brier_calibrated": {
+              "ci_high": 0.06215610000727046,
+              "ci_low": 0.02330820947643136,
+              "value": 0.03896117852669439
+            },
+            "brier_delta": {
+              "ci_high": -0.01436063225186702,
+              "ci_low": -0.049118432951323024,
+              "value": -0.0285420325057198
+            },
+            "brier_raw": {
+              "ci_high": 0.09585885820145335,
+              "ci_low": 0.04798164114806346,
+              "value": 0.06750321103241419
+            },
+            "ece_calibrated": {
+              "ci_high": 0.05038904587604891,
+              "ci_low": 0.016047324402077776,
+              "value": 0.01692734661797454
+            },
+            "ece_delta": {
+              "ci_high": -0.042111652824130145,
+              "ci_low": -0.10665962271894713,
+              "value": -0.08355464669506216
+            },
+            "ece_raw": {
+              "ci_high": 0.14320085103613672,
+              "ci_low": 0.07254871754587744,
+              "value": 0.1004819933130367
+            }
+          },
+          "lysosome_vacuole": {
+            "brier_calibrated": {
+              "ci_high": 0.055278991350921236,
+              "ci_low": 0.023621857062197656,
+              "value": 0.03962137085340451
+            },
+            "brier_delta": {
+              "ci_high": -0.038704968338169436,
+              "ci_low": -0.07844866466345521,
+              "value": -0.05518399288141677
+            },
+            "brier_raw": {
+              "ci_high": 0.11389516560895586,
+              "ci_low": 0.08133444238624354,
+              "value": 0.09480536373482128
+            },
+            "ece_calibrated": {
+              "ci_high": 0.06260376446475416,
+              "ci_low": 0.03195902100673349,
+              "value": 0.042939165854846126
+            },
+            "ece_delta": {
+              "ci_high": -0.10980151911852133,
+              "ci_low": -0.1749349297224713,
+              "value": -0.13907166736573456
+            },
+            "ece_raw": {
+              "ci_high": 0.2154054277252711,
+              "ci_low": 0.16190041555697993,
+              "value": 0.18201083322058068
+            }
+          },
+          "mitochondrion": {
+            "brier_calibrated": {
+              "ci_high": 0.09204366541753159,
+              "ci_low": 0.0402160855159669,
+              "value": 0.06110968702492667
+            },
+            "brier_delta": {
+              "ci_high": -0.009262976807696499,
+              "ci_low": -0.037467122146379345,
+              "value": -0.021606683756972847
+            },
+            "brier_raw": {
+              "ci_high": 0.11659003490777678,
+              "ci_low": 0.05795313735644608,
+              "value": 0.08271637078189951
+            },
+            "ece_calibrated": {
+              "ci_high": 0.08578156150727592,
+              "ci_low": 0.02547009235684543,
+              "value": 0.04897085561031414
+            },
+            "ece_delta": {
+              "ci_high": -0.0394413791313442,
+              "ci_low": -0.10614437128157679,
+              "value": -0.07320924289863961
+            },
+            "ece_raw": {
+              "ci_high": 0.17010773539104415,
+              "ci_low": 0.08272577333332212,
+              "value": 0.12218009850895376
+            }
+          },
+          "nucleus": {
+            "brier_calibrated": {
+              "ci_high": 0.2012926562116098,
+              "ci_low": 0.13586065855486296,
+              "value": 0.16287269632761325
+            },
+            "brier_delta": {
+              "ci_high": 0.017805816454317933,
+              "ci_low": -0.011300288873587416,
+              "value": 0.0016251399604797767
+            },
+            "brier_raw": {
+              "ci_high": 0.1930494193950887,
+              "ci_low": 0.13571538845504666,
+              "value": 0.16124755636713348
+            },
+            "ece_calibrated": {
+              "ci_high": 0.1288437866131706,
+              "ci_low": 0.04585537769551144,
+              "value": 0.0770657985851174
+            },
+            "ece_delta": {
+              "ci_high": 0.028273648420507388,
+              "ci_low": -0.05966091445481005,
+              "value": -0.012902676148659364
+            },
+            "ece_raw": {
+              "ci_high": 0.14433993275738563,
+              "ci_low": 0.0686448829045985,
+              "value": 0.08996847473377677
+            }
+          },
+          "peroxisome": {
+            "brier_calibrated": {
+              "ci_high": 0.028930764336525153,
+              "ci_low": 0.007160891994692659,
+              "value": 0.01604407116261916
+            },
+            "brier_delta": {
+              "ci_high": -0.014645438820560065,
+              "ci_low": -0.03560321405165952,
+              "value": -0.023767433539774077
+            },
+            "brier_raw": {
+              "ci_high": 0.05816788903579763,
+              "ci_low": 0.02616236425177193,
+              "value": 0.03981150470239324
+            },
+            "ece_calibrated": {
+              "ci_high": 0.039620815754976335,
+              "ci_low": 0.014204841819228719,
+              "value": 0.01684596314630714
+            },
+            "ece_delta": {
+              "ci_high": -0.046604970927127204,
+              "ci_low": -0.10925394660245363,
+              "value": -0.07607576957545098
+            },
+            "ece_raw": {
+              "ci_high": 0.13895546200267378,
+              "ci_low": 0.06363200169198859,
+              "value": 0.09292173272175812
+            }
+          },
+          "plastid": {
+            "brier_calibrated": {
+              "ci_high": 0.03865802442194089,
+              "ci_low": 0.009761341254665996,
+              "value": 0.021749660808854356
+            },
+            "brier_delta": {
+              "ci_high": -0.0021692188278872424,
+              "ci_low": -0.027082480784820256,
+              "value": -0.013160547427013246
+            },
+            "brier_raw": {
+              "ci_high": 0.054944681573904544,
+              "ci_low": 0.01953856764363935,
+              "value": 0.0349102082358676
+            },
+            "ece_calibrated": {
+              "ci_high": 0.036358432834561555,
+              "ci_low": 0.007827503180489647,
+              "value": 0.011481691603038545
+            },
+            "ece_delta": {
+              "ci_high": -0.0312707996336308,
+              "ci_low": -0.08191980391381112,
+              "value": -0.05926227335839002
+            },
+            "ece_raw": {
+              "ci_high": 0.1027367481944489,
+              "ci_low": 0.04986413416340856,
+              "value": 0.07074396496142857
+            }
+          }
+        },
+        "reliability": {
+          "cell_membrane": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.07608695652173914,
+                "mean_score": 0.01282705743333602,
+                "rows": 92
+              },
+              {
+                "fraction_positive": 0.017857142857142856,
+                "mean_score": 0.034918083791370694,
+                "rows": 56
+              },
+              {
+                "fraction_positive": 0.125,
+                "mean_score": 0.04865433756512049,
+                "rows": 48
+              },
+              {
+                "fraction_positive": 0.1875,
+                "mean_score": 0.06006378454996456,
+                "rows": 16
+              },
+              {
+                "fraction_positive": 0.04,
+                "mean_score": 0.08312333819787071,
+                "rows": 75
+              },
+              {
+                "fraction_positive": 0.029850746268656716,
+                "mean_score": 0.09219858156028368,
+                "rows": 67
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.1,
+                "rows": 14
+              },
+              {
+                "fraction_positive": 0.575,
+                "mean_score": 0.6389204060674758,
+                "rows": 40
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.002278678588038197,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.011199026493491923,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.039938823615268966,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.08802032878711111,
+                "rows": 42
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.13564748679980254,
+                "rows": 39
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.18895183103840527,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.07317073170731707,
+                "mean_score": 0.25186023915686256,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.07317073170731707,
+                "mean_score": 0.32981378421550844,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.07317073170731707,
+                "mean_score": 0.5069235803150549,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.6,
+                "mean_score": 0.8474816918373108,
+                "rows": 40
+              }
+            ]
+          },
+          "cytoplasm": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.037037037037037035,
+                "mean_score": 0.0,
+                "rows": 81
+              },
+              {
+                "fraction_positive": 0.16666666666666666,
+                "mean_score": 0.023622047244094488,
+                "rows": 6
+              },
+              {
+                "fraction_positive": 0.038461538461538464,
+                "mean_score": 0.027017734993123894,
+                "rows": 52
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.038134646936629164,
+                "rows": 26
+              },
+              {
+                "fraction_positive": 0.18604651162790697,
+                "mean_score": 0.10608303861175358,
+                "rows": 43
+              },
+              {
+                "fraction_positive": 0.55,
+                "mean_score": 0.44922970650479915,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.35714285714285715,
+                "mean_score": 0.5248599439775908,
+                "rows": 42
+              },
+              {
+                "fraction_positive": 0.717948717948718,
+                "mean_score": 0.6409433681159592,
+                "rows": 39
+              },
+              {
+                "fraction_positive": 0.7758620689655172,
+                "mean_score": 0.7491411176016666,
+                "rows": 58
+              },
+              {
+                "fraction_positive": 0.5714285714285714,
+                "mean_score": 0.865512957120381,
+                "rows": 21
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.004362063826680774,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.019607597893876273,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.07564284125479256,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.17042032138603488,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.075,
+                "mean_score": 0.3016444034874439,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.4878048780487805,
+                "mean_score": 0.48192944831964446,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.4878048780487805,
+                "mean_score": 0.6253405489572664,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.6097560975609756,
+                "mean_score": 0.709884614479251,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.8048780487804879,
+                "mean_score": 0.7871260686618525,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.75,
+                "mean_score": 0.9108423113822937,
+                "rows": 40
+              }
+            ]
+          },
+          "endoplasmic_reticulum": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.0,
+                "rows": 42
+              },
+              {
+                "fraction_positive": 0.08196721311475409,
+                "mean_score": 0.0282202036378816,
+                "rows": 61
+              },
+              {
+                "fraction_positive": 0.0967741935483871,
+                "mean_score": 0.05021452407436834,
+                "rows": 31
+              },
+              {
+                "fraction_positive": 0.05084745762711865,
+                "mean_score": 0.06,
+                "rows": 59
+              },
+              {
+                "fraction_positive": 0.05970149253731343,
+                "mean_score": 0.060402684563758385,
+                "rows": 67
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.08560539368921669,
+                "rows": 47
+              },
+              {
+                "fraction_positive": 0.13043478260869565,
+                "mean_score": 0.11221532091097307,
+                "rows": 23
+              },
+              {
+                "fraction_positive": 0.2553191489361702,
+                "mean_score": 0.23901963317662717,
+                "rows": 47
+              },
+              {
+                "fraction_positive": 0.2903225806451613,
+                "mean_score": 0.40309215494411754,
+                "rows": 31
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.001562284986082487,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.006249718260156308,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.14634146341463414,
+                "mean_score": 0.019307705096718742,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.05419156654942327,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.12103384155780077,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.07317073170731707,
+                "mean_score": 0.20253496853316702,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.07317073170731707,
+                "mean_score": 0.2830054687290657,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0975609756097561,
+                "mean_score": 0.40244828637053326,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.17073170731707318,
+                "mean_score": 0.5598460842923421,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.375,
+                "mean_score": 0.8229930207133294,
+                "rows": 40
+              }
+            ]
+          },
+          "extracellular": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.008403361344537815,
+                "mean_score": 0.0,
+                "rows": 119
+              },
+              {
+                "fraction_positive": 0.07407407407407407,
+                "mean_score": 0.015151515151515152,
+                "rows": 27
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.030319288191039632,
+                "rows": 32
+              },
+              {
+                "fraction_positive": 0.1111111111111111,
+                "mean_score": 0.038384765827381345,
+                "rows": 27
+              },
+              {
+                "fraction_positive": 0.06,
+                "mean_score": 0.0725406162464986,
+                "rows": 50
+              },
+              {
+                "fraction_positive": 0.05263157894736842,
+                "mean_score": 0.07831229657855045,
+                "rows": 38
+              },
+              {
+                "fraction_positive": 0.029411764705882353,
+                "mean_score": 0.17086675283680494,
+                "rows": 34
+              },
+              {
+                "fraction_positive": 0.9117647058823529,
+                "mean_score": 0.8974742570189418,
+                "rows": 68
+              },
+              {
+                "fraction_positive": 0.9230769230769231,
+                "mean_score": 0.9896024578380481,
+                "rows": 13
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0007213024561301941,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0034907516120455976,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.013048432880967128,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.034501042580459176,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.05,
+                "mean_score": 0.07492850935086608,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.07317073170731707,
+                "mean_score": 0.1428693843687453,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.2666507192501208,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0975609756097561,
+                "mean_score": 0.4733503678949868,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.8536585365853658,
+                "mean_score": 0.8326123603960363,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.975,
+                "mean_score": 0.990057972073555,
+                "rows": 40
+              }
+            ]
+          },
+          "golgi_apparatus": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0011481040206854688,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.003420772992754296,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.006994111817603734,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.015220846361446196,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.026106649154811784,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.03807378455789481,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.05080769464517101,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.0640378543705589,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.07317073170731707,
+                "mean_score": 0.08716250512470058,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.2,
+                "mean_score": 0.18144436512250453,
+                "rows": 40
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.00017018631594354947,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0011972952541815707,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.004385395622925788,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.018350113773854766,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.05,
+                "mean_score": 0.04165602824650705,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.06959506396840258,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.12063243567216687,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.18614664673805237,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.07317073170731707,
+                "mean_score": 0.3135082474568995,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.225,
+                "mean_score": 0.6437274016439914,
+                "rows": 40
+              }
+            ]
+          },
+          "lysosome_vacuole": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.0005505236132444187,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0975609756097561,
+                "mean_score": 0.0027935963948544354,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.01162705766012205,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.03379574530582785,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.042950484721787065,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.04568582100559379,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.04722362285051526,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.049133948153690155,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.05155276028026549,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.175,
+                "mean_score": 0.07153769913147023,
+                "rows": 40
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.00042542936085826624,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0975609756097561,
+                "mean_score": 0.0020260338802117763,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.008194447165673099,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.03257668068314471,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.08196036834269763,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.13392026304471782,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.2020102917421155,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.302224609909988,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.44710589472840473,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.175,
+                "mean_score": 0.714678505063057,
+                "rows": 40
+              }
+            ]
+          },
+          "mitochondrion": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.03007518796992481,
+                "mean_score": 0.0,
+                "rows": 133
+              },
+              {
+                "fraction_positive": 0.02127659574468085,
+                "mean_score": 0.019812811053397952,
+                "rows": 47
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.02936751409811941,
+                "rows": 39
+              },
+              {
+                "fraction_positive": 0.019230769230769232,
+                "mean_score": 0.0375898202243139,
+                "rows": 52
+              },
+              {
+                "fraction_positive": 0.15151515151515152,
+                "mean_score": 0.044444444444444446,
+                "rows": 33
+              },
+              {
+                "fraction_positive": 0.17391304347826086,
+                "mean_score": 0.09616368286445014,
+                "rows": 23
+              },
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.17179860743506584,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.725,
+                "mean_score": 0.8111498993684553,
+                "rows": 40
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.0010898478411524215,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.004310977747436703,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.009211998398801902,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.02558523473307127,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0727592964656651,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.14200835202525303,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.07317073170731707,
+                "mean_score": 0.2197221088700178,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0975609756097561,
+                "mean_score": 0.33714025340429166,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0975609756097561,
+                "mean_score": 0.5111767497004532,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.75,
+                "mean_score": 0.9155445635318756,
+                "rows": 40
+              }
+            ]
+          },
+          "nucleus": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.03529411764705882,
+                "mean_score": 0.0,
+                "rows": 85
+              },
+              {
+                "fraction_positive": 0.0975609756097561,
+                "mean_score": 0.036731591306716854,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.0727234753550543,
+                "rows": 42
+              },
+              {
+                "fraction_positive": 0.2619047619047619,
+                "mean_score": 0.20043669659006394,
+                "rows": 42
+              },
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.39007747714470403,
+                "rows": 35
+              },
+              {
+                "fraction_positive": 0.5434782608695652,
+                "mean_score": 0.48988995409127734,
+                "rows": 46
+              },
+              {
+                "fraction_positive": 0.5365853658536586,
+                "mean_score": 0.5559480773044129,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.6,
+                "mean_score": 0.6731034264305922,
+                "rows": 50
+              },
+              {
+                "fraction_positive": 0.6538461538461539,
+                "mean_score": 0.7636443071200708,
+                "rows": 26
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.002048882861655751,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.011408459974407422,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.07317073170731707,
+                "mean_score": 0.06203734229614095,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.14433796249511766,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.25,
+                "mean_score": 0.2574179884046316,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.3170731707317073,
+                "mean_score": 0.4058034056570472,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.5121951219512195,
+                "mean_score": 0.6031293127594924,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.5365853658536586,
+                "mean_score": 0.7030085078099879,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.6585365853658537,
+                "mean_score": 0.7945383772617434,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.65,
+                "mean_score": 0.9413542911410332,
+                "rows": 40
+              }
+            ]
+          },
+          "peroxisome": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0007743572041806878,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.002537727324723652,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.006248086282029384,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.013445563823100205,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.025,
+                "mean_score": 0.019725796132941793,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.02265478478833971,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.02668817502508332,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.034166452326045454,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.04878048780487805,
+                "mean_score": 0.04386998931221225,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.05,
+                "mean_score": 0.12734333382745217,
+                "rows": 40
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0007743572041806878,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.002537727324723652,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.006248086282029384,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.013452228385864235,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.025,
+                "mean_score": 0.027388948388397692,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.07317073170731707,
+                "mean_score": 0.06421235939714967,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.11993508258970773,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.17408302353649605,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.2540883941621315,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.4008335217833519,
+                "rows": 40
+              }
+            ]
+          },
+          "plastid": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.00040926284588726396,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0011027804418846342,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.00198231721604542,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.003291981060563603,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.005325192852429323,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.00868751230330986,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.014640021553288704,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.023484233674871187,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.03724807518513331,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.25,
+                "mean_score": 0.21036515394993177,
+                "rows": 40
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0007052523428794258,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0024750091351296117,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.005198189648004566,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.010334128411713897,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.01852119395043701,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.03345112929620394,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.06478614650848435,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.024390243902439025,
+                "mean_score": 0.11556210986724715,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.19777424342748595,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.25,
+                "mean_score": 0.5870238848030567,
+                "rows": 40
+              }
+            ]
+          }
+        }
+      },
+      "raw": {
+        "folds": [
+          {
+            "macro_f1": 0.5266024795005834,
+            "per_class": {
+              "cell_membrane": {
+                "f1": 0.48,
+                "mcc": 0.500914502841798,
+                "support": 18,
+                "undefined": false
+              },
+              "cytoplasm": {
+                "f1": 0.7422680412371134,
+                "mcc": 0.641678617168323,
+                "support": 40,
+                "undefined": false
+              },
+              "endoplasmic_reticulum": {
+                "f1": 0.38461538461538464,
+                "mcc": 0.3260185487993413,
+                "support": 12,
+                "undefined": false
+              },
+              "extracellular": {
+                "f1": 0.9174311926605505,
+                "mcc": 0.868350506338707,
+                "support": 55,
+                "undefined": false
+              },
+              "golgi_apparatus": {
+                "f1": 0.14285714285714285,
+                "mcc": 0.1415750000866723,
+                "support": 3,
+                "undefined": false
+              },
+              "lysosome_vacuole": {
+                "f1": 0.3076923076923077,
+                "mcc": 0.3059033683942098,
+                "support": 9,
+                "undefined": false
+              },
+              "mitochondrion": {
+                "f1": 0.5555555555555556,
+                "mcc": 0.6023231982363461,
+                "support": 13,
+                "undefined": false
+              },
+              "nucleus": {
+                "f1": 0.6486486486486487,
+                "mcc": 0.5312403824057306,
+                "support": 35,
+                "undefined": false
+              },
+              "peroxisome": {
+                "f1": 0.08695652173913043,
+                "mcc": 0.17943514064131835,
+                "support": 2,
+                "undefined": false
+              },
+              "plastid": {
+                "f1": 1.0,
+                "mcc": 0.0,
+                "support": 1,
+                "undefined": true
+              }
+            },
+            "rows": 146,
+            "validate": 1
+          },
+          {
+            "macro_f1": 0.4999369240836106,
+            "per_class": {
+              "cell_membrane": {
+                "f1": 0.6153846153846154,
+                "mcc": 0.5822088423841009,
+                "support": 6,
+                "undefined": false
+              },
+              "cytoplasm": {
+                "f1": 0.7352941176470589,
+                "mcc": 0.5966430306162186,
+                "support": 26,
+                "undefined": false
+              },
+              "endoplasmic_reticulum": {
+                "f1": 0.5454545454545454,
+                "mcc": 0.4834835706848496,
+                "support": 9,
+                "undefined": false
+              },
+              "extracellular": {
+                "f1": 0.8,
+                "mcc": 0.78065375798434,
+                "support": 8,
+                "undefined": false
+              },
+              "golgi_apparatus": {
+                "f1": 0.32,
+                "mcc": 0.3246830813483206,
+                "support": 5,
+                "undefined": false
+              },
+              "lysosome_vacuole": {
+                "f1": 0.75,
+                "mcc": 0.764057447960416,
+                "support": 3,
+                "undefined": false
+              },
+              "mitochondrion": {
+                "f1": 0.6,
+                "mcc": 0.5577816789190845,
+                "support": 8,
+                "undefined": false
+              },
+              "nucleus": {
+                "f1": 0.6075949367088608,
+                "mcc": 0.4255961412791452,
+                "support": 24,
+                "undefined": false
+              },
+              "peroxisome": {
+                "f1": 0.02564102564102564,
+                "mcc": 0.0,
+                "support": 1,
+                "undefined": true
+              },
+              "plastid": {
+                "f1": 0.0,
+                "mcc": 0.0,
+                "support": 7,
+                "undefined": false
+              }
+            },
+            "rows": 77,
+            "validate": 2
+          },
+          {
+            "macro_f1": 0.4792975155071657,
+            "per_class": {
+              "cell_membrane": {
+                "f1": 0.6,
+                "mcc": 0.5902037509808481,
+                "support": 13,
+                "undefined": false
+              },
+              "cytoplasm": {
+                "f1": 0.7088607594936709,
+                "mcc": 0.4984076392680625,
+                "support": 37,
+                "undefined": false
+              },
+              "endoplasmic_reticulum": {
+                "f1": 0.2,
+                "mcc": 0.10361445783132531,
+                "support": 10,
+                "undefined": false
+              },
+              "extracellular": {
+                "f1": 0.8,
+                "mcc": 0.7769282067495051,
+                "support": 14,
+                "undefined": false
+              },
+              "golgi_apparatus": {
+                "f1": 0.4,
+                "mcc": 0.37579825924875904,
+                "support": 6,
+                "undefined": false
+              },
+              "lysosome_vacuole": {
+                "f1": 0.0,
+                "mcc": 0.0,
+                "support": 1,
+                "undefined": true
+              },
+              "mitochondrion": {
+                "f1": 0.8421052631578947,
+                "mcc": 0.8256154365748793,
+                "support": 10,
+                "undefined": false
+              },
+              "nucleus": {
+                "f1": 0.5753424657534246,
+                "mcc": 0.3024592595635977,
+                "support": 35,
+                "undefined": false
+              },
+              "peroxisome": {
+                "f1": 0.0,
+                "mcc": -0.03333333333333333,
+                "support": 3,
+                "undefined": false
+              },
+              "plastid": {
+                "f1": 0.6666666666666666,
+                "mcc": 0.7032533095487744,
+                "support": 2,
+                "undefined": false
+              }
+            },
+            "rows": 93,
+            "validate": 3
+          },
+          {
+            "macro_f1": 0.41935199720914007,
+            "per_class": {
+              "cell_membrane": {
+                "f1": 0.7142857142857143,
+                "mcc": 0.6996611002644991,
+                "support": 8,
+                "undefined": false
+              },
+              "cytoplasm": {
+                "f1": 0.7333333333333333,
+                "mcc": 0.5860404031703634,
+                "support": 33,
+                "undefined": false
+              },
+              "endoplasmic_reticulum": {
+                "f1": 0.3076923076923077,
+                "mcc": 0.20830016851983468,
+                "support": 10,
+                "undefined": false
+              },
+              "extracellular": {
+                "f1": 0.8888888888888888,
+                "mcc": 0.8768406961178046,
+                "support": 9,
+                "undefined": false
+              },
+              "golgi_apparatus": {
+                "f1": 0.0,
+                "mcc": -0.045454545454545456,
+                "support": 4,
+                "undefined": false
+              },
+              "lysosome_vacuole": {
+                "f1": 0.0,
+                "mcc": -0.03178208630818641,
+                "support": 4,
+                "undefined": false
+              },
+              "mitochondrion": {
+                "f1": 0.6666666666666666,
+                "mcc": 0.6153871128820448,
+                "support": 15,
+                "undefined": false
+              },
+              "nucleus": {
+                "f1": 0.6326530612244898,
+                "mcc": 0.43546026486971373,
+                "support": 31,
+                "undefined": false
+              },
+              "peroxisome": {
+                "f1": 0.0,
+                "mcc": 0.0,
+                "support": 0,
+                "undefined": true
+              },
+              "plastid": {
+                "f1": 0.25,
+                "mcc": 0.22593861697862647,
+                "support": 3,
+                "undefined": false
+              }
+            },
+            "rows": 92,
+            "validate": 4
+          }
+        ],
+        "frozen_thresholds": [
+          0.7927332520484924,
+          0.3855764865875244,
+          0.5652334690093994,
+          0.5976316928863525,
+          0.3837727904319763,
+          0.7342265844345093,
+          0.6992934346199036,
+          0.3627905249595642,
+          0.01749824918806553,
+          0.7448931932449341
+        ],
+        "mean_fold_macro_f1": 0.48129722907512495,
+        "pooled": {
+          "jaccard": {
+            "ci_high": 0.5309996949640431,
+            "ci_low": 0.39432100238479173,
+            "value": 0.46956699346405223
+          },
+          "macro_f1": {
+            "ci_high": 0.516163309971824,
+            "ci_low": 0.4279041497941392,
+            "value": 0.4763343487904311
+          },
+          "per_class": {
+            "cell_membrane": {
+              "f1": {
+                "ci_high": 0.7347475832438238,
+                "ci_low": 0.42291666666666666,
+                "value": 0.5833333333333334
+              },
+              "mcc": {
+                "ci_high": 0.7162728110290081,
+                "ci_low": 0.4059592034866164,
+                "value": 0.5672318737791673
+              },
+              "support": 45,
+              "undefined": false
+            },
+            "cytoplasm": {
+              "f1": {
+                "ci_high": 0.7842004440966093,
+                "ci_low": 0.6763535001583783,
+                "value": 0.7305389221556886
+              },
+              "mcc": {
+                "ci_high": 0.6527950606515653,
+                "ci_low": 0.47956836293213406,
+                "value": 0.5825752650035353
+              },
+              "support": 136,
+              "undefined": false
+            },
+            "endoplasmic_reticulum": {
+              "f1": {
+                "ci_high": 0.4819484835895305,
+                "ci_low": 0.2352628285356696,
+                "value": 0.3617021276595745
+              },
+              "mcc": {
+                "ci_high": 0.41702397352242765,
+                "ci_low": 0.14095421620537996,
+                "value": 0.2830762995124658
+              },
+              "support": 41,
+              "undefined": false
+            },
+            "extracellular": {
+              "f1": {
+                "ci_high": 0.9278028880866426,
+                "ci_low": 0.7199245283018868,
+                "value": 0.8862275449101796
+              },
+              "mcc": {
+                "ci_high": 0.9038035510226836,
+                "ci_low": 0.696012909739104,
+                "value": 0.8575923028923004
+              },
+              "support": 86,
+              "undefined": false
+            },
+            "golgi_apparatus": {
+              "f1": {
+                "ci_high": 0.376825266611977,
+                "ci_low": 0.09991935483870969,
+                "value": 0.24561403508771928
+              },
+              "mcc": {
+                "ci_high": 0.35648047389193777,
+                "ci_low": 0.053992570108571024,
+                "value": 0.2143046804968193
+              },
+              "support": 18,
+              "undefined": false
+            },
+            "lysosome_vacuole": {
+              "f1": {
+                "ci_high": 0.5834558823529411,
+                "ci_low": 0.08686594202898551,
+                "value": 0.3448275862068966
+              },
+              "mcc": {
+                "ci_high": 0.5746193526203426,
+                "ci_low": 0.06214663866870157,
+                "value": 0.3266793038882825
+              },
+              "support": 17,
+              "undefined": false
+            },
+            "mitochondrion": {
+              "f1": {
+                "ci_high": 0.7692307692307693,
+                "ci_low": 0.534802767147483,
+                "value": 0.6666666666666666
+              },
+              "mcc": {
+                "ci_high": 0.7459680551156244,
+                "ci_low": 0.4800480259317574,
+                "value": 0.6323681648601047
+              },
+              "support": 46,
+              "undefined": false
+            },
+            "nucleus": {
+              "f1": {
+                "ci_high": 0.6755893851439403,
+                "ci_low": 0.5539191024802536,
+                "value": 0.6172839506172839
+              },
+              "mcc": {
+                "ci_high": 0.5026987639286065,
+                "ci_low": 0.2839745076285646,
+                "value": 0.415175326125182
+              },
+              "support": 125,
+              "undefined": false
+            },
+            "peroxisome": {
+              "f1": {
+                "ci_high": 0.05556666666666665,
+                "ci_low": 0.0,
+                "value": 0.027149321266968326
+              },
+              "mcc": {
+                "ci_high": 0.08770456899261035,
+                "ci_low": -0.13249955810003944,
+                "value": -0.006597165806648554
+              },
+              "support": 6,
+              "undefined": false
+            },
+            "plastid": {
+              "f1": {
+                "ci_high": 0.5714285714285714,
+                "ci_low": 0.0,
+                "value": 0.3
+              },
+              "mcc": {
+                "ci_high": 0.5826963762030754,
+                "ci_low": -0.02029881309988927,
+                "value": 0.2984272518241018
+              },
+              "support": 13,
+              "undefined": false
+            }
+          },
+          "rows": 408
+        }
+      }
+    }
+  },
+  "frozen_sha256": "ee61452da32acde9d94cbf1c8a2f5b8689e85e128711ca49efb910329c779877",
+  "phase": 10,
+  "schema_version": 1,
+  "test": null
+}

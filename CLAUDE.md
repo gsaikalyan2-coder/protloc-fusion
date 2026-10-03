@@ -97,8 +97,9 @@ scripts/             one job per script
 Directories the old plan created and this one does not need are gone: `baselines/`,
 `benchmarks/`, `experiments/`, `notebooks/`, `registry/`, `data/`, `_phase3_hold/`,
 `docs/handover/`, `docs/phases/` (old content). `data/`, `registry/` and
-`experiments/` are recreated by the phase that first writes to them and stay
-gitignored.
+`experiments/` are recreated by the phase that first writes to them. `data/` and
+`experiments/` stay gitignored; `registry/localization/<version>/*.json` (bundle and
+calibrator, ADR-0012) is committed, weights and pickles are not.
 
 ---
 
@@ -344,8 +345,8 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 7   — ESM-2 embedding cache                         MVP   6.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.7.0)
 [x] Phase 8   — Classical baselines (metric floor)            ENH   3.0 h   done 2026-10-03 (branch; you tag v0.8.0)
 [x] Phase 9   — Localization head (attention pooling + MLP)   MVP   7.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.9.0)
-[ ] Phase 10  — Calibration & per-label thresholds            MVP   5.0 h   <-- NEXT
-[ ] Phase 11  — Signal-peptide CRF head                       ENH   8.0 h
+[x] Phase 10  — Calibration & per-label thresholds            MVP   5.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.10.0)
+[ ] Phase 11  — Signal-peptide CRF head                       ENH   8.0 h   <-- NEXT
 [ ] Phase 12  — GO head                                       ENH   4.0 h
 [ ] Phase 13  — Homology evidence (MMseqs2 index)             ENH   5.0 h
 [ ] Phase 14  — Swap the engine: model behind the same API     MVP   6.0 h
@@ -461,6 +462,17 @@ LinearSVC 0.368 / 0.343, motif rules 0.357 / 0.230. Test Jaccard: head 0.330, Lo
 inside wide intervals, Jaccard lower); 99 test accessions, one seed. `configs/evaluation/default.yaml` now uses registry numbering ([1,2,3,4] / [5]) with a test.
 UNVERIFIED: any claim beyond 500 sequences, seed variance, DeepLoc parity, Docker, GitHub Actions and the frontend gate (not runnable in the sandbox).
 Detail: `docs/phases/09.md`.
+
+### Phase 10 close — 2026-10-03
+
+Per-label calibration (isotonic for 6 labels, Platt for 4, else identity) cross-fitted on the Phase 9 head's out-of-fold scores, plus MCC-tuned thresholds frozen in
+`registry/localization/0.10.0/{bundle.json,calibrator.json}` (ADR-0012; `bundle_sha256` `c341da61936383928ff07765a28577b40a1e66860ede8629455f687830beb62c`; loader refuses any hash mismatch).
+**500-sequence subset only** ("subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers"). Manifest `data/manifests/calibration_metrics.json`,
+frozen_sha256 `ee61452da32acde9d94cbf1c8a2f5b8689e85e128711ca49efb910329c779877`. Validation, pooled over partitions 1-4: macro ECE 0.1171 -> 0.0421 (delta CI [-0.0899, -0.0583]),
+macro Brier 0.0928 -> 0.0688, macro F1 0.4763 -> 0.4578 (CIs overlap), Jaccard 0.4696 -> 0.5088. Cytoplasm and nucleus show no significant ECE change; peroxisome (6 positives) is
+Platt in the frozen fit but uncalibrated in two folds. Partition 5 was not read (the Phase 9 head touched it once). `data/calibration/` is gitignored.
+UNVERIFIED: any claim beyond 500 sequences, per-label claims on 6-18 positives, seed variance, DeepLoc parity, Docker, GitHub Actions and the frontend gate (not runnable in the sandbox).
+Detail: `docs/phases/10.md`.
 
 ### Two things a cold session must know
 
