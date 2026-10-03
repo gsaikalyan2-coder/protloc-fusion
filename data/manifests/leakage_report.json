@@ -1,0 +1,246 @@
+{
+  "checker": {
+    "hits_file_sha256": "dee30aa74c2a0a2992940fdc045252cb199df9aa68d42e81463e9ddbc5af233f",
+    "limit": "A heuristic search cannot prove absence: zero means none found at this sensitivity and hit cap.",
+    "mmseqs_version": "8cc5ce367b5638c4306c2d7cfc652dd099a4643f",
+    "path": "independent: own FASTA from the corpus, own MMseqs2 search, own hashing",
+    "search": {
+      "alignment_mode": 3,
+      "command": [
+        "mmseqs",
+        "easy-search",
+        "...",
+        "(reused hits file)"
+      ],
+      "max_seqs": 5000,
+      "min_seq_id": 0.25,
+      "sensitivity": "8.0",
+      "seq_id_mode": "shorter sequence"
+    },
+    "stages": "1. MMseqs2 local search, identity over the shorter sequence: candidate cross-partition pairs above the threshold. 2. Each candidate re-scored by EMBOSS needle global identity (identical residues / alignment length, gap open 10, extend 0.5, EBLOSUM62), the definition ADR-0002 and GraphPart use. The gate counts stage 2."
+  },
+  "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+  "fragments_per_partition": {
+    "1": 274,
+    "2": 79,
+    "3": 71,
+    "4": 79,
+    "5": 105
+  },
+  "identity_threshold": 0.3,
+  "leakage": {
+    "cross_partition_exact_duplicates": 0,
+    "cross_partition_homology_clusters": 0,
+    "cross_partition_pairs_above_threshold": 0,
+    "cross_partition_pairs_local_candidates": 7205,
+    "examples": [],
+    "max_cross_partition_identity_found": null,
+    "registry_clusters_spanning_partitions": 0
+  },
+  "partition_sizes": {
+    "1": 9373,
+    "2": 6060,
+    "3": 6008,
+    "4": 5885,
+    "5": 6553
+  },
+  "partitions": 5,
+  "passed": true,
+  "per_group": {
+    "1": {
+      "eukarya": 9373
+    },
+    "2": {
+      "eukarya": 6060
+    },
+    "3": {
+      "eukarya": 6008
+    },
+    "4": {
+      "eukarya": 5885
+    },
+    "5": {
+      "eukarya": 6553
+    }
+  },
+  "registry_rows": 33879,
+  "registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+  "sequences_removed": {
+    "graphpart_removed_accessions": 1557,
+    "graphpart_removed_distinct_sequences": 1497,
+    "leakage_repair_removed_accessions": 7,
+    "left_out_of_the_split_before_partitioning": {
+      "length_over_max": 5478,
+      "localization_not_experimental": 113092,
+      "not_eukarya_with_annotated_localization": 394689
+    },
+    "reason": "graphpart_removed",
+    "removal_rate": 0.044127,
+    "total_removed_accessions": 1564,
+    "working_set_reading": "eukarya_localization_eco",
+    "working_set_records": 35443
+  },
+  "split_version": "homology_v1",
+  "task_states": {
+    "1": {
+      "chloroplast_transit_peptide": {
+        "annotated": 177,
+        "negative": 8564,
+        "unknown": 632
+      },
+      "go_function": {
+        "annotated": 7266,
+        "unknown": 2107
+      },
+      "localization": {
+        "annotated": 9373
+      },
+      "membrane_type": {
+        "annotated": 1934,
+        "negative": 6583,
+        "unknown": 856
+      },
+      "mitochondrial_transit_peptide": {
+        "annotated": 299,
+        "negative": 8564,
+        "unknown": 510
+      },
+      "prokaryotic_localization": {
+        "not_applicable": 9373
+      },
+      "signal_peptide": {
+        "annotated": 2500,
+        "negative": 6606,
+        "unknown": 267
+      }
+    },
+    "2": {
+      "chloroplast_transit_peptide": {
+        "annotated": 229,
+        "negative": 5403,
+        "unknown": 428
+      },
+      "go_function": {
+        "annotated": 4653,
+        "unknown": 1407
+      },
+      "localization": {
+        "annotated": 6060
+      },
+      "membrane_type": {
+        "annotated": 1645,
+        "negative": 4034,
+        "unknown": 381
+      },
+      "mitochondrial_transit_peptide": {
+        "annotated": 302,
+        "negative": 5403,
+        "unknown": 355
+      },
+      "prokaryotic_localization": {
+        "not_applicable": 6060
+      },
+      "signal_peptide": {
+        "annotated": 776,
+        "negative": 5204,
+        "unknown": 80
+      }
+    },
+    "3": {
+      "chloroplast_transit_peptide": {
+        "annotated": 214,
+        "negative": 5389,
+        "unknown": 405
+      },
+      "go_function": {
+        "annotated": 4758,
+        "unknown": 1250
+      },
+      "localization": {
+        "annotated": 6008
+      },
+      "membrane_type": {
+        "annotated": 1554,
+        "negative": 4089,
+        "unknown": 365
+      },
+      "mitochondrial_transit_peptide": {
+        "annotated": 289,
+        "negative": 5389,
+        "unknown": 330
+      },
+      "prokaryotic_localization": {
+        "not_applicable": 6008
+      },
+      "signal_peptide": {
+        "annotated": 850,
+        "negative": 5085,
+        "unknown": 73
+      }
+    },
+    "4": {
+      "chloroplast_transit_peptide": {
+        "annotated": 163,
+        "negative": 5314,
+        "unknown": 408
+      },
+      "go_function": {
+        "annotated": 4512,
+        "unknown": 1373
+      },
+      "localization": {
+        "annotated": 5885
+      },
+      "membrane_type": {
+        "annotated": 1583,
+        "negative": 3923,
+        "unknown": 379
+      },
+      "mitochondrial_transit_peptide": {
+        "annotated": 283,
+        "negative": 5314,
+        "unknown": 288
+      },
+      "prokaryotic_localization": {
+        "not_applicable": 5885
+      },
+      "signal_peptide": {
+        "annotated": 756,
+        "negative": 5046,
+        "unknown": 83
+      }
+    },
+    "5": {
+      "chloroplast_transit_peptide": {
+        "annotated": 153,
+        "negative": 6031,
+        "unknown": 369
+      },
+      "go_function": {
+        "annotated": 5722,
+        "unknown": 831
+      },
+      "localization": {
+        "annotated": 6553
+      },
+      "membrane_type": {
+        "annotated": 2119,
+        "negative": 3975,
+        "unknown": 459
+      },
+      "mitochondrial_transit_peptide": {
+        "annotated": 221,
+        "negative": 6031,
+        "unknown": 301
+      },
+      "prokaryotic_localization": {
+        "not_applicable": 6553
+      },
+      "signal_peptide": {
+        "annotated": 1086,
+        "negative": 5355,
+        "unknown": 112
+      }
+    }
+  }
+}

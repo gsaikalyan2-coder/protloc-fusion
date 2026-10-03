@@ -36,12 +36,12 @@ labels:
   accepted_evidence_codes: all  # frozen from data/manifests/dataset_manifest.json
 
 splits:
-  # ADR-0002: GraphPart over needleall alignments, 30% maximum global identity,
-  # five partitions. Changing any of these means re-splitting and re-training.
+  # ADR-0002: GraphPart, 30% maximum global identity (the backend is mmseqs2needle, see
+  # docs/phases/06.md), five partitions. Changing any of these means re-splitting and re-training.
   partitioner: graphpart
-  alignment_backend: needleall
+  alignment_backend: mmseqs2needle  # frozen from data/manifests/split_manifest.json
   max_identity: 0.30
   partitions: 5
-  # Produced by the Phase 4 GraphPart run and recorded in the split manifest.
-  partitioner_version: null
-  removal_rate: null
+  # Produced by the Phase 6 GraphPart run and recorded in the split manifest.
+  partitioner_version: "1.0.2"  # frozen from data/manifests/split_manifest.json
+  removal_rate: 0.044127  # frozen from data/manifests/split_manifest.json

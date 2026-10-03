@@ -38,6 +38,7 @@ SCHEDULED_VALUES: list[tuple[str, str]] = [
 ]
 
 MANIFEST = CONFIG_DIR.parent / "data" / "manifests" / "dataset_manifest.json"
+SPLIT_MANIFEST = CONFIG_DIR.parent / "data" / "manifests" / "split_manifest.json"
 
 
 def _compose(*overrides: str) -> DictConfig:
@@ -100,6 +101,17 @@ def test_the_seed_is_recorded() -> None:
     assert isinstance(_compose().seed, int)
 
 
+def test_frozen_split_values_equal_the_split_manifest() -> None:
+    """Phase 6 froze these; the split manifest is the record and the config must agree."""
+    manifest = json.loads(SPLIT_MANIFEST.read_bytes())
+    splits = _compose().data.splits
+    assert splits.alignment_backend == manifest["alignment_backend"]
+    assert splits.partitioner_version == manifest["partitioner_version"]
+    assert splits.removal_rate == manifest["removal_rate"]
+    assert splits.max_identity == manifest["identity_threshold"]
+    assert splits.partitions == manifest["partitions"]
+
+
 def test_the_serving_mode_is_queue_everywhere() -> None:
     """ADR-0001: 'queue' is the only supported mode, in every deployment."""
     for option in GROUP_OPTIONS["deployment"]:
@@ -108,14 +120,14 @@ def test_the_serving_mode_is_queue_everywhere() -> None:
 
 
 def test_the_split_settings_match_adr_0002() -> None:
-    """30% maximum global identity, needleall, five partitions.
+    """30% maximum global identity, the mmseqs2needle backend, five partitions.
 
     Changing any of these means re-splitting and re-training, so the numbers are
     asserted against the ADR rather than trusted to stay put.
     """
     splits = _compose().data.splits
     assert splits.partitioner == "graphpart"
-    assert splits.alignment_backend == "needleall"
+    assert splits.alignment_backend == "mmseqs2needle"
     assert splits.max_identity == 0.30
     assert splits.partitions == 5
 

@@ -1,0 +1,92 @@
+{
+  "alignment_backend": "mmseqs2needle",
+  "calibration_split_rule": "Any calibration or validation split drawn from the training partitions must be made by whole homology clusters (the registry's cluster_id), never by random sequences, or the calibration data leaks into training.",
+  "command": [
+    "graphpart",
+    "precomputed",
+    "-ff",
+    "distinct.fasta",
+    "-ef",
+    "edges.csv",
+    "-th",
+    "0.30",
+    "-tf",
+    "one-minus",
+    "-pa",
+    "5",
+    "-of",
+    "graphpart.csv"
+  ],
+  "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+  "determinism": {
+    "identical": true,
+    "pre_repair_run_a_sha256": "c71c7725d535f68b5af5caff7f1681b1687df113b0f109fea8acff87f600d1d9",
+    "pre_repair_run_b_sha256": "c71c7725d535f68b5af5caff7f1681b1687df113b0f109fea8acff87f600d1d9",
+    "run_a_registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+    "run_b_registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+    "seconds": {
+      "run_a": 222.0,
+      "run_b": 225.0
+    }
+  },
+  "edge_command": [
+    "graphpart",
+    "mmseqs2needle",
+    "--fasta-file",
+    "/root/p6/run_a/distinct.fasta",
+    "--threshold",
+    "0.30",
+    "--partitions",
+    "5",
+    "--recompute-threshold",
+    "0.20",
+    "--threads",
+    "6",
+    "--out-file",
+    "/root/p6/run_a/graphpart.csv",
+    "--save-checkpoint-path",
+    "/root/p6/run_a/edges.csv",
+    "--prefilter"
+  ],
+  "edge_order": "LC_ALL=C sort -t, -k1,1 -k2,2",
+  "hash_seed": "0",
+  "identity_threshold": 0.3,
+  "leakage_report": {
+    "file": "data/manifests/leakage_report.json",
+    "partition_sizes": {
+      "1": 9373,
+      "2": 6060,
+      "3": 6008,
+      "4": 5885,
+      "5": 6553
+    },
+    "passed": true,
+    "pre_repair_file": "data/manifests/leakage_report_pre_repair.json"
+  },
+  "partitioner": "graphpart",
+  "partitioner_version": "1.0.2",
+  "partitions": 5,
+  "registry": {
+    "committed": false,
+    "file": "data/processed/splits/registry.tsv",
+    "pre_repair_sha256": "c71c7725d535f68b5af5caff7f1681b1687df113b0f109fea8acff87f600d1d9",
+    "rows": 33879,
+    "sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a"
+  },
+  "removal_rate": 0.044127,
+  "sequences_removed": 1564,
+  "sequences_removed_by_graphpart": 1557,
+  "sequences_removed_by_leakage_repair": 7,
+  "split_version": "homology_v1",
+  "tool_versions": {
+    "emboss": "6.6.0.0",
+    "graphpart": "1.0.2",
+    "mmseqs2": "18-8cc5c"
+  },
+  "working_set": {
+    "distinct_sequences": 34965,
+    "in_set": 35443,
+    "list_sha256": "b1f3426162b92d6840325f9cce4d61a4aabb3bd831bdb54cdaee84d639552412",
+    "reading": "eukarya_localization_eco"
+  }
+}
