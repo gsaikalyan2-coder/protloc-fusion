@@ -238,6 +238,11 @@ def _counts(y: Array, p: Array) -> tuple[Array, Array, Array, Array]:
     return tp, fp, fn, tn
 
 
+def macro_f1(y: Array, p: Array) -> float:
+    """Unweighted mean over classes of F1 for 0/1 labels ``y`` and 0/1 predictions ``p``."""
+    return float(f1_from_counts(*_counts(y, p)[:3]).mean())
+
+
 def sample_jaccard(y: Array, p: Array) -> Array:
     """Per-row Jaccard of the predicted and true label sets (1.0 when both are empty)."""
     np = _np()

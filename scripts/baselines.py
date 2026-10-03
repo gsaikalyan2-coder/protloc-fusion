@@ -51,7 +51,6 @@ from typing import Any
 
 import yaml
 
-from protloc.data.embeddings import read_pack
 from protloc.data.manifest import sha256_file, write_json
 from protloc.data.splits import read_registry
 from protloc.features.classical import extract
@@ -71,7 +70,6 @@ from protloc.training.baselines import (
     BaselineError,
     ClassMap,
     assert_protocol,
-    cache_lengths,
     check_manifest,
     check_subset_block,
     digest,
@@ -82,9 +80,9 @@ from protloc.training.baselines import (
     pinned_sklearn,
     read_manifest,
     rule_vector,
-    subset_digest,
     vectorise,
 )
+from protloc.training.subset import embedding_manifest, subset_block
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CORPUS = REPO_ROOT / "data" / "processed" / "corpus.jsonl"
@@ -102,7 +100,6 @@ SUBSET_DIR = "subset"
 EMBEDDING_MANIFEST = REPO_ROOT / "data" / "manifests" / "embedding_manifest.json"
 EMBED_ROOT = REPO_ROOT / "data" / "embeddings"
 PACK = EMBED_ROOT / "input_pack.tsv"
-CACHE_DIR_HEX = 16
 SMOKE_STRIDE = 25
 PROGRESS_EVERY = 5000
 MAX_JOBS = 10
@@ -280,47 +277,10 @@ def run_features(args: argparse.Namespace) -> int:
     return 0
 
 
-def _embedding_manifest() -> dict[str, Any]:
-    manifest = read_manifest(EMBEDDING_MANIFEST)
-    if manifest["sequences"]["scope"] != SUBSET_SCOPE:
-        raise BaselineError(
-            "the embedding manifest does not say 'subset'; --subset needs the subset cache"
-        )
-    return manifest
-
-
 def _subset_block(table: dict[str, Any]) -> tuple[Any, dict[str, Any]]:
     """The subset as indices into the feature table, and the facts the manifest records."""
-    embedding = _embedding_manifest()
-    key = str(embedding["cache_key"])
-    sequences = embedding["sequences"]
-    directory = EMBED_ROOT / f"{key[:CACHE_DIR_HEX]}_subset{sequences['subset_size']}"
-    lengths = cache_lengths(directory)
-    if len(lengths) != int(sequences["cached"]):
-        raise BaselineError(
-            "the cache tables and the embedding manifest disagree on the count"
-        )
-    if sha256_file(PACK)[0] != embedding["input"]["pack_sha256"]:
-        raise BaselineError(
-            "input_pack.tsv is not the pack the embedding manifest records"
-        )
-    items, _header = read_pack(PACK)
-    indices = bm.locate_sequences(table, [item.sha256 for item in items], lengths)
-    restricted = bm.restrict_to_sequences(table, indices)
-    labelled = {t: int(restricted[f"M_{t}"].sum()) for t in TASKS}
-    in_subset = bm.in_sequences(table, indices)
-    by_partition = {
-        str(p): int(((table["partition"] == p) & in_subset).sum())
-        for p in (*VALIDATION_PARTITIONS, TEST_PARTITION)
-    }
-    return indices, {
-        "sequences": len(lengths),
-        "sequences_sha256": subset_digest(list(lengths)),
-        "embedding_cache_key": key,
-        "cache_directory": directory.name,
-        "accessions_by_partition": by_partition,
-        "labelled_rows_per_task": labelled,
-    }
+    embedding = embedding_manifest(EMBEDDING_MANIFEST)
+    return subset_block(table, embedding, EMBED_ROOT, PACK)
 
 
 def _load(subset: bool) -> tuple[dict[str, Any], dict[str, Any], ClassMap]:
@@ -482,7 +442,7 @@ def _manifest_problems(
     )
     if args.subset:
         frozen = manifest.get("frozen")
-        key = str(read_manifest(EMBEDDING_MANIFEST)["cache_key"])
+        key = str(embedding_manifest(EMBEDDING_MANIFEST)["cache_key"])
         if isinstance(frozen, dict):
             problems += check_subset_block(frozen, cache_key=key)
     return problems
