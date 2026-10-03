@@ -38,6 +38,15 @@ r"""Phase 7: the ESM-2 embedding cache. One job per mode.
     python scripts/embed.py --freeze
         Writes data/manifests/embedding_manifest.json from the reports and the cache.
 
+    python scripts/embed.py --residues --subset 500 [--device cpu|cuda]
+        Phase 9 (ADR-0011). Stores the per-residue ESM-2 states (float16, sliding-window
+        averaged) of the sequences the subset cache holds, in the directory beside it
+        ending _residues, one committed shard of 50 sequences at a time. Safe to kill and
+        rerun. Then re-hashes every shard, measures how far the mean of each sequence's
+        states is from its Phase 7 pooled vector, and writes
+        data/manifests/residue_cache_manifest.json. The script records its own time, so do
+        NOT wrap it in Measure-Command or time. Needs the pack (input_pack.tsv).
+
     python scripts/embed.py --check
         No cache bytes needed (this is what CI runs). Exit 1 unless the config pins,
         .env.example and the manifest (when present) agree.
@@ -58,6 +67,7 @@ import sys
 import time
 import zipfile
 
+from protloc.data import residue_cache
 from protloc.data.embedding_manifest import (
     Measured,
     build_manifest,
@@ -92,6 +102,7 @@ CORPUS = REPO_ROOT / "data" / "processed" / "corpus.jsonl"
 REGISTRY = REPO_ROOT / "data" / "processed" / "splits" / "registry.tsv"
 DATASET_MANIFEST = REPO_ROOT / "data" / "manifests" / "dataset_manifest.json"
 EMBEDDING_MANIFEST = REPO_ROOT / "data" / "manifests" / "embedding_manifest.json"
+RESIDUE_MANIFEST = REPO_ROOT / "data" / "manifests" / "residue_cache_manifest.json"
 MODEL_CONFIG = REPO_ROOT / "configs" / "model" / "trunk_esm2_150m.yaml"
 ENV_EXAMPLE = REPO_ROOT / ".env.example"
 EMBED_ROOT = REPO_ROOT / "data" / "embeddings"
@@ -278,6 +289,86 @@ def _extract(args: argparse.Namespace) -> int:
     write_json(REPORTS / "extract_run.json", run)
     _say(json.dumps(run, indent=2, sort_keys=True))
     return 0
+
+
+def _residues(args: argparse.Namespace) -> int:
+    if not args.subset:
+        raise EmbeddingError(
+            "--residues needs --subset N: states are cached for a subset only"
+        )
+    spec = _spec()
+    pooled = _cache_dir(spec, args.subset)
+    problems = verify_cache(pooled)
+    if problems:
+        raise EmbeddingError("the pooled cache failed verification: " + "; ".join(problems))
+    lengths = residue_cache.pooled_lengths(pooled)
+    if not args.input:
+        args.input = str(EMBED_ROOT / "input_pack.tsv")
+    items, source = _load_unique(args)
+    chosen = [item for item in items if item.sha256 in lengths]
+    if len(chosen) != len(lengths) or any(
+        len(item.sequence) != lengths[item.sha256] for item in chosen
+    ):
+        raise EmbeddingError("the pack and the pooled cache disagree about the subset")
+    rspec = residue_cache.ResidueSpec(spec)
+    directory = residue_cache.residue_directory(pooled)
+    encoder = _encoder(spec, args)
+    seconds_file = REPORTS / "residue_shard_seconds.json"
+    recorded: dict[str, object] = (
+        read_json_object(seconds_file)
+        if seconds_file.exists() and (directory / "spec.json").exists()
+        else {}
+    )
+
+    def on_shard(number: int, total: int, seconds: float) -> None:
+        recorded[str(number)] = seconds
+        write_json(seconds_file, recorded)
+        _say(f"shard {number + 1}/{total} committed in {seconds:.1f}s")
+
+    options = ExtractOptions(shard_size=residue_cache.SHARD_SEQUENCES, on_shard=on_shard)
+    report = residue_cache.extract_residues(chosen, directory, rspec, encoder, options)
+    _say(
+        f"shards: {report.shards_computed} computed, {report.shards_skipped} already done, "
+        f"{report.shards_total} total; this call {report.seconds:.1f}s"
+    )
+    if not report.complete:
+        return 1
+    problems = residue_cache.verify_residue_cache(directory)
+    if problems:
+        raise EmbeddingError("the residue cache failed verification: " + "; ".join(problems))
+    store = residue_cache.ResidueStore(directory)
+    comparison = residue_cache.compare_with_pooled(store, pooled)
+    index = residue_cache.read_residue_index(directory)
+    total_seconds = sum(float(str(v)) for v in recorded.values())
+    pooled_manifest = read_json_object(EMBEDDING_MANIFEST)
+    manifest = {
+        "schema_version": residue_cache.SCHEMA_VERSION,
+        "scope": "subset",
+        "cache_key": rspec.key(),
+        "pooled_cache_key": spec.key(),
+        "directory": directory.name,
+        "dtype": residue_cache.DTYPE,
+        "sequences": index["sequence_count"],
+        "residues": index["residue_count"],
+        "cache_bytes": sum(
+            path.stat().st_size
+            for path in directory.iterdir()
+            if path.suffix in {".f16", ".tsv"}
+        ),
+        "shard_sequences": residue_cache.SHARD_SEQUENCES,
+        "shard_index_sha256": index["shard_index_sha256"],
+        "pooled_comparison": comparison,
+        "seconds_total": total_seconds,
+        "seconds_per_sequence": total_seconds / int(str(index["sequence_count"])),
+        "hardware": encoder.describe(),
+        "input": source,
+        "full_corpus_float16_bytes_estimate": pooled_manifest[
+            "per_residue_storage_estimate_bytes"
+        ],
+    }
+    write_json(RESIDUE_MANIFEST, manifest)
+    _say(json.dumps(manifest, indent=2, sort_keys=True))
+    return 0 if comparison["within_tolerance"] else 1
 
 
 def _pairs(items: Sequence[UniqueSequence]) -> list[tuple[str, str]]:
@@ -476,6 +567,12 @@ def _check(_: argparse.Namespace) -> int:
         MODEL_CONFIG.read_text(encoding="utf-8"),
         ENV_EXAMPLE.read_text(encoding="utf-8"),
     )
+    if manifest is not None and RESIDUE_MANIFEST.exists():
+        problems += residue_cache.check_residue_manifest(
+            read_json_object(RESIDUE_MANIFEST),
+            residue_cache.ResidueSpec(_spec()),
+            str(manifest["cache_key"]),
+        )
     for problem in problems:
         sys.stderr.write(f"FAIL: {problem}\n")
     if not problems:
@@ -498,6 +595,7 @@ def main() -> int:
         "extract",
         "verify",
         "freeze",
+        "residues",
         "check",
     ):
         mode.add_argument(f"--{name}", action="store_true")
@@ -521,6 +619,7 @@ def main() -> int:
         "extract": _extract,
         "verify": _verify,
         "freeze": _freeze,
+        "residues": _residues,
         "check": _check,
     }
     chosen = next(name for name in modes if getattr(args, name))

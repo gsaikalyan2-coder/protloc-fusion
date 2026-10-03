@@ -153,6 +153,40 @@ class TorchEncoder:
             for total, sequence in zip(totals, sequences, strict=True)
         ]
 
+    def embed_residues(self, sequences: Sequence[str]) -> list[bytes]:
+        """Per-residue states of each sequence, as little-endian float16 bytes of (length, dim).
+
+        The states are exactly those :meth:`embed_batch` averages into its pooled vector: the
+        last hidden state of every residue, averaged over the sliding windows that cover it,
+        with ``<cls>``, ``<eos>`` and padding excluded. Windows run in the same sorted,
+        fixed-size batches, so the result depends only on the input list. The float32 states
+        are rounded to float16 once, at the end.
+        """
+        torch = self._torch
+        spec = self.spec
+        plans = [windows(len(s), spec.max_residues, spec.window_stride) for s in sequences]
+        counts = [residue_weights(len(s), plan) for s, plan in zip(sequences, plans, strict=True)]
+        jobs = sorted(
+            (end - start, index, start, end)
+            for index, plan in enumerate(plans)
+            for start, end in plan
+        )
+        totals = [torch.zeros((len(s), spec.embedding_dim), dtype=torch.float32) for s in sequences]
+        with torch.no_grad():
+            for first in range(0, len(jobs), self.batch_size):
+                chunk = jobs[first : first + self.batch_size]
+                texts = [sequences[index][start:end] for _, index, start, end in chunk]
+                batch = self._tokenizer(texts, return_tensors="pt", padding=True)
+                batch = {name: value.to(self.device) for name, value in batch.items()}
+                hidden = self._model(**batch).last_hidden_state
+                for row, (size, index, start, end) in enumerate(chunk):
+                    states = hidden[row, 1 : 1 + size, :].float()
+                    divisor = torch.tensor(
+                        counts[index][start:end], dtype=torch.float32, device=self.device
+                    )
+                    totals[index][start:end] += (states / divisor[:, None]).cpu()
+        return [total.half().numpy().astype("<f2", copy=False).tobytes() for total in totals]
+
 
 def probe_worker(spec_fields: dict[str, Any], sequence: str, out: str, device: str) -> None:
     """Embed one sequence in a fresh process and write its raw float32 bytes to ``out``."""
