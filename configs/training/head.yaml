@@ -1,0 +1,55 @@
+# Phase 9 localization head: attention pooling over per-residue ESM-2 states, then an MLP.
+#
+# Data, not code. Every architecture setting and every hyperparameter the head searches lives
+# here; backend/protloc/training/head.py reads this file and nothing in it is repeated in code.
+# The values were confirmed at the Phase 9 architecture gate (ADR-0011).
+#
+# scripts/head.py hashes this file into the frozen manifest, so changing it after --freeze is
+# detected by `scripts/head.py --check`.
+
+name: head
+task: localization
+
+# Must equal `seed` in configs/config.yaml (a unit test asserts it).
+seed: 20260909
+
+architecture:
+  # Softmax attention over the unpadded residues, one weight per residue per head. The
+  # weights are returned with the scores because Phase 10 and Phase 15 explain with them.
+  pooling: attention
+  heads: 1
+  attention_hidden: 64
+  # Must equal model.trunk.embedding_dim (a unit test asserts it).
+  embedding_dim: 640
+
+loss:
+  # Per-class pos_weight (negatives / positives, from the training rows only) times the focal
+  # factor (1 - p_t) ** gamma, averaged over classes and rows. gamma 0 is exactly BCE with
+  # pos_weight. CLAUDE.md names the focal form; the Phase 9 prompt names BCE; the grid holds both.
+  kind: weighted_focal
+
+# The search grid. The first value of each list is the default; a tie goes to the earlier grid
+# point (ADR-0010 section 2.3). Order of expansion: learning_rate, dropout, hidden, gamma.
+grid:
+  learning_rate: [0.001, 0.0003]
+  dropout: [0.3, 0.5]
+  hidden: [256, 128]
+  gamma: [0.0, 2.0]
+
+optimiser:
+  name: adamw
+  weight_decay: 0.01
+
+schedule:
+  batch_size: 32
+  max_epochs: 80
+  # Stop when the inner-holdout macro F1 has not improved for this many epochs.
+  patience: 10
+  # Share of the training clusters (whole cluster_id clusters) held out for early stopping.
+  inner_holdout_fraction: 0.2
+
+# `scripts/head.py --smoke`: a code check only, never frozen, no number from it is reported.
+smoke:
+  stride: 4
+  max_epochs: 2
+  grid_points: 2

@@ -83,3 +83,6 @@ desktop.ini
 !.vscode/extensions.json
 *.swp
 *~
+
+# Phase 9 localization head: weights, scores and smoke output (the manifest is committed)
+data/head/

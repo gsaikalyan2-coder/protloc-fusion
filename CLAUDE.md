@@ -343,8 +343,8 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 6   — GraphPart splits & leakage gate               MVP   5.0 h   done 2026-10-03 (branch; you tag v0.6.0)
 [x] Phase 7   — ESM-2 embedding cache                         MVP   6.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.7.0)
 [x] Phase 8   — Classical baselines (metric floor)            ENH   3.0 h   done 2026-10-03 (branch; you tag v0.8.0)
-[ ] Phase 9   — Localization head (attention pooling + MLP)   MVP   7.0 h   <-- NEXT
-[ ] Phase 10  — Calibration & per-label thresholds            MVP   5.0 h
+[x] Phase 9   — Localization head (attention pooling + MLP)   MVP   7.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.9.0)
+[ ] Phase 10  — Calibration & per-label thresholds            MVP   5.0 h   <-- NEXT
 [ ] Phase 11  — Signal-peptide CRF head                       ENH   8.0 h
 [ ] Phase 12  — GO head                                       ENH   4.0 h
 [ ] Phase 13  — Homology evidence (MMseqs2 index)             ENH   5.0 h
@@ -379,6 +379,7 @@ docs say so rather than promising durability the host cannot deliver.
 | 0008 | Batch durability scoped to client-side chunking | Accepted | 14, 16 |
 | 0009 | Frozen encoder + trained heads; ESM-2 150M; sliding window for sequences over 1022 residues | Accepted 2026-10-03 (measured cost filled at the Phase 7 close) | 7, 9 |
 | 0010 | Baseline protocol: leave-one-partition-out on registry partitions 1-4, per-class MCC-optimal thresholds, test partition 5 scored once after freeze | Accepted 2026-10-03 | 8, 9 |
+| 0011 | Localization head: attention pooling over per-residue ESM-2 states + MLP; per-residue cache for the 500-sequence subset; inner whole-cluster early stopping; subset-only numbers | Accepted 2026-10-03 | 9, 10 |
 
 ### Phase 0 close — 2026-09-28
 
@@ -448,6 +449,18 @@ LinearSVC 0.437 / 0.456, motif rules 0.364 / 0.365. RF Jaccard 0.492 / 0.467. Me
 DeepLoc (about 0.46 macro F1, about 0.53 Jaccard) is indicative only: different benchmark and split. `configs/evaluation/default.yaml` is not
 edited; it numbers partitions 0-4 where the registry says 1-5 (n = index + 1), so Phase 9 reconciles it. `data/baselines/` is gitignored.
 UNVERIFIED: Docker, GitHub Actions and the frontend gate (not runnable in the sandbox). Detail: `docs/phases/08.md`.
+
+### Phase 9 close — 2026-10-03
+
+Attention pooling over per-residue ESM-2 states plus an MLP, 10 sigmoids (ADR-0011), trained and scored on the **500-sequence subset only**
+(every number: "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers"). A float16 per-residue cache for the subset was added
+(286 MB, mean of states within 8.6e-4 of the Phase 7 pooled vectors). Chosen: lr 1e-3, dropout 0.5, hidden 128, gamma 0, 125,707 parameters.
+Same protocol as ADR-0010; manifest `data/manifests/head_metrics.json`, frozen_sha256 `719c9866603640a781bf13193e38ee5d27c7fd13426aa44c5221a1e4099c9dae`.
+Localization macro F1 validation / test: head 0.476 [0.428, 0.516] / 0.366 [0.302, 0.427]; subset floor LogReg 0.415 / 0.363, RandomForest 0.408 / 0.347,
+LinearSVC 0.368 / 0.343, motif rules 0.357 / 0.230. Test Jaccard: head 0.330, LogReg 0.404, RF 0.458. **The head does not beat the floor on test** (macro F1 a tie
+inside wide intervals, Jaccard lower); 99 test accessions, one seed. `configs/evaluation/default.yaml` now uses registry numbering ([1,2,3,4] / [5]) with a test.
+UNVERIFIED: any claim beyond 500 sequences, seed variance, DeepLoc parity, Docker, GitHub Actions and the frontend gate (not runnable in the sandbox).
+Detail: `docs/phases/09.md`.
 
 ### Two things a cold session must know
 

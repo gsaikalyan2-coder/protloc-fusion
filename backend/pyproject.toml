@@ -60,6 +60,14 @@ baselines = [
   "threadpoolctl==3.7.0",
   "pyyaml==6.0.3",
 ]
+# Localization head (Phase 9). Exact pins; training/ is never imported by the serving path,
+# so none of this reaches the served image. The head reads per-residue states through the
+# cache API and needs only torch and numpy; PyYAML reads configs/training/head.yaml.
+head = [
+  "torch==2.14.1",
+  "numpy==2.4.6",
+  "pyyaml==6.0.3",
+]
 # Data versioning. Kept apart from `data` because CI never needs it and it pulls
 # in a large dependency tree.
 dvc = [

@@ -10,6 +10,9 @@ Metric conventions, each stated once here and repeated in ADR-0010:
 * a class's F1 and MCC are 0.0 when their denominator is 0;
 * sample-wise Jaccard is |predicted AND true| / |predicted OR true| per row, 1.0 for a
   row whose predicted and true sets are both empty, then the mean over rows;
+* a class with fewer than ``MIN_POSITIVES`` positives in the rows being scored has no defined
+  MCC: it is reported as 0.0 (whatever the raw value would be) and marked
+  ``"undefined": true``, never dropped; its F1 and its place in macro F1 are unchanged;
 * a positive call is ``score >= threshold`` and the threshold is a score, never a literal;
 * confidence intervals resample whole clusters (``cluster_id``), not rows, because
   homologous rows inside one cluster are not independent.
@@ -24,6 +27,8 @@ import time
 from typing import Any
 
 from protloc.training.baselines import (
+    FEATURE_NAMES,
+    MIN_POSITIVES,
     N_ESTIMATORS,
     BaselineError,
     Fold,
@@ -147,6 +152,53 @@ def task_rows(table: Mapping[str, Array], task: str, partitions: Sequence[int], 
     return np.flatnonzero(keep)[::stride]
 
 
+def locate_sequences(
+    table: Mapping[str, Array], order: Sequence[str], lengths: Mapping[str, int]
+) -> Array:
+    """Indices into the feature table's distinct sequences for the hashes in ``lengths``.
+
+    ``order`` is the distinct sequence hashes in the table's own order (sorted by hash, as
+    the embedding input pack lists them). The mapping is proven, not assumed: the
+    ``log1p_length`` feature of every located row must equal ``log1p`` of the length the
+    embedding cache recorded for that hash.
+    """
+    np = _np()
+    if len(order) != table["X"].shape[0]:
+        raise BaselineError(
+            f"the pack lists {len(order)} sequences, the feature table has {table['X'].shape[0]}"
+        )
+    index_of = {sha: i for i, sha in enumerate(order)}
+    missing = sorted(set(lengths) - set(index_of))
+    if missing:
+        raise BaselineError(
+            f"{len(missing)} cached sequences are not in the pack, e.g. {missing[0]}"
+        )
+    indices = np.array(sorted(index_of[sha] for sha in lengths), dtype=np.int64)
+    expected = np.log1p(np.array([lengths[order[i]] for i in indices], dtype=float))
+    column = FEATURE_NAMES.index("log1p_length")
+    if not np.allclose(table["X"][indices, column], expected, rtol=0.0, atol=1e-9):
+        raise BaselineError("the pack order does not match the feature table: lengths differ")
+    return indices
+
+
+def in_sequences(table: Mapping[str, Array], seq_indices: Array) -> Array:
+    """Boolean mask over the table's rows: True where the row's sequence is in ``seq_indices``."""
+    return _np().isin(table["seq_index"], seq_indices)
+
+
+def restrict_to_sequences(table: Mapping[str, Array], seq_indices: Array) -> dict[str, Array]:
+    """A copy of the table in which only rows of the given distinct sequences carry a label.
+
+    Every ``M_<task>`` mask is ANDed with membership in ``seq_indices``, so every reader of
+    the table (``task_rows`` and what is built on it) sees the subset and nothing else. The
+    feature, rule and label arrays are shared, not copied, and partitions are untouched.
+    """
+    keep = in_sequences(table, seq_indices)
+    return {
+        name: (array & keep if name.startswith("M_") else array) for name, array in table.items()
+    }
+
+
 def task_xy(table: Mapping[str, Array], task: str, rows: Array) -> tuple[Array, Array]:
     """Motif features and 0/1 labels of the given rows."""
     return table["X"][table["seq_index"][rows]], table[f"Y_{task}"][rows].astype(int)
@@ -184,6 +236,11 @@ def _counts(y: Array, p: Array) -> tuple[Array, Array, Array, Array]:
     fn = (y * (1 - p)).sum(axis=0)
     tn = ((1 - y) * (1 - p)).sum(axis=0)
     return tp, fp, fn, tn
+
+
+def macro_f1(y: Array, p: Array) -> float:
+    """Unweighted mean over classes of F1 for 0/1 labels ``y`` and 0/1 predictions ``p``."""
+    return float(f1_from_counts(*_counts(y, p)[:3]).mean())
 
 
 def sample_jaccard(y: Array, p: Array) -> Array:
@@ -275,10 +332,13 @@ def metrics_report(
             intervals[key] = np.percentile(stacked, CI_PERCENTILES, axis=0)
     per_class = {}
     for j, name in enumerate(classes):
+        undefined = int(y[:, j].sum()) < MIN_POSITIVES
+        mcc_interval = None if intervals["mcc"] is None or undefined else intervals["mcc"][:, j]
         per_class[name] = {
             "f1": _value(f1[j], None if intervals["f1"] is None else intervals["f1"][:, j]),
-            "mcc": _value(mcc[j], None if intervals["mcc"] is None else intervals["mcc"][:, j]),
+            "mcc": _value(0.0 if undefined else mcc[j], mcc_interval),
             "support": int(y[:, j].sum()),
+            "undefined": undefined,
         }
     return {
         "rows": int(y.shape[0]),
@@ -297,6 +357,8 @@ def validate_oof(
     For fold k the thresholds are tuned on the out-of-fold scores of the other validation
     partitions. ``frozen_thresholds`` are tuned on all validation rows and are what the
     test partition will use. The pooled metrics concatenate the four validation folds.
+    Each fold also reports per-class F1, MCC and support; a class with fewer than
+    ``MIN_POSITIVES`` positives in the fold is marked ``undefined`` (its MCC is 0.0).
     """
     np = _np()
     y = split.y
@@ -306,9 +368,25 @@ def validate_oof(
         held = split.partition == fold.validate
         thresholds = tune_thresholds(scores[~held], y[~held])
         predicted[held] = scores[held] >= np.array(thresholds)
-        fold_f1 = f1_from_counts(*_counts(y[held], predicted[held])[:3]).mean()
+        counts = _counts(y[held], predicted[held])
+        fold_f1 = f1_from_counts(*counts[:3])
+        fold_mcc = mcc_from_counts(*counts)
+        support = y[held].sum(axis=0)
         per_fold.append(
-            {"validate": fold.validate, "rows": int(held.sum()), "macro_f1": float(fold_f1)}
+            {
+                "validate": fold.validate,
+                "rows": int(held.sum()),
+                "macro_f1": float(fold_f1.mean()),
+                "per_class": {
+                    name: {
+                        "f1": float(fold_f1[j]),
+                        "mcc": 0.0 if int(support[j]) < MIN_POSITIVES else float(fold_mcc[j]),
+                        "support": int(support[j]),
+                        "undefined": int(support[j]) < MIN_POSITIVES,
+                    }
+                    for j, name in enumerate(classes)
+                },
+            }
         )
     return {
         "folds": per_fold,

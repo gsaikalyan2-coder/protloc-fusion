@@ -39,6 +39,13 @@ MODEL_NAMES: tuple[str, ...] = ("logreg", "linear_svc", "random_forest")
 RULES_NAME = "motif_rules"
 SCHEMA_VERSION = 1
 VECTORISER_VERSION = "1"
+# A class with fewer positives than this in the rows being scored has no defined MCC: it is
+# reported as 0.0 and marked "undefined", never dropped (ADR-0011 section 2.4).
+MIN_POSITIVES = 2
+# The 500-sequence prototype scope (ADR-0009, ADR-0011). Every number computed on it carries
+# this label.
+SUBSET_SCOPE = "subset"
+SUBSET_LABEL = "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers"
 # Residues at each terminus summarised by the hydropathy end means. A vectorisation
 # parameter (how much of the profile one number covers), not a biological threshold.
 TERMINAL_WINDOW = 30
@@ -304,6 +311,49 @@ def grid_items(model: str) -> Iterator[tuple[int, dict[str, float | int | None]]
     """The hyperparameter grid of a model as (index, params)."""
     for index, params in enumerate(GRIDS[model]):
         yield index, dict(params)
+
+
+# -- the 500-sequence subset -----------------------------------------------------------
+def cache_lengths(cache_dir: Path) -> dict[str, int]:
+    """Sequence hash and length of every sequence in an embedding cache directory.
+
+    Reads only the committed ``shard_*.tsv`` tables (``sha256``, ``length``, ``windows``),
+    never the vector bytes, so the subset is defined by what the cache actually holds.
+    """
+    found: dict[str, int] = {}
+    for table in sorted(cache_dir.glob("shard_*.tsv")):
+        for row in table.read_text(encoding="ascii").splitlines()[1:]:
+            sha, length, _windows = row.split("\t")
+            if not _SHA.fullmatch(sha):
+                raise BaselineError(f"{table.name}: {sha!r} is not a sequence hash")
+            found[sha] = int(length)
+    if not found:
+        raise BaselineError(f"{cache_dir} holds no committed shard tables")
+    return found
+
+
+def subset_digest(shas: Sequence[str]) -> str:
+    """SHA-256 of the sorted sequence hashes that define the subset."""
+    return hashlib.sha256("\n".join(sorted(shas)).encode("ascii")).hexdigest()
+
+
+def check_subset_block(frozen: Mapping[str, Any], *, cache_key: str) -> list[str]:
+    """Problems with the ``scope`` and ``subset`` entries of a subset manifest; empty if sound."""
+    problems: list[str] = []
+    if frozen.get("scope") != SUBSET_SCOPE:
+        problems.append("a subset manifest must say scope 'subset'")
+    if frozen.get("scope_label") != SUBSET_LABEL:
+        problems.append("scope_label is not the required subset label")
+    block = frozen.get("subset")
+    if not isinstance(block, dict):
+        return [*problems, "manifest is missing the object 'subset'"]
+    if block.get("embedding_cache_key") != cache_key:
+        problems.append("subset embedding_cache_key differs from the embedding manifest")
+    if not _SHA.fullmatch(str(block.get("sequences_sha256", ""))):
+        problems.append("subset.sequences_sha256 is not a SHA-256")
+    if not isinstance(block.get("sequences"), int) or block["sequences"] <= 0:
+        problems.append("subset.sequences must be a positive count")
+    return problems
 
 
 # -- the manifest ----------------------------------------------------------------------

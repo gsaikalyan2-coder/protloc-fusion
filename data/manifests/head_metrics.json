@@ -1,0 +1,942 @@
+{
+  "frozen": {
+    "architecture": {
+      "attention_hidden": 64,
+      "batch_size": 32,
+      "embedding_dim": 640,
+      "heads": 1,
+      "loss": "weighted_focal",
+      "optimiser": "adamw",
+      "pooling": "attention",
+      "seed": 20260909,
+      "weight_decay": 0.01
+    },
+    "classes": [
+      "cell_membrane",
+      "cytoplasm",
+      "endoplasmic_reticulum",
+      "extracellular",
+      "golgi_apparatus",
+      "lysosome_vacuole",
+      "mitochondrion",
+      "nucleus",
+      "peroxisome",
+      "plastid"
+    ],
+    "grid": [
+      {
+        "index": 0,
+        "mean_fold_macro_f1": 0.4180912049752561,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 0.0,
+          "hidden": 256,
+          "learning_rate": 0.001
+        },
+        "seconds": 140.8927225000225
+      },
+      {
+        "index": 1,
+        "mean_fold_macro_f1": 0.42234603333177995,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 2.0,
+          "hidden": 256,
+          "learning_rate": 0.001
+        },
+        "seconds": 105.97828750009649
+      },
+      {
+        "index": 2,
+        "mean_fold_macro_f1": 0.3478728586502362,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 0.0,
+          "hidden": 128,
+          "learning_rate": 0.001
+        },
+        "seconds": 76.84925089986064
+      },
+      {
+        "index": 3,
+        "mean_fold_macro_f1": 0.4425165513071744,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 2.0,
+          "hidden": 128,
+          "learning_rate": 0.001
+        },
+        "seconds": 72.32590859988704
+      },
+      {
+        "index": 4,
+        "mean_fold_macro_f1": 0.46584372749423153,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 0.0,
+          "hidden": 256,
+          "learning_rate": 0.001
+        },
+        "seconds": 76.18704520002939
+      },
+      {
+        "index": 5,
+        "mean_fold_macro_f1": 0.4707862400814108,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 2.0,
+          "hidden": 256,
+          "learning_rate": 0.001
+        },
+        "seconds": 76.7763376000803
+      },
+      {
+        "index": 6,
+        "mean_fold_macro_f1": 0.48129722907512495,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 0.0,
+          "hidden": 128,
+          "learning_rate": 0.001
+        },
+        "seconds": 80.67520369985141
+      },
+      {
+        "index": 7,
+        "mean_fold_macro_f1": 0.40540201505859896,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 2.0,
+          "hidden": 128,
+          "learning_rate": 0.001
+        },
+        "seconds": 87.65084839984775
+      },
+      {
+        "index": 8,
+        "mean_fold_macro_f1": 0.45991338234936185,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 0.0,
+          "hidden": 256,
+          "learning_rate": 0.0003
+        },
+        "seconds": 139.51065609999932
+      },
+      {
+        "index": 9,
+        "mean_fold_macro_f1": 0.4112702259575258,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 2.0,
+          "hidden": 256,
+          "learning_rate": 0.0003
+        },
+        "seconds": 96.17425479996018
+      },
+      {
+        "index": 10,
+        "mean_fold_macro_f1": 0.3682689049175437,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 0.0,
+          "hidden": 128,
+          "learning_rate": 0.0003
+        },
+        "seconds": 96.06740369996987
+      },
+      {
+        "index": 11,
+        "mean_fold_macro_f1": 0.34100151608550805,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 2.0,
+          "hidden": 128,
+          "learning_rate": 0.0003
+        },
+        "seconds": 108.48781000007875
+      },
+      {
+        "index": 12,
+        "mean_fold_macro_f1": 0.456643123422179,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 0.0,
+          "hidden": 256,
+          "learning_rate": 0.0003
+        },
+        "seconds": 189.86798330000602
+      },
+      {
+        "index": 13,
+        "mean_fold_macro_f1": 0.4590391796257803,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 2.0,
+          "hidden": 256,
+          "learning_rate": 0.0003
+        },
+        "seconds": 136.96680050017312
+      },
+      {
+        "index": 14,
+        "mean_fold_macro_f1": 0.3431401270532444,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 0.0,
+          "hidden": 128,
+          "learning_rate": 0.0003
+        },
+        "seconds": 109.41476169996895
+      },
+      {
+        "index": 15,
+        "mean_fold_macro_f1": 0.399363467880264,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 2.0,
+          "hidden": 128,
+          "learning_rate": 0.0003
+        },
+        "seconds": 128.8258861999493
+      }
+    ],
+    "hardware": {
+      "train": {
+        "final_fit_seconds": 9.554550100117922,
+        "grid_seconds_total": 1722.651160699781,
+        "logical_cpus": 12,
+        "machine": "AMD64",
+        "platform": "Windows-10-10.0.26200-SP0",
+        "python": "3.11.9",
+        "seconds": 1734.5022679001559,
+        "torch_threads": 10
+      }
+    },
+    "inputs": {
+      "class_map_sha256": "c1ffefe085392bc6cee8d35010f6dfe08de81a6586413717238db9f247a190dc",
+      "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+      "embedding_cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+      "feature_table_sha256": "2f3d36d78519776c7ae542923820accf13b67953397fc07582da49c2749dfaa8",
+      "head_config_sha256": "723fb0d45b638260c2390748b94106b485eebff10678b8c9416c61087ff2a18a",
+      "registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+      "residue_cache_key": "05c9bb393be0e8b25a1af2eddcea811bc3d19edafe18580c34eb547b444a3349",
+      "weights_sha256": "7bd18e3a93510369c7676439a22b70af763361d42c1e2caca127fef1e2ccb8ca"
+    },
+    "protocol": {
+      "adr": "ADR-0011 (protocol of ADR-0010)",
+      "bootstrap": {
+        "samples": 1000,
+        "seed": 20260909,
+        "unit": "cluster_id"
+      },
+      "early_stopping": "macro F1 on an inner whole-cluster holdout of the training partitions, thresholds tuned on that holdout; patience 10, at most 80 epochs",
+      "folds": [
+        {
+          "train": [
+            2,
+            3,
+            4
+          ],
+          "validate": 1
+        },
+        {
+          "train": [
+            1,
+            3,
+            4
+          ],
+          "validate": 2
+        },
+        {
+          "train": [
+            1,
+            2,
+            4
+          ],
+          "validate": 3
+        },
+        {
+          "train": [
+            1,
+            2,
+            3
+          ],
+          "validate": 4
+        }
+      ],
+      "label_states": "annotated rows only (ADR-0006); unknown and not_applicable dropped",
+      "test_partition": 5,
+      "threshold_rule": "per class, the score maximising MCC; fold k is scored with thresholds tuned on the out-of-fold scores of the other validation partitions; the frozen thresholds are tuned on all validation rows",
+      "validation_partitions": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "scope": "subset",
+    "scope_label": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+    "selected": {
+      "final_epochs": 7,
+      "index": 6,
+      "mean_fold_macro_f1": 0.48129722907512495,
+      "params": {
+        "dropout": 0.5,
+        "gamma": 0.0,
+        "hidden": 128,
+        "learning_rate": 0.001
+      },
+      "trainable_parameters": 125707
+    },
+    "software": {
+      "torch": "2.14.1",
+      "versions": {
+        "numpy": "2.4.6",
+        "pyyaml": "6.0.3",
+        "torch": "2.14.1+cpu"
+      }
+    },
+    "subset": {
+      "accessions_by_partition": {
+        "1": 146,
+        "2": 77,
+        "3": 93,
+        "4": 92,
+        "5": 99
+      },
+      "cache_directory": "0e528d4a46831b05_subset500",
+      "embedding_cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+      "labelled_rows_per_task": {
+        "localization": 507,
+        "membrane_type": 475,
+        "signal_peptide": 495
+      },
+      "sequences": 500,
+      "sequences_sha256": "4fe25aca277748e5662afbe07ea2820bcd42f5f3f487e3dee9ba73cc40e9d5e3"
+    },
+    "thresholds": [
+      0.7927332520484924,
+      0.3855764865875244,
+      0.5652334690093994,
+      0.5976316928863525,
+      0.3837727904319763,
+      0.7342265844345093,
+      0.6992934346199036,
+      0.3627905249595642,
+      0.01749824918806553,
+      0.7448931932449341
+    ],
+    "validation": {
+      "folds": [
+        {
+          "macro_f1": 0.5266024795005834,
+          "per_class": {
+            "cell_membrane": {
+              "f1": 0.48,
+              "mcc": 0.500914502841798,
+              "support": 18,
+              "undefined": false
+            },
+            "cytoplasm": {
+              "f1": 0.7422680412371134,
+              "mcc": 0.641678617168323,
+              "support": 40,
+              "undefined": false
+            },
+            "endoplasmic_reticulum": {
+              "f1": 0.38461538461538464,
+              "mcc": 0.3260185487993413,
+              "support": 12,
+              "undefined": false
+            },
+            "extracellular": {
+              "f1": 0.9174311926605505,
+              "mcc": 0.868350506338707,
+              "support": 55,
+              "undefined": false
+            },
+            "golgi_apparatus": {
+              "f1": 0.14285714285714285,
+              "mcc": 0.1415750000866723,
+              "support": 3,
+              "undefined": false
+            },
+            "lysosome_vacuole": {
+              "f1": 0.3076923076923077,
+              "mcc": 0.3059033683942098,
+              "support": 9,
+              "undefined": false
+            },
+            "mitochondrion": {
+              "f1": 0.5555555555555556,
+              "mcc": 0.6023231982363461,
+              "support": 13,
+              "undefined": false
+            },
+            "nucleus": {
+              "f1": 0.6486486486486487,
+              "mcc": 0.5312403824057306,
+              "support": 35,
+              "undefined": false
+            },
+            "peroxisome": {
+              "f1": 0.08695652173913043,
+              "mcc": 0.17943514064131835,
+              "support": 2,
+              "undefined": false
+            },
+            "plastid": {
+              "f1": 1.0,
+              "mcc": 0.0,
+              "support": 1,
+              "undefined": true
+            }
+          },
+          "rows": 146,
+          "validate": 1
+        },
+        {
+          "macro_f1": 0.4999369240836106,
+          "per_class": {
+            "cell_membrane": {
+              "f1": 0.6153846153846154,
+              "mcc": 0.5822088423841009,
+              "support": 6,
+              "undefined": false
+            },
+            "cytoplasm": {
+              "f1": 0.7352941176470589,
+              "mcc": 0.5966430306162186,
+              "support": 26,
+              "undefined": false
+            },
+            "endoplasmic_reticulum": {
+              "f1": 0.5454545454545454,
+              "mcc": 0.4834835706848496,
+              "support": 9,
+              "undefined": false
+            },
+            "extracellular": {
+              "f1": 0.8,
+              "mcc": 0.78065375798434,
+              "support": 8,
+              "undefined": false
+            },
+            "golgi_apparatus": {
+              "f1": 0.32,
+              "mcc": 0.3246830813483206,
+              "support": 5,
+              "undefined": false
+            },
+            "lysosome_vacuole": {
+              "f1": 0.75,
+              "mcc": 0.764057447960416,
+              "support": 3,
+              "undefined": false
+            },
+            "mitochondrion": {
+              "f1": 0.6,
+              "mcc": 0.5577816789190845,
+              "support": 8,
+              "undefined": false
+            },
+            "nucleus": {
+              "f1": 0.6075949367088608,
+              "mcc": 0.4255961412791452,
+              "support": 24,
+              "undefined": false
+            },
+            "peroxisome": {
+              "f1": 0.02564102564102564,
+              "mcc": 0.0,
+              "support": 1,
+              "undefined": true
+            },
+            "plastid": {
+              "f1": 0.0,
+              "mcc": 0.0,
+              "support": 7,
+              "undefined": false
+            }
+          },
+          "rows": 77,
+          "validate": 2
+        },
+        {
+          "macro_f1": 0.4792975155071657,
+          "per_class": {
+            "cell_membrane": {
+              "f1": 0.6,
+              "mcc": 0.5902037509808481,
+              "support": 13,
+              "undefined": false
+            },
+            "cytoplasm": {
+              "f1": 0.7088607594936709,
+              "mcc": 0.4984076392680625,
+              "support": 37,
+              "undefined": false
+            },
+            "endoplasmic_reticulum": {
+              "f1": 0.2,
+              "mcc": 0.10361445783132531,
+              "support": 10,
+              "undefined": false
+            },
+            "extracellular": {
+              "f1": 0.8,
+              "mcc": 0.7769282067495051,
+              "support": 14,
+              "undefined": false
+            },
+            "golgi_apparatus": {
+              "f1": 0.4,
+              "mcc": 0.37579825924875904,
+              "support": 6,
+              "undefined": false
+            },
+            "lysosome_vacuole": {
+              "f1": 0.0,
+              "mcc": 0.0,
+              "support": 1,
+              "undefined": true
+            },
+            "mitochondrion": {
+              "f1": 0.8421052631578947,
+              "mcc": 0.8256154365748793,
+              "support": 10,
+              "undefined": false
+            },
+            "nucleus": {
+              "f1": 0.5753424657534246,
+              "mcc": 0.3024592595635977,
+              "support": 35,
+              "undefined": false
+            },
+            "peroxisome": {
+              "f1": 0.0,
+              "mcc": -0.03333333333333333,
+              "support": 3,
+              "undefined": false
+            },
+            "plastid": {
+              "f1": 0.6666666666666666,
+              "mcc": 0.7032533095487744,
+              "support": 2,
+              "undefined": false
+            }
+          },
+          "rows": 93,
+          "validate": 3
+        },
+        {
+          "macro_f1": 0.41935199720914007,
+          "per_class": {
+            "cell_membrane": {
+              "f1": 0.7142857142857143,
+              "mcc": 0.6996611002644991,
+              "support": 8,
+              "undefined": false
+            },
+            "cytoplasm": {
+              "f1": 0.7333333333333333,
+              "mcc": 0.5860404031703634,
+              "support": 33,
+              "undefined": false
+            },
+            "endoplasmic_reticulum": {
+              "f1": 0.3076923076923077,
+              "mcc": 0.20830016851983468,
+              "support": 10,
+              "undefined": false
+            },
+            "extracellular": {
+              "f1": 0.8888888888888888,
+              "mcc": 0.8768406961178046,
+              "support": 9,
+              "undefined": false
+            },
+            "golgi_apparatus": {
+              "f1": 0.0,
+              "mcc": -0.045454545454545456,
+              "support": 4,
+              "undefined": false
+            },
+            "lysosome_vacuole": {
+              "f1": 0.0,
+              "mcc": -0.03178208630818641,
+              "support": 4,
+              "undefined": false
+            },
+            "mitochondrion": {
+              "f1": 0.6666666666666666,
+              "mcc": 0.6153871128820448,
+              "support": 15,
+              "undefined": false
+            },
+            "nucleus": {
+              "f1": 0.6326530612244898,
+              "mcc": 0.43546026486971373,
+              "support": 31,
+              "undefined": false
+            },
+            "peroxisome": {
+              "f1": 0.0,
+              "mcc": 0.0,
+              "support": 0,
+              "undefined": true
+            },
+            "plastid": {
+              "f1": 0.25,
+              "mcc": 0.22593861697862647,
+              "support": 3,
+              "undefined": false
+            }
+          },
+          "rows": 92,
+          "validate": 4
+        }
+      ],
+      "frozen_thresholds": [
+        0.7927332520484924,
+        0.3855764865875244,
+        0.5652334690093994,
+        0.5976316928863525,
+        0.3837727904319763,
+        0.7342265844345093,
+        0.6992934346199036,
+        0.3627905249595642,
+        0.01749824918806553,
+        0.7448931932449341
+      ],
+      "mean_fold_macro_f1": 0.48129722907512495,
+      "pooled": {
+        "jaccard": {
+          "ci_high": 0.5309996949640431,
+          "ci_low": 0.39432100238479173,
+          "value": 0.46956699346405223
+        },
+        "macro_f1": {
+          "ci_high": 0.516163309971824,
+          "ci_low": 0.4279041497941392,
+          "value": 0.4763343487904311
+        },
+        "per_class": {
+          "cell_membrane": {
+            "f1": {
+              "ci_high": 0.7347475832438238,
+              "ci_low": 0.42291666666666666,
+              "value": 0.5833333333333334
+            },
+            "mcc": {
+              "ci_high": 0.7162728110290081,
+              "ci_low": 0.4059592034866164,
+              "value": 0.5672318737791673
+            },
+            "support": 45,
+            "undefined": false
+          },
+          "cytoplasm": {
+            "f1": {
+              "ci_high": 0.7842004440966093,
+              "ci_low": 0.6763535001583783,
+              "value": 0.7305389221556886
+            },
+            "mcc": {
+              "ci_high": 0.6527950606515653,
+              "ci_low": 0.47956836293213406,
+              "value": 0.5825752650035353
+            },
+            "support": 136,
+            "undefined": false
+          },
+          "endoplasmic_reticulum": {
+            "f1": {
+              "ci_high": 0.4819484835895305,
+              "ci_low": 0.2352628285356696,
+              "value": 0.3617021276595745
+            },
+            "mcc": {
+              "ci_high": 0.41702397352242765,
+              "ci_low": 0.14095421620537996,
+              "value": 0.2830762995124658
+            },
+            "support": 41,
+            "undefined": false
+          },
+          "extracellular": {
+            "f1": {
+              "ci_high": 0.9278028880866426,
+              "ci_low": 0.7199245283018868,
+              "value": 0.8862275449101796
+            },
+            "mcc": {
+              "ci_high": 0.9038035510226836,
+              "ci_low": 0.696012909739104,
+              "value": 0.8575923028923004
+            },
+            "support": 86,
+            "undefined": false
+          },
+          "golgi_apparatus": {
+            "f1": {
+              "ci_high": 0.376825266611977,
+              "ci_low": 0.09991935483870969,
+              "value": 0.24561403508771928
+            },
+            "mcc": {
+              "ci_high": 0.35648047389193777,
+              "ci_low": 0.053992570108571024,
+              "value": 0.2143046804968193
+            },
+            "support": 18,
+            "undefined": false
+          },
+          "lysosome_vacuole": {
+            "f1": {
+              "ci_high": 0.5834558823529411,
+              "ci_low": 0.08686594202898551,
+              "value": 0.3448275862068966
+            },
+            "mcc": {
+              "ci_high": 0.5746193526203426,
+              "ci_low": 0.06214663866870157,
+              "value": 0.3266793038882825
+            },
+            "support": 17,
+            "undefined": false
+          },
+          "mitochondrion": {
+            "f1": {
+              "ci_high": 0.7692307692307693,
+              "ci_low": 0.534802767147483,
+              "value": 0.6666666666666666
+            },
+            "mcc": {
+              "ci_high": 0.7459680551156244,
+              "ci_low": 0.4800480259317574,
+              "value": 0.6323681648601047
+            },
+            "support": 46,
+            "undefined": false
+          },
+          "nucleus": {
+            "f1": {
+              "ci_high": 0.6755893851439403,
+              "ci_low": 0.5539191024802536,
+              "value": 0.6172839506172839
+            },
+            "mcc": {
+              "ci_high": 0.5026987639286065,
+              "ci_low": 0.2839745076285646,
+              "value": 0.415175326125182
+            },
+            "support": 125,
+            "undefined": false
+          },
+          "peroxisome": {
+            "f1": {
+              "ci_high": 0.05556666666666665,
+              "ci_low": 0.0,
+              "value": 0.027149321266968326
+            },
+            "mcc": {
+              "ci_high": 0.08770456899261035,
+              "ci_low": -0.13249955810003944,
+              "value": -0.006597165806648554
+            },
+            "support": 6,
+            "undefined": false
+          },
+          "plastid": {
+            "f1": {
+              "ci_high": 0.5714285714285714,
+              "ci_low": 0.0,
+              "value": 0.3
+            },
+            "mcc": {
+              "ci_high": 0.5826963762030754,
+              "ci_low": -0.02029881309988927,
+              "value": 0.2984272518241018
+            },
+            "support": 13,
+            "undefined": false
+          }
+        },
+        "rows": 408
+      }
+    }
+  },
+  "frozen_sha256": "719c9866603640a781bf13193e38ee5d27c7fd13426aa44c5221a1e4099c9dae",
+  "phase": 9,
+  "schema_version": 1,
+  "test": {
+    "frozen_sha256": "719c9866603640a781bf13193e38ee5d27c7fd13426aa44c5221a1e4099c9dae",
+    "hardware": {
+      "logical_cpus": 12,
+      "machine": "AMD64",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "python": "3.11.9"
+    },
+    "label": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+    "metrics": {
+      "jaccard": {
+        "ci_high": 0.37817043821839075,
+        "ci_low": 0.288339571879752,
+        "value": 0.33013468013468017
+      },
+      "macro_f1": {
+        "ci_high": 0.42675244571536725,
+        "ci_low": 0.3023085020377334,
+        "value": 0.36631721731596933
+      },
+      "per_class": {
+        "cell_membrane": {
+          "f1": {
+            "ci_high": 0.8387945670628183,
+            "ci_low": 0.413448275862069,
+            "value": 0.6666666666666666
+          },
+          "mcc": {
+            "ci_high": 0.8151906909532575,
+            "ci_low": 0.37968386577919366,
+            "value": 0.6273529569964522
+          },
+          "support": 18,
+          "undefined": false
+        },
+        "cytoplasm": {
+          "f1": {
+            "ci_high": 0.8283622744296901,
+            "ci_low": 0.6538265306122449,
+            "value": 0.7450980392156863
+          },
+          "mcc": {
+            "ci_high": 0.6869970810259646,
+            "ci_low": 0.4542092756643477,
+            "value": 0.566475404050682
+          },
+          "support": 39,
+          "undefined": false
+        },
+        "endoplasmic_reticulum": {
+          "f1": {
+            "ci_high": 0.46153846153846156,
+            "ci_low": 0.0,
+            "value": 0.2222222222222222
+          },
+          "mcc": {
+            "ci_high": 0.42707133527685204,
+            "ci_low": -0.08853840083486339,
+            "value": 0.15564249183991263
+          },
+          "support": 7,
+          "undefined": false
+        },
+        "extracellular": {
+          "f1": {
+            "ci_high": 0.8334677419354838,
+            "ci_low": 0.375,
+            "value": 0.64
+          },
+          "mcc": {
+            "ci_high": 0.8192881745830303,
+            "ci_low": 0.3171740285411705,
+            "value": 0.5886890592353394
+          },
+          "support": 12,
+          "undefined": false
+        },
+        "golgi_apparatus": {
+          "f1": {
+            "ci_high": 0.4,
+            "ci_low": 0.0,
+            "value": 0.21428571428571427
+          },
+          "mcc": {
+            "ci_high": 0.43033148291193524,
+            "ci_low": -0.10361788348563977,
+            "value": 0.14604657501955906
+          },
+          "support": 7,
+          "undefined": false
+        },
+        "lysosome_vacuole": {
+          "f1": {
+            "ci_high": 0.6666666666666666,
+            "ci_low": 0.0,
+            "value": 0.2
+          },
+          "mcc": {
+            "ci_high": 0.6563837128478223,
+            "ci_low": -0.04791503250849742,
+            "value": 0.22085718770366425
+          },
+          "support": 2,
+          "undefined": false
+        },
+        "mitochondrion": {
+          "f1": {
+            "ci_high": 0.6666666666666666,
+            "ci_low": 0.0,
+            "value": 0.2222222222222222
+          },
+          "mcc": {
+            "ci_high": 0.6557245589230616,
+            "ci_low": -0.048351828672368966,
+            "value": 0.24047787582163344
+          },
+          "support": 7,
+          "undefined": false
+        },
+        "nucleus": {
+          "f1": {
+            "ci_high": 0.7789473684210526,
+            "ci_low": 0.5473205741626794,
+            "value": 0.673469387755102
+          },
+          "mcc": {
+            "ci_high": 0.5994408613165018,
+            "ci_low": 0.28504865141526053,
+            "value": 0.4537557253783286
+          },
+          "support": 36,
+          "undefined": false
+        },
+        "peroxisome": {
+          "f1": {
+            "ci_high": 0.14414878796322095,
+            "ci_low": 0.020403009688723973,
+            "value": 0.07920792079207921
+          },
+          "mcc": {
+            "ci_high": 0.053252922958423037,
+            "ci_low": 0.0,
+            "value": 0.029464381137788747
+          },
+          "support": 4,
+          "undefined": false
+        },
+        "plastid": {
+          "f1": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "value": 0.0
+          },
+          "mcc": {
+            "ci_high": 0.0,
+            "ci_low": 0.0,
+            "value": 0.0
+          },
+          "support": 2,
+          "undefined": false
+        }
+      },
+      "rows": 99
+    },
+    "scope": "subset",
+    "seconds": 4.760702099883929,
+    "touches": 1
+  }
+}

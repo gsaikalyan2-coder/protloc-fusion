@@ -14,9 +14,14 @@ target:
   base_url: http://localhost:8000
 
 partitions:
+  # Registry numbering: data/processed/splits/registry.tsv numbers the five GraphPart
+  # partitions 1 to 5 (GraphPart's own 0-based index n is registry partition n + 1).
+  # Phase 9 replaced the earlier zero-based lists [0, 1, 2, 3] and [4] with these (ADR-0011;
+  # ADR-0010 recorded the mapping). tests/unit/test_evaluation_partitions.py fails if this
+  # block and the registry ever disagree again.
   # Test is touched once, after every reported value is frozen on validation.
-  validation: [0, 1, 2, 3]
-  test: [4]
+  validation: [1, 2, 3, 4]
+  test: [5]
 
 metrics:
   per_head: [macro_f1, mcc]
