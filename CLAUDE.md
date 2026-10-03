@@ -124,7 +124,7 @@ MAX_SEQUENCE_LENGTH=ENTER_YOUR_VALUE_HERE
 # ── Phase 7: embeddings ──
 EMBED_CACHE=./data/embeddings
 ESM_CHECKPOINT=facebook/esm2_t30_150M_UR50D
-ESM_REVISION=ENTER_YOUR_VALUE_HERE
+ESM_REVISION=a695f6045e2e32885fa60af20c13cb35398ce30c
 HF_TOKEN=ENTER_YOUR_VALUE_HERE
 
 # ── Phase 8: experiment tracking (ENH) ──
@@ -162,7 +162,7 @@ MAX_UPLOAD_BYTES=ENTER_YOUR_VALUE_HERE
 | Variable | Fill in phase | Where to get it |
 |---|---|---|
 | `MAX_SEQUENCE_LENGTH` | 5 | Decided from the corpus length distribution; record in the dataset card |
-| `ESM_REVISION` | 7 | HuggingFace model page → commit hash of the revision you pull |
+| `ESM_REVISION` | 7 | Filled 2026-10-03: `a695f604…` (huggingface.co/api/models); do not float it |
 | `HF_TOKEN` | 7 (read) · 19 (write) | huggingface.co → Settings → Access Tokens |
 | `MODEL_VERSION`, `ARTIFACT_REVISION` | 14 | The HF model-repo commit SHA the server pins |
 | `ARTIFACT_CACHE_DIR` | 2 | Host-dependent; ephemeral on both candidates, so weights are re-pulled on cold start |
@@ -377,7 +377,7 @@ docs say so rather than promising durability the host cannot deliver.
 | 0006 | Label semantics: four states, per-label evidence, per-task negative rule | Accepted 2026-10-02 | 5, 9, 20 |
 | 0007 | Hosting, post-paywall | Accepted for the Phase 2 acceptance host; **host for the real service undecided** | 19, 20 |
 | 0008 | Batch durability scoped to client-side chunking | Accepted | 14, 16 |
-| 0009 | Frozen encoder + trained heads; ESM-2 150M | **To be written in Phase 7** | 7, 9 |
+| 0009 | Frozen encoder + trained heads; ESM-2 150M; sliding window for sequences over 1022 residues | Accepted 2026-10-03 (measured cost filled at the Phase 7 close) | 7, 9 |
 
 ### Phase 0 close — 2026-09-28
 
