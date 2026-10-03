@@ -86,3 +86,6 @@ desktop.ini
 
 # Phase 9 localization head: weights, scores and smoke output (the manifest is committed)
 data/head/
+
+# Phase 10 calibration working files (the frozen manifest and the registry bundle are committed)
+data/calibration/
