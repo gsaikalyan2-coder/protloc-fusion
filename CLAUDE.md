@@ -342,8 +342,8 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 5   — Swiss-Prot corpus, labels, manifest           MVP   8.0 h   done 2026-10-02 (branch; you tag v0.5.0)
 [x] Phase 6   — GraphPart splits & leakage gate               MVP   5.0 h   done 2026-10-03 (branch; you tag v0.6.0)
 [x] Phase 7   — ESM-2 embedding cache                         MVP   6.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.7.0)
-[ ] Phase 8   — Classical baselines (metric floor)            ENH   3.0 h   <-- NEXT
-[ ] Phase 9   — Localization head (attention pooling + MLP)   MVP   7.0 h
+[x] Phase 8   — Classical baselines (metric floor)            ENH   3.0 h   done 2026-10-03 (branch; you tag v0.8.0)
+[ ] Phase 9   — Localization head (attention pooling + MLP)   MVP   7.0 h   <-- NEXT
 [ ] Phase 10  — Calibration & per-label thresholds            MVP   5.0 h
 [ ] Phase 11  — Signal-peptide CRF head                       ENH   8.0 h
 [ ] Phase 12  — GO head                                       ENH   4.0 h
@@ -378,6 +378,7 @@ docs say so rather than promising durability the host cannot deliver.
 | 0007 | Hosting, post-paywall | Accepted for the Phase 2 acceptance host; **host for the real service undecided** | 19, 20 |
 | 0008 | Batch durability scoped to client-side chunking | Accepted | 14, 16 |
 | 0009 | Frozen encoder + trained heads; ESM-2 150M; sliding window for sequences over 1022 residues | Accepted 2026-10-03 (measured cost filled at the Phase 7 close) | 7, 9 |
+| 0010 | Baseline protocol: leave-one-partition-out on registry partitions 1-4, per-class MCC-optimal thresholds, test partition 5 scored once after freeze | Accepted 2026-10-03 | 8, 9 |
 
 ### Phase 0 close — 2026-09-28
 
@@ -436,6 +437,17 @@ an estimate; `scripts/embed.py --pack`/`--bundle` prepare a free-GPU run). Measu
 2.14.1+cpu: 2.011 s/sequence; subset cache 1,315,501 bytes; one sequence byte-identical across two processes and
 after a real kill and resume; padding changes a vector by at most 9.5e-07. Byte identity is claimed for that machine
 and device only. Manifest `data/manifests/embedding_manifest.json` says `subset`. Detail: `docs/phases/07.md`.
+
+### Phase 8 close — 2026-10-03
+
+LogReg, LinearSVC and RandomForest on a 29-column motif vector, plus the untrained motif rules as a second row (ADR-0010).
+Protocol: leave-one-partition-out over registry partitions 1-4, per-class MCC-optimal thresholds tuned on out-of-fold scores,
+test = partition 5 scored once after `--freeze` (`data/manifests/baseline_metrics.json`, frozen_sha256 `60bdfcd2f2b7173e5e8e21a66a106db91dab126698eeebeecd919908c7a664f4`).
+Localization macro F1, validation / test: RandomForest 0.479 / 0.472 (the floor Phase 9 must beat), LogReg 0.440 / 0.458,
+LinearSVC 0.437 / 0.456, motif rules 0.364 / 0.365. RF Jaccard 0.492 / 0.467. Membrane type RF 0.525 / 0.561; signal peptide RF 0.936 / 0.931.
+DeepLoc (about 0.46 macro F1, about 0.53 Jaccard) is indicative only: different benchmark and split. `configs/evaluation/default.yaml` is not
+edited; it numbers partitions 0-4 where the registry says 1-5 (n = index + 1), so Phase 9 reconciles it. `data/baselines/` is gitignored.
+UNVERIFIED: Docker, GitHub Actions and the frontend gate (not runnable in the sandbox). Detail: `docs/phases/08.md`.
 
 ### Two things a cold session must know
 
