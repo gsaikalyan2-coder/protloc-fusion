@@ -1050,5 +1050,9 @@ def test_a_signal_peptide_bundle_without_a_head_definition_is_refused(
 
 def test_the_localization_head_contract_is_unchanged() -> None:
     assert registry_bundle.TASK_HEAD_KEYS["localization"] == ()
-    assert set(registry_bundle.TASK_HEAD_KEYS) == {"localization", "signal_peptide"}
+    assert set(registry_bundle.TASK_HEAD_KEYS) == {
+        "localization",
+        "signal_peptide",
+        "go_function",
+    }
     assert registry_bundle.RULE_KEYS == ("baseline_class_map", "consistency")

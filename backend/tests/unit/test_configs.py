@@ -27,7 +27,7 @@ CONFIG_DIR = Path(__file__).resolve().parents[3] / "configs"
 GROUP_OPTIONS: dict[str, list[str]] = {
     "data": ["uniprot_swissprot"],
     "model": ["trunk_esm2_150m"],
-    "training": ["calibration", "crf", "frozen_trunk", "head", "lora"],
+    "training": ["calibration", "crf", "frozen_trunk", "go", "head", "lora"],
     "evaluation": ["default"],
     "deployment": ["local", "hf_spaces"],
 }

@@ -347,8 +347,8 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 9   — Localization head (attention pooling + MLP)   MVP   7.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.9.0)
 [x] Phase 10  — Calibration & per-label thresholds            MVP   5.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.10.0)
 [x] Phase 11  — Signal-peptide CRF head                       ENH   8.0 h   done 2026-10-04 (branch; 500-sequence subset only; you tag v0.11.0)
-[ ] Phase 12  — GO head                                       ENH   4.0 h   <-- NEXT
-[ ] Phase 13  — Homology evidence (MMseqs2 index)             ENH   5.0 h
+[x] Phase 12  — GO head                                       ENH   4.0 h   done 2026-10-04 (branch; 500-sequence subset only; you tag v0.12.0)
+[ ] Phase 13  — Homology evidence (MMseqs2 index)             ENH   5.0 h   <-- NEXT
 [ ] Phase 14  — Swap the engine: model behind the same API     MVP   6.0 h
 [ ] Phase 15  — Attribution from the real model                ENH   4.0 h
 [ ] Phase 16  — Frontend upgrade & landing page                MVP   7.0 h
@@ -381,6 +381,7 @@ docs say so rather than promising durability the host cannot deliver.
 | 0009 | Frozen encoder + trained heads; ESM-2 150M; sliding window for sequences over 1022 residues | Accepted 2026-10-03 (measured cost filled at the Phase 7 close) | 7, 9 |
 | 0010 | Baseline protocol: leave-one-partition-out on registry partitions 1-4, per-class MCC-optimal thresholds, test partition 5 scored once after freeze | Accepted 2026-10-03 | 8, 9 |
 | 0011 | Localization head: attention pooling over per-residue ESM-2 states + MLP; per-residue cache for the 500-sequence subset; inner whole-cluster early stopping; subset-only numbers | Accepted 2026-10-03 | 9, 10 |
+| 0014 | GO head: multi-label molecular function, evidence policy experimental + curated, term floor 20 (12 terms), open-world labels, three floors, subset-only numbers | Accepted 2026-10-04 | 12, 13, 14 |
 
 ### Phase 0 close — 2026-09-28
 
@@ -487,6 +488,21 @@ the localization head's count is still 1. Training took 17,612 s on CPU. Keys: r
 embedding cache `0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1`, residue cache `05c9bb393be0e8b25a1af2eddcea811bc3d19edafe18580c34eb547b444a3349`. `data/crf/` is gitignored; the registry bundle has a per-task head contract (`TASK_HEAD_KEYS`).
 TargetP's 83% / 46-49% are context only (`comparable: false`). UNVERIFIED: any claim beyond 500 sequences or one organism group, partition 5 (12 positives), seed variance, TargetP parity,
 10 sandbox golden-test hydropathy failures (unattributed), Docker, GitHub Actions and the frontend gate (not runnable in the sandbox). Detail: `docs/phases/11.md`.
+
+### Phase 12 close — 2026-10-04
+
+GO molecular-function head: attention pooling over per-residue ESM-2 states plus an MLP, 12 sigmoids, evidence policy experimental + curated, term floor 20 (ADR-0014), trained and scored on the **500-sequence subset only**
+("subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers"). Labels are open-world (`annotated`/`unknown`, never `negative`); counts and the vocabulary come from subset rows only (12 trainable terms, 705 under the floor).
+Ontology `releases/2026-07-26`, SHA-256 `b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc` (CC BY 4.0, pointer and hash only). Frozen in `registry/go_function/0.12.0/{bundle.json,calibrator.json,terms.json}`
+(`bundle_sha256` `c34a1befad3ba5e01d91998197cdb418acd5263fa13a5ecc5541821a3b627d07`; `head.frozen_sha256` `6b3ee6f7bc835da9d7867fcdfc518d58a9327634aa6c5bd00c0334f7930affb8` is the training record's hash; vocabulary `ee8e9de5dd1f0a60ef8a31eb77b666b09e5ba6dd071e8641a15f511e603a91ba`).
+Manifest `data/manifests/go_metrics.json`, frozen_sha256 `9fc6057c291e04bd66b137844cda8810f2abda12a4292c90a19e6360ed470e70`; weights `1d9d77f93861444b551a058317d9c0c9175818c02bf7475bfca87bab4d0eac6f`; calibrator `956e55da98c4749806f7c9cbabd7f23821e24e38c0599295ff427cb5da59a691`.
+Chosen: lr 1e-3, dropout 0.5, hidden 256, gamma 0 (one-value axis, 8 grid points), 209,549 parameters; training took 773.7 s on CPU. Validation pooled over partitions 1-4 (209 labelled rows), head vs floors:
+p@3 0.592 [0.551, 0.645] vs frequency prior 0.523 [0.487, 0.552], logreg 0.460 [0.417, 0.506], motif 0.493 [0.456, 0.525]; Fmax (F at a nested global threshold) 0.609 [0.576, 0.654] vs 0.531, 0.500, 0.529 (intervals disjoint for all three).
+Calibration (isotonic, 12 terms): macro ECE 0.1240 -> 0.0980 (delta CI [-0.0429, -0.0096]), Brier 0.1593 -> 0.1485; ranking unchanged. Partition 5 scored once (`touches: 1`; 64 labelled rows, 52 evaluable): head p@3 0.583 [0.484, 0.667], calibrated 0.635 [0.540, 0.712],
+Fmax 0.622 / 0.632, frequency prior 0.571 / 0.568; the head overlaps the prior and the motif on test. The CRF's and the localization head's counts are still 1 each. Keys: registry `37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a`,
+corpus `d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8`, embedding cache `0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1`, residue cache `05c9bb393be0e8b25a1af2eddcea811bc3d19edafe18580c34eb547b444a3349`.
+`data/go/` is gitignored; `TASK_HEAD_KEYS["go_function"]` adds the vocabulary and ontology checks. Phase 14 needs a model-shaped GO output with `source: "model"` (`GoAnnotation` requires `source_accession`).
+UNVERIFIED: any claim beyond 500 sequences, per-term claims on 22-111 positives, seed variance, published GO parity (none fetched), Docker, GitHub Actions and the frontend gate (not runnable in the sandbox). Detail: `docs/phases/12.md`.
 
 ### Two things a cold session must know
 

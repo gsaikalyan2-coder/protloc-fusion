@@ -1,0 +1,132 @@
+{
+  "evidence_codes": [
+    "EXP",
+    "HDA",
+    "HEP",
+    "HGI",
+    "HMP",
+    "HTP",
+    "IC",
+    "IDA",
+    "IEP",
+    "IGI",
+    "IMP",
+    "IPI",
+    "TAS"
+  ],
+  "evidence_policy": [
+    "experimental",
+    "curated"
+  ],
+  "ontology": {
+    "data_version": "releases/2026-07-26",
+    "namespace": "molecular_function",
+    "root": "GO:0003674",
+    "sha256": "b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc"
+  },
+  "propagation": [
+    "is_a",
+    "part_of"
+  ],
+  "schema_version": 1,
+  "task": "go_function",
+  "term_floor": 20,
+  "terms": [
+    {
+      "ancestors": [
+        "GO:0005488"
+      ],
+      "id": "GO:0003676",
+      "name": "nucleic acid binding",
+      "positives_validation": 41
+    },
+    {
+      "ancestors": [
+        "GO:0003676",
+        "GO:0005488"
+      ],
+      "id": "GO:0003677",
+      "name": "DNA binding",
+      "positives_validation": 22
+    },
+    {
+      "ancestors": [
+        "GO:0003676",
+        "GO:0005488"
+      ],
+      "id": "GO:0003723",
+      "name": "RNA binding",
+      "positives_validation": 22
+    },
+    {
+      "ancestors": [],
+      "id": "GO:0003824",
+      "name": "catalytic activity",
+      "positives_validation": 97
+    },
+    {
+      "ancestors": [],
+      "id": "GO:0005488",
+      "name": "binding",
+      "positives_validation": 111
+    },
+    {
+      "ancestors": [
+        "GO:0005488"
+      ],
+      "id": "GO:0005515",
+      "name": "protein binding",
+      "positives_validation": 57
+    },
+    {
+      "ancestors": [
+        "GO:0003824"
+      ],
+      "id": "GO:0016740",
+      "name": "transferase activity",
+      "positives_validation": 37
+    },
+    {
+      "ancestors": [
+        "GO:0003824"
+      ],
+      "id": "GO:0016787",
+      "name": "hydrolase activity",
+      "positives_validation": 37
+    },
+    {
+      "ancestors": [
+        "GO:0005488"
+      ],
+      "id": "GO:0036094",
+      "name": "small molecule binding",
+      "positives_validation": 36
+    },
+    {
+      "ancestors": [
+        "GO:0005488",
+        "GO:0005515"
+      ],
+      "id": "GO:0042802",
+      "name": "identical protein binding",
+      "positives_validation": 23
+    },
+    {
+      "ancestors": [
+        "GO:0005488",
+        "GO:0036094"
+      ],
+      "id": "GO:0043167",
+      "name": "ion binding",
+      "positives_validation": 32
+    },
+    {
+      "ancestors": [
+        "GO:0003824"
+      ],
+      "id": "GO:0140096",
+      "name": "catalytic activity, acting on a protein",
+      "positives_validation": 38
+    }
+  ]
+}

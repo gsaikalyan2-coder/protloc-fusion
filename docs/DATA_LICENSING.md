@@ -13,6 +13,7 @@ fetched at build time from its original source, pinned by release and SHA-256.
 | Manifest, release string, SHA-256, row counts | Generated | Project (Apache-2.0) | **Yes** (`data/manifests/`) | Yes |
 | Split registry and `leakage_report.json` | Generated | Project (Apache-2.0) | Yes, once small and text | Yes |
 | SignalP 6.0 / TargetP 2.0 / DeepLoc 2.0 benchmark sets | Authors' sites | **Not yet verified** — read the terms at download time | **No** | **No** |
+| Gene Ontology `go-basic.obo` (release `2026-07-26`, SHA-256 `b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc`) | geneontology.org | CC BY 4.0 (<https://creativecommons.org/licenses/by/4.0/>), read at the Phase 12 pin | No — pointer and hash only (`data/raw/` is ignored) | No — fetched at build time; cite the Gene Ontology Consortium and the release |
 | GOA GAF snapshot | EBI GOA | **Not yet verified** — record at download time | No | No — fetched at build time |
 | Embeddings (`*.h5`, `*.pt`) | Generated | Derived from ESM-2 (MIT) and the corpus | No | No |
 | Trained weights | Generated | See the model card (Phase 20) | No — Hugging Face Hub, pinned by revision | Per model card |

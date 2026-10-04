@@ -1,0 +1,5278 @@
+{
+  "frozen": {
+    "architecture": {
+      "attention_hidden": 64,
+      "batch_size": 32,
+      "embedding_dim": 640,
+      "heads": 1,
+      "optimiser": "adamw",
+      "pooling": "attention",
+      "pos_weight_cap": 10.0,
+      "seed": 20260909,
+      "weight_decay": 0.01
+    },
+    "bundle": {
+      "bundle_sha256": "c34a1befad3ba5e01d91998197cdb418acd5263fa13a5ecc5541821a3b627d07",
+      "calibration_version": "0.12.0+ba99718e08a4",
+      "directory": "registry/go_function/0.12.0",
+      "version": "0.12.0"
+    },
+    "calibration_methods": {
+      "consistent": {
+        "GO:0003676": true,
+        "GO:0003677": false,
+        "GO:0003723": false,
+        "GO:0003824": true,
+        "GO:0005488": true,
+        "GO:0005515": true,
+        "GO:0016740": true,
+        "GO:0016787": true,
+        "GO:0036094": false,
+        "GO:0042802": false,
+        "GO:0043167": false,
+        "GO:0140096": true
+      },
+      "fold": {
+        "1": [
+          "isotonic",
+          "uncalibrated",
+          "uncalibrated",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "uncalibrated",
+          "uncalibrated",
+          "uncalibrated",
+          "isotonic"
+        ],
+        "2": [
+          "isotonic",
+          "uncalibrated",
+          "uncalibrated",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "uncalibrated",
+          "isotonic",
+          "isotonic"
+        ],
+        "3": [
+          "isotonic",
+          "uncalibrated",
+          "uncalibrated",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "uncalibrated",
+          "isotonic",
+          "isotonic"
+        ],
+        "4": [
+          "isotonic",
+          "uncalibrated",
+          "uncalibrated",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "isotonic",
+          "uncalibrated",
+          "isotonic",
+          "isotonic"
+        ]
+      },
+      "frozen": [
+        "isotonic",
+        "isotonic",
+        "isotonic",
+        "isotonic",
+        "isotonic",
+        "isotonic",
+        "isotonic",
+        "isotonic",
+        "isotonic",
+        "isotonic",
+        "isotonic",
+        "isotonic"
+      ],
+      "inner": {
+        "1": {
+          "2": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic"
+          ],
+          "3": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic"
+          ],
+          "4": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic"
+          ]
+        },
+        "2": {
+          "1": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "isotonic",
+            "isotonic"
+          ],
+          "3": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "isotonic",
+            "isotonic"
+          ],
+          "4": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "isotonic",
+            "isotonic"
+          ]
+        },
+        "3": {
+          "1": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "isotonic",
+            "isotonic"
+          ],
+          "2": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "isotonic",
+            "isotonic"
+          ],
+          "4": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "isotonic",
+            "isotonic"
+          ]
+        },
+        "4": {
+          "1": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "isotonic",
+            "isotonic"
+          ],
+          "2": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "isotonic",
+            "isotonic"
+          ],
+          "3": [
+            "isotonic",
+            "uncalibrated",
+            "uncalibrated",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "isotonic",
+            "uncalibrated",
+            "isotonic",
+            "isotonic"
+          ]
+        }
+      }
+    },
+    "grid": [
+      {
+        "index": 0,
+        "mean_fold_fmax": 0.5897197825309582,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 0.0,
+          "hidden": 256,
+          "learning_rate": 0.001
+        },
+        "seconds": 64.66398519999348,
+        "selector": 0.592321558734832
+      },
+      {
+        "index": 1,
+        "mean_fold_fmax": 0.6063327478843441,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 0.0,
+          "hidden": 128,
+          "learning_rate": 0.001
+        },
+        "seconds": 62.037943199975416,
+        "selector": 0.5809211544966436
+      },
+      {
+        "index": 2,
+        "mean_fold_fmax": 0.5964298899236474,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 0.0,
+          "hidden": 256,
+          "learning_rate": 0.001
+        },
+        "seconds": 78.54608010011725,
+        "selector": 0.5929263974445096
+      },
+      {
+        "index": 3,
+        "mean_fold_fmax": 0.6071048996922949,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 0.0,
+          "hidden": 128,
+          "learning_rate": 0.001
+        },
+        "seconds": 77.41617770004086,
+        "selector": 0.5889874869581373
+      },
+      {
+        "index": 4,
+        "mean_fold_fmax": 0.577783209570957,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 0.0,
+          "hidden": 256,
+          "learning_rate": 0.0003
+        },
+        "seconds": 111.51183620002121,
+        "selector": 0.5892397189627491
+      },
+      {
+        "index": 5,
+        "mean_fold_fmax": 0.5997321732902827,
+        "params": {
+          "dropout": 0.3,
+          "gamma": 0.0,
+          "hidden": 128,
+          "learning_rate": 0.0003
+        },
+        "seconds": 140.62041709991172,
+        "selector": 0.584367600678415
+      },
+      {
+        "index": 6,
+        "mean_fold_fmax": 0.6164718372943789,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 0.0,
+          "hidden": 256,
+          "learning_rate": 0.0003
+        },
+        "seconds": 120.63114829990081,
+        "selector": 0.5837925379107293
+      },
+      {
+        "index": 7,
+        "mean_fold_fmax": 0.5206093767160429,
+        "params": {
+          "dropout": 0.5,
+          "gamma": 0.0,
+          "hidden": 128,
+          "learning_rate": 0.0003
+        },
+        "seconds": 106.70673829992302,
+        "selector": 0.5400369995855188
+      }
+    ],
+    "hardware": {
+      "calibrate_seconds": 10.553587700007483,
+      "evaluate_seconds": 13.963468400062993,
+      "train": {
+        "final_fit_seconds": 10.483185100136325,
+        "grid_seconds_total": 762.1343260998838,
+        "logical_cpus": 12,
+        "machine": "AMD64",
+        "platform": "Windows-10-10.0.26200-SP0",
+        "python": "3.11.9",
+        "seconds": 773.7396366000175,
+        "torch_threads": 10
+      }
+    },
+    "inputs": {
+      "calibration_config_sha256": "ae3195043c621a32b3894c2803d2c1f27e662dcaa614bc3d38652c378e81f7b8",
+      "calibrator_sha256": "956e55da98c4749806f7c9cbabd7f23821e24e38c0599295ff427cb5da59a691",
+      "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+      "embedding_cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+      "feature_table_sha256": "2f3d36d78519776c7ae542923820accf13b67953397fc07582da49c2749dfaa8",
+      "go_config_sha256": "80b40ded567ee80367b131fe5ee95198d12e1be85c05d0cb85f119e41e6dd4a9",
+      "label_policy_sha256": "4c9b61844c6d89d89dab577de4841e87845184cc471d59a68e9b27152ed0220a",
+      "label_table_sha256": "ac356d4af7aa0044abab61716a2fd20d6b8759c72f7cc66770e2a019eecb3e16",
+      "ontology_sha256": "b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc",
+      "oof_sha256": "ba99718e08a42a672d119193188c9878bbc680a844db1f05b20c233d18245ea9",
+      "registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+      "residue_cache_key": "05c9bb393be0e8b25a1af2eddcea811bc3d19edafe18580c34eb547b444a3349",
+      "training_record_sha256": "6b3ee6f7bc835da9d7867fcdfc518d58a9327634aa6c5bd00c0334f7930affb8",
+      "vocabulary_sha256": "ee8e9de5dd1f0a60ef8a31eb77b666b09e5ba6dd071e8641a15f511e603a91ba",
+      "weights_sha256": "1d9d77f93861444b551a058317d9c0c9175818c02bf7475bfca87bab4d0eac6f"
+    },
+    "label_policy": {
+      "closed_world": "a row is labelled when it is annotated and has at least one policy term; for such a row a vocabulary term absent from its propagated annotation is a negative; unknown rows and annotated rows with no policy term are not labelled and are never negatives",
+      "evidence_classes": {
+        "author": [
+          "NAS"
+        ],
+        "curated": [
+          "TAS",
+          "IC"
+        ],
+        "electronic": [
+          "IEA"
+        ],
+        "experimental": [
+          "EXP",
+          "IDA",
+          "IPI",
+          "IMP",
+          "IGI",
+          "IEP",
+          "HTP",
+          "HDA",
+          "HMP",
+          "HGI",
+          "HEP"
+        ],
+        "no_data": [
+          "ND"
+        ],
+        "similarity": [
+          "ISS",
+          "ISO",
+          "ISA",
+          "ISM",
+          "IGC",
+          "IBA",
+          "IBD",
+          "IKR",
+          "IRD",
+          "RCA"
+        ]
+      },
+      "evidence_codes": [
+        "EXP",
+        "HDA",
+        "HEP",
+        "HGI",
+        "HMP",
+        "HTP",
+        "IC",
+        "IDA",
+        "IEP",
+        "IGI",
+        "IMP",
+        "IPI",
+        "TAS"
+      ],
+      "evidence_policy": [
+        "experimental",
+        "curated"
+      ],
+      "namespace": "molecular_function",
+      "ontology_data_version": "releases/2026-07-26",
+      "propagation": [
+        "is_a",
+        "part_of"
+      ],
+      "root": "GO:0003674",
+      "states": [
+        "annotated",
+        "unknown"
+      ],
+      "term_floor": 20
+    },
+    "label_summary": {
+      "accessions": 507,
+      "annotated_without_policy_term": 132,
+      "labelled": 273,
+      "labelled_by_partition": {
+        "1": 75,
+        "2": 37,
+        "3": 45,
+        "4": 52,
+        "5": 64
+      },
+      "states": {
+        "annotated": 405,
+        "unknown": 102
+      },
+      "with_motif_hit": 175
+    },
+    "ontology": {
+      "cross_aspect_edges": 0,
+      "data_version": "releases/2026-07-26",
+      "license": "CC-BY-4.0",
+      "mapping_subset": {
+        "distinct_ids": {
+          "absent": 0,
+          "alt_id": 0,
+          "obsolete_dropped": 0,
+          "other_aspect": 0,
+          "primary": 620,
+          "replaced_by": 2
+        },
+        "occurrences": {
+          "absent": 0,
+          "alt_id": 0,
+          "obsolete_dropped": 0,
+          "other_aspect": 0,
+          "primary": 1218,
+          "replaced_by": 3
+        },
+        "total_distinct_ids": 622,
+        "total_occurrences": 1221
+      },
+      "mapping_whole_corpus": {
+        "distinct_ids": {
+          "absent": 0,
+          "alt_id": 0,
+          "obsolete_dropped": 3,
+          "other_aspect": 0,
+          "primary": 8251,
+          "replaced_by": 12
+        },
+        "occurrences": {
+          "absent": 0,
+          "alt_id": 0,
+          "obsolete_dropped": 90,
+          "other_aspect": 0,
+          "primary": 1045052,
+          "replaced_by": 278
+        },
+        "total_distinct_ids": 8266,
+        "total_occurrences": 1045420
+      },
+      "sha256": "b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc"
+    },
+    "protocol": {
+      "adr": "ADR-0014 (protocol of ADR-0010, ADR-0011 and ADR-0013)",
+      "bootstrap": {
+        "samples": 1000,
+        "seed": 20260909,
+        "unit": "cluster_id"
+      },
+      "early_stopping": "negative mean binary cross-entropy on an inner whole-cluster holdout of the training partitions; patience 10, at most 80 epochs",
+      "fmax_rule": "precision is averaged over rows with at least one term at or above the threshold, recall over all rows with a vocabulary positive, F = 2PR/(P+R); the threshold is nested (see threshold_rule), so Fmax here is F at the nested threshold, not an oracle maximum",
+      "folds": [
+        {
+          "train": [
+            2,
+            3,
+            4
+          ],
+          "validate": 1
+        },
+        {
+          "train": [
+            1,
+            3,
+            4
+          ],
+          "validate": 2
+        },
+        {
+          "train": [
+            1,
+            2,
+            4
+          ],
+          "validate": 3
+        },
+        {
+          "train": [
+            1,
+            2,
+            3
+          ],
+          "validate": 4
+        }
+      ],
+      "k_values": [
+        1,
+        3,
+        5
+      ],
+      "label_states": "annotated or unknown (ADR-0006); never negative; a row is labelled when it is annotated and has at least one policy term; for such a row a vocabulary term absent from its propagated annotation is a negative; unknown rows and annotated rows with no policy term are not labelled and are never negatives",
+      "primary_k": 3,
+      "selection_rule": "mean over folds of precision@k (k = metrics.primary_k) over rows with a vocabulary positive; tie-break mean fold Fmax under nested thresholds; then the earlier grid point",
+      "test_partition": 5,
+      "threshold_rule": "one global threshold on the propagated score (a term scores at least as high as any descendant); it is the CAFA-style Fmax maximiser over the labelled rows that have a vocabulary positive; fold k is scored with a threshold tuned on the out-of-fold scores of the other validation partitions; the frozen threshold is tuned on all validation rows. The calibrated threshold is tuned the same way on the cross-fitted calibrated scores",
+      "validation_partitions": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "scope": "subset",
+    "scope_label": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+    "selected": {
+      "final_epochs": 15,
+      "index": 2,
+      "mean_fold_fmax": 0.5964298899236474,
+      "params": {
+        "dropout": 0.5,
+        "gamma": 0.0,
+        "hidden": 256,
+        "learning_rate": 0.001
+      },
+      "selector": 0.5929263974445096,
+      "trainable_parameters": 209549
+    },
+    "software": {
+      "torch": "2.14.1",
+      "versions": {
+        "numpy": "2.4.6",
+        "pyyaml": "6.0.3",
+        "scikit-learn": "1.9.1",
+        "torch": "2.14.1+cpu"
+      }
+    },
+    "subset": {
+      "accessions_by_partition": {
+        "1": 146,
+        "2": 77,
+        "3": 93,
+        "4": 92,
+        "5": 99
+      },
+      "cache_directory": "0e528d4a46831b05_subset500",
+      "embedding_cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+      "labelled_rows_per_task": {
+        "localization": 507,
+        "membrane_type": 475,
+        "signal_peptide": 495
+      },
+      "sequences": 500,
+      "sequences_sha256": "4fe25aca277748e5662afbe07ea2820bcd42f5f3f487e3dee9ba73cc40e9d5e3"
+    },
+    "thresholds": {
+      "frequency_prior": 0.25,
+      "logreg": 0.5032119867938012,
+      "model_calibrated": 0.25,
+      "model_raw": 0.32247254252433777,
+      "motif": 0.125
+    },
+    "validation": {
+      "calibration": {
+        "bootstrap": {
+          "samples": 1000,
+          "seed": 20260909,
+          "unit": "cluster_id"
+        },
+        "macro": {
+          "brier_calibrated": {
+            "ci_high": 0.16029927287168344,
+            "ci_low": 0.13491206591803107,
+            "value": 0.14846596461283176
+          },
+          "brier_delta": {
+            "ci_high": -0.004431175791495619,
+            "ci_low": -0.018847068828982648,
+            "value": -0.010839638796266643
+          },
+          "brier_raw": {
+            "ci_high": 0.1728656099904654,
+            "ci_low": 0.14654674126139414,
+            "value": 0.1593056034090984
+          },
+          "ece_calibrated": {
+            "ci_high": 0.12419562537744303,
+            "ci_low": 0.09419554740790365,
+            "value": 0.09798784672325662
+          },
+          "ece_delta": {
+            "ci_high": -0.009627380284003987,
+            "ci_low": -0.042916063746711246,
+            "value": -0.026034066154447227
+          },
+          "ece_raw": {
+            "ci_high": 0.153492667186783,
+            "ci_low": 0.11675587664844295,
+            "value": 0.12402191287770385
+          }
+        },
+        "per_label": {
+          "GO:0003676": {
+            "brier_calibrated": {
+              "ci_high": 0.17478261101609113,
+              "ci_low": 0.11616557413253902,
+              "value": 0.14474880830722664
+            },
+            "brier_delta": {
+              "ci_high": 0.0013437697720570093,
+              "ci_low": -0.030829395012500115,
+              "value": -0.01450780548237307
+            },
+            "brier_raw": {
+              "ci_high": 0.1904765360303057,
+              "ci_low": 0.128300089727179,
+              "value": 0.1592566137895997
+            },
+            "ece_calibrated": {
+              "ci_high": 0.133470713415797,
+              "ci_low": 0.05264809309691975,
+              "value": 0.08307492659923821
+            },
+            "ece_delta": {
+              "ci_high": 0.011410004295420464,
+              "ci_low": -0.08670106844453034,
+              "value": -0.04177801488310749
+            },
+            "ece_raw": {
+              "ci_high": 0.1802016020732376,
+              "ci_low": 0.08168026503857358,
+              "value": 0.1248529414823457
+            }
+          },
+          "GO:0003677": {
+            "brier_calibrated": {
+              "ci_high": 0.14215541642198565,
+              "ci_low": 0.08280060041128595,
+              "value": 0.10941457977934951
+            },
+            "brier_delta": {
+              "ci_high": 0.0,
+              "ci_low": 0.0,
+              "value": 0.0
+            },
+            "brier_raw": {
+              "ci_high": 0.14215541642198565,
+              "ci_low": 0.08280060041128595,
+              "value": 0.10941457977934951
+            },
+            "ece_calibrated": {
+              "ci_high": 0.139881697910508,
+              "ci_low": 0.0679819258199231,
+              "value": 0.0955533618118578
+            },
+            "ece_delta": {
+              "ci_high": 0.0,
+              "ci_low": 0.0,
+              "value": 0.0
+            },
+            "ece_raw": {
+              "ci_high": 0.139881697910508,
+              "ci_low": 0.0679819258199231,
+              "value": 0.0955533618118578
+            }
+          },
+          "GO:0003723": {
+            "brier_calibrated": {
+              "ci_high": 0.18520862766840626,
+              "ci_low": 0.12220526036031724,
+              "value": 0.15380132106355543
+            },
+            "brier_delta": {
+              "ci_high": 0.0,
+              "ci_low": 0.0,
+              "value": 0.0
+            },
+            "brier_raw": {
+              "ci_high": 0.18520862766840626,
+              "ci_low": 0.12220526036031724,
+              "value": 0.15380132106355543
+            },
+            "ece_calibrated": {
+              "ci_high": 0.21461870664853813,
+              "ci_low": 0.13236371364715943,
+              "value": 0.17774500271570579
+            },
+            "ece_delta": {
+              "ci_high": 0.0,
+              "ci_low": 0.0,
+              "value": 0.0
+            },
+            "ece_raw": {
+              "ci_high": 0.21461870664853813,
+              "ci_low": 0.13236371364715943,
+              "value": 0.17774500271570579
+            }
+          },
+          "GO:0003824": {
+            "brier_calibrated": {
+              "ci_high": 0.1762470981801568,
+              "ci_low": 0.10555121341764409,
+              "value": 0.1409378447407849
+            },
+            "brier_delta": {
+              "ci_high": 0.027238818004909772,
+              "ci_low": 0.004030875631841108,
+              "value": 0.01589289032496302
+            },
+            "brier_raw": {
+              "ci_high": 0.15613576635476747,
+              "ci_low": 0.09686428186950043,
+              "value": 0.1250449544158219
+            },
+            "ece_calibrated": {
+              "ci_high": 0.16982803496463683,
+              "ci_low": 0.06410939524338903,
+              "value": 0.11099955397809831
+            },
+            "ece_delta": {
+              "ci_high": 0.0931510153506974,
+              "ci_low": -0.016249019204204247,
+              "value": 0.04456174560689137
+            },
+            "ece_raw": {
+              "ci_high": 0.12643052430680232,
+              "ci_low": 0.03964407290735242,
+              "value": 0.06643780837120694
+            }
+          },
+          "GO:0005488": {
+            "brier_calibrated": {
+              "ci_high": 0.2683522610132815,
+              "ci_low": 0.22692062440602842,
+              "value": 0.24852599201733472
+            },
+            "brier_delta": {
+              "ci_high": 0.0023593282611729443,
+              "ci_low": -0.032487255053923324,
+              "value": -0.013997373924352685
+            },
+            "brier_raw": {
+              "ci_high": 0.29131052269584873,
+              "ci_low": 0.2301281630407203,
+              "value": 0.2625233659416874
+            },
+            "ece_calibrated": {
+              "ci_high": 0.18399859769015647,
+              "ci_low": 0.08174506175075812,
+              "value": 0.12051207151748101
+            },
+            "ece_delta": {
+              "ci_high": 0.018578187664887627,
+              "ci_low": -0.10090898538143903,
+              "value": -0.05012962032980002
+            },
+            "ece_raw": {
+              "ci_high": 0.23006036269277352,
+              "ci_low": 0.11465854717520096,
+              "value": 0.17064169184728104
+            }
+          },
+          "GO:0005515": {
+            "brier_calibrated": {
+              "ci_high": 0.22884840295671446,
+              "ci_low": 0.16604862928770944,
+              "value": 0.20047902121396988
+            },
+            "brier_delta": {
+              "ci_high": -0.0008281412568844083,
+              "ci_low": -0.039263483764966266,
+              "value": -0.018391127641009863
+            },
+            "brier_raw": {
+              "ci_high": 0.2488099232740184,
+              "ci_low": 0.18429607211478538,
+              "value": 0.21887014885497974
+            },
+            "ece_calibrated": {
+              "ci_high": 0.15337595205674334,
+              "ci_low": 0.0613713269326668,
+              "value": 0.07694038402084073
+            },
+            "ece_delta": {
+              "ci_high": 0.013449988229248793,
+              "ci_low": -0.09776894986121573,
+              "value": -0.04611651550363581
+            },
+            "ece_raw": {
+              "ci_high": 0.20410448639236506,
+              "ci_low": 0.10263268432432883,
+              "value": 0.12305689952447654
+            }
+          },
+          "GO:0016740": {
+            "brier_calibrated": {
+              "ci_high": 0.13263713113253744,
+              "ci_low": 0.07997686047003283,
+              "value": 0.1083761615764159
+            },
+            "brier_delta": {
+              "ci_high": 0.005216148636242717,
+              "ci_low": -0.02328242996144771,
+              "value": -0.0071416469273336974
+            },
+            "brier_raw": {
+              "ci_high": 0.13940864311976311,
+              "ci_low": 0.09213301255169476,
+              "value": 0.1155178085037496
+            },
+            "ece_calibrated": {
+              "ci_high": 0.11308236441419091,
+              "ci_low": 0.041686138951032924,
+              "value": 0.07699804347733857
+            },
+            "ece_delta": {
+              "ci_high": 0.029111692771933855,
+              "ci_low": -0.06102759814567086,
+              "value": -0.006151473693242773
+            },
+            "ece_raw": {
+              "ci_high": 0.1329075313208585,
+              "ci_low": 0.05808295029609046,
+              "value": 0.08314951717058135
+            }
+          },
+          "GO:0016787": {
+            "brier_calibrated": {
+              "ci_high": 0.17672138577354785,
+              "ci_low": 0.10150607981859688,
+              "value": 0.14232616314836818
+            },
+            "brier_delta": {
+              "ci_high": 0.013155851340625555,
+              "ci_low": -0.02975985417559629,
+              "value": -0.006960653575870529
+            },
+            "brier_raw": {
+              "ci_high": 0.18112084400377523,
+              "ci_low": 0.11381267670641314,
+              "value": 0.1492868167242387
+            },
+            "ece_calibrated": {
+              "ci_high": 0.1571485238156466,
+              "ci_low": 0.07330282446663892,
+              "value": 0.0987350663883444
+            },
+            "ece_delta": {
+              "ci_high": 0.03829900002164532,
+              "ci_low": -0.06284341145938076,
+              "value": -0.015248755647321213
+            },
+            "ece_raw": {
+              "ci_high": 0.18056018111378233,
+              "ci_low": 0.08219961142586567,
+              "value": 0.11398382203566561
+            }
+          },
+          "GO:0036094": {
+            "brier_calibrated": {
+              "ci_high": 0.180882646957718,
+              "ci_low": 0.11852699319521923,
+              "value": 0.15142927430561387
+            },
+            "brier_delta": {
+              "ci_high": -0.016616295707639214,
+              "ci_low": -0.07730721308298559,
+              "value": -0.04477542320354244
+            },
+            "brier_raw": {
+              "ci_high": 0.23634664637296088,
+              "ci_low": 0.16246687019452058,
+              "value": 0.1962046975091563
+            },
+            "ece_calibrated": {
+              "ci_high": 0.14850308724428365,
+              "ci_low": 0.06819799241000651,
+              "value": 0.0912976074731005
+            },
+            "ece_delta": {
+              "ci_high": -0.03453340633820281,
+              "ci_low": -0.1360664251013737,
+              "value": -0.08770780194512601
+            },
+            "ece_raw": {
+              "ci_high": 0.24463438322923894,
+              "ci_low": 0.14447827147390524,
+              "value": 0.1790054094182265
+            }
+          },
+          "GO:0042802": {
+            "brier_calibrated": {
+              "ci_high": 0.15494360570235272,
+              "ci_low": 0.09172602726109903,
+              "value": 0.11953466519979628
+            },
+            "brier_delta": {
+              "ci_high": 0.0,
+              "ci_low": 0.0,
+              "value": 0.0
+            },
+            "brier_raw": {
+              "ci_high": 0.15494360570235272,
+              "ci_low": 0.09172602726109903,
+              "value": 0.11953466519979628
+            },
+            "ece_calibrated": {
+              "ci_high": 0.1797099500867415,
+              "ci_low": 0.07556654899053046,
+              "value": 0.1130463222965529
+            },
+            "ece_delta": {
+              "ci_high": 0.0,
+              "ci_low": 0.0,
+              "value": 0.0
+            },
+            "ece_raw": {
+              "ci_high": 0.1797099500867415,
+              "ci_low": 0.07556654899053046,
+              "value": 0.1130463222965529
+            }
+          },
+          "GO:0043167": {
+            "brier_calibrated": {
+              "ci_high": 0.16204366538062406,
+              "ci_low": 0.10238955176504004,
+              "value": 0.13168694854323337
+            },
+            "brier_delta": {
+              "ci_high": -0.014025315677213868,
+              "ci_low": -0.06546310735465113,
+              "value": -0.036560536435457563
+            },
+            "brier_raw": {
+              "ci_high": 0.20717307618292147,
+              "ci_low": 0.1357601623229348,
+              "value": 0.16824748497869094
+            },
+            "ece_calibrated": {
+              "ci_high": 0.12544672244401578,
+              "ci_low": 0.05521668695489082,
+              "value": 0.06750059181572464
+            },
+            "ece_delta": {
+              "ci_high": -0.019615621270029273,
+              "ci_low": -0.11553410599995836,
+              "value": -0.07971759050520917
+            },
+            "ece_raw": {
+              "ci_high": 0.20966293492865606,
+              "ci_low": 0.11225164954574426,
+              "value": 0.1472181823209338
+            }
+          },
+          "GO:0140096": {
+            "brier_calibrated": {
+              "ci_high": 0.15741418814447372,
+              "ci_low": 0.09866293600442401,
+              "value": 0.1303307954583325
+            },
+            "brier_delta": {
+              "ci_high": 0.01169002999018732,
+              "ci_low": -0.020372304512797503,
+              "value": -0.0036339886902228835
+            },
+            "brier_raw": {
+              "ci_high": 0.16201449877348603,
+              "ci_low": 0.10377713746495729,
+              "value": 0.1339647841485554
+            },
+            "ece_calibrated": {
+              "ci_high": 0.1144283828341044,
+              "ci_low": 0.04117633592717424,
+              "value": 0.0634512285847966
+            },
+            "ece_delta": {
+              "ci_high": 0.02056516903842626,
+              "ci_low": -0.06750293196672155,
+              "value": -0.03012076695281561
+            },
+            "ece_raw": {
+              "ci_high": 0.14779521958381697,
+              "ci_low": 0.062329052788485655,
+              "value": 0.09357199553761221
+            }
+          }
+        },
+        "reliability": {
+          "GO:0003676": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.1282051282051282,
+                "mean_score": 0.0,
+                "rows": 39
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.05915027783846888,
+                "rows": 3
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0819263038496334,
+                "rows": 24
+              },
+              {
+                "fraction_positive": 0.17391304347826086,
+                "mean_score": 0.11395348480477877,
+                "rows": 23
+              },
+              {
+                "fraction_positive": 0.13793103448275862,
+                "mean_score": 0.13909747029233796,
+                "rows": 29
+              },
+              {
+                "fraction_positive": 0.2,
+                "mean_score": 0.1492857142857143,
+                "rows": 10
+              },
+              {
+                "fraction_positive": 0.07407407407407407,
+                "mean_score": 0.16439909297052152,
+                "rows": 27
+              },
+              {
+                "fraction_positive": 0.2857142857142857,
+                "mean_score": 0.29084479545815023,
+                "rows": 14
+              },
+              {
+                "fraction_positive": 0.5238095238095238,
+                "mean_score": 0.4370351689701662,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.47368421052631576,
+                "mean_score": 0.6824249521041441,
+                "rows": 19
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.0020210014245960685,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.006520269183619391,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.01912673159192006,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.05003079931650843,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.08672025728793371,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.1859952300077393,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.3063412358363469,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.2857142857142857,
+                "mean_score": 0.45174514395850046,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.42857142857142855,
+                "mean_score": 0.6075581397329058,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.5,
+                "mean_score": 0.8836568176746369,
+                "rows": 20
+              }
+            ]
+          },
+          "GO:0003677": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.000339323219599291,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.0020837687327349115,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.008359005829940239,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.018414384907200224,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.03616186116068136,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.06340202511776061,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.11607271539313453,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.2171531163510822,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.41290330177261714,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.35,
+                "mean_score": 0.7666974782943725,
+                "rows": 20
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.000339323219599291,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.0020837687327349115,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.008359005829940239,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.018414384907200224,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.03616186116068136,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.06340202511776061,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.11607271539313453,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.2171531163510822,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.41290330177261714,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.35,
+                "mean_score": 0.7666974782943725,
+                "rows": 20
+              }
+            ]
+          },
+          "GO:0003723": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.0025893511039958824,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.006678899018360036,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.017379077727950755,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.0378110007870765,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.07556067708702315,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.13350054302385875,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.2269052103871391,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.33391158779462177,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.517657071352005,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.2,
+                "mean_score": 0.775737178325653,
+                "rows": 20
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.0025893511039958824,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.006678899018360036,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.017379077727950755,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.0378110007870765,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.07556067708702315,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.13350054302385875,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.2269052103871391,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.33391158779462177,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.517657071352005,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.2,
+                "mean_score": 0.775737178325653,
+                "rows": 20
+              }
+            ]
+          },
+          "GO:0003824": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.06382978723404255,
+                "mean_score": 0.0,
+                "rows": 47
+              },
+              {
+                "fraction_positive": 0.3333333333333333,
+                "mean_score": 0.09915961231750706,
+                "rows": 18
+              },
+              {
+                "fraction_positive": 0.2857142857142857,
+                "mean_score": 0.19047619047619047,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.15,
+                "mean_score": 0.3576839184836701,
+                "rows": 20
+              },
+              {
+                "fraction_positive": 0.5,
+                "mean_score": 0.584532357946322,
+                "rows": 28
+              },
+              {
+                "fraction_positive": 0.9411764705882353,
+                "mean_score": 0.8074866310160429,
+                "rows": 17
+              },
+              {
+                "fraction_positive": 0.7619047619047619,
+                "mean_score": 0.8573401426964752,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.9473684210526315,
+                "mean_score": 0.907905650848733,
+                "rows": 19
+              },
+              {
+                "fraction_positive": 0.8333333333333334,
+                "mean_score": 0.9686962504299965,
+                "rows": 18
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.019282471676844926,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.07092361560180074,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.12547114243110022,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.24584067861239114,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.3333333333333333,
+                "mean_score": 0.39396525422732037,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.42857142857142855,
+                "mean_score": 0.5948293265842256,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.9047619047619048,
+                "mean_score": 0.7631372894559588,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.7619047619047619,
+                "mean_score": 0.8675886222294399,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.9047619047619048,
+                "mean_score": 0.935976056825547,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.95,
+                "mean_score": 0.9779378175735474,
+                "rows": 20
+              }
+            ]
+          },
+          "GO:0005488": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.36363636363636365,
+                "mean_score": 0.1885233653142861,
+                "rows": 22
+              },
+              {
+                "fraction_positive": 0.38461538461538464,
+                "mean_score": 0.4154122980033911,
+                "rows": 26
+              },
+              {
+                "fraction_positive": 0.6071428571428571,
+                "mean_score": 0.4408380752656245,
+                "rows": 28
+              },
+              {
+                "fraction_positive": 0.5,
+                "mean_score": 0.5141622679330277,
+                "rows": 18
+              },
+              {
+                "fraction_positive": 0.5294117647058824,
+                "mean_score": 0.5319148936170213,
+                "rows": 17
+              },
+              {
+                "fraction_positive": 0.6875,
+                "mean_score": 0.5535438436851277,
+                "rows": 16
+              },
+              {
+                "fraction_positive": 0.45161290322580644,
+                "mean_score": 0.5688479262672811,
+                "rows": 31
+              },
+              {
+                "fraction_positive": 0.46153846153846156,
+                "mean_score": 0.6060606060606061,
+                "rows": 13
+              },
+              {
+                "fraction_positive": 0.8421052631578947,
+                "mean_score": 0.70963199993367,
+                "rows": 19
+              },
+              {
+                "fraction_positive": 0.5789473684210527,
+                "mean_score": 0.863497117566393,
+                "rows": 19
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.3333333333333333,
+                "mean_score": 0.11791848639647166,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.42857142857142855,
+                "mean_score": 0.21237982738585698,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.42857142857142855,
+                "mean_score": 0.3048898889904931,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.6190476190476191,
+                "mean_score": 0.3998927630129315,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.5238095238095238,
+                "mean_score": 0.4866409244991484,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.38095238095238093,
+                "mean_score": 0.5826317753110614,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.7142857142857143,
+                "mean_score": 0.6532897637003944,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.42857142857142855,
+                "mean_score": 0.7680790112132118,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.7619047619047619,
+                "mean_score": 0.8377456409590585,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.7,
+                "mean_score": 0.9190886676311493,
+                "rows": 20
+              }
+            ]
+          },
+          "GO:0005515": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.02724358974358974,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.13043478260869565,
+                "mean_score": 0.1523538253170167,
+                "rows": 23
+              },
+              {
+                "fraction_positive": 0.2391304347826087,
+                "mean_score": 0.21650614821661507,
+                "rows": 46
+              },
+              {
+                "fraction_positive": 0.3125,
+                "mean_score": 0.2484094187780692,
+                "rows": 16
+              },
+              {
+                "fraction_positive": 0.37142857142857144,
+                "mean_score": 0.3047377428772778,
+                "rows": 35
+              },
+              {
+                "fraction_positive": 0.37037037037037035,
+                "mean_score": 0.3333333333333333,
+                "rows": 27
+              },
+              {
+                "fraction_positive": 0.27586206896551724,
+                "mean_score": 0.4193290823573951,
+                "rows": 29
+              },
+              {
+                "fraction_positive": 0.3333333333333333,
+                "mean_score": 0.6323023994527815,
+                "rows": 12
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.061600424349308014,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.12328825749102093,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.1786486818676903,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.3333333333333333,
+                "mean_score": 0.23279399886017754,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.2801264552843003,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.2857142857142857,
+                "mean_score": 0.3426767757960728,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.42857142857142855,
+                "mean_score": 0.43550890400296166,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.42857142857142855,
+                "mean_score": 0.5351696425960177,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.2857142857142857,
+                "mean_score": 0.6532631544839769,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.4,
+                "mean_score": 0.8441050112247467,
+                "rows": 20
+              }
+            ]
+          },
+          "GO:0016740": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.033707865168539325,
+                "mean_score": 0.0,
+                "rows": 89
+              },
+              {
+                "fraction_positive": 0.2727272727272727,
+                "mean_score": 0.130202720498161,
+                "rows": 22
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.2,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.05555555555555555,
+                "mean_score": 0.21568627450980393,
+                "rows": 18
+              },
+              {
+                "fraction_positive": 0.3888888888888889,
+                "mean_score": 0.2584037474852074,
+                "rows": 18
+              },
+              {
+                "fraction_positive": 0.25,
+                "mean_score": 0.3188270395466022,
+                "rows": 24
+              },
+              {
+                "fraction_positive": 0.7058823529411765,
+                "mean_score": 0.7573009707154186,
+                "rows": 17
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.005855672166771477,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.020784976404337657,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.039000448903867176,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.07357903108710334,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.11724724975370225,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.17095448218640827,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.2569037221726917,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.378334315050216,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.2857142857142857,
+                "mean_score": 0.5072740075134096,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.7,
+                "mean_score": 0.816701078414917,
+                "rows": 20
+              }
+            ]
+          },
+          "GO:0016787": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.10416666666666667,
+                "mean_score": 0.0,
+                "rows": 48
+              },
+              {
+                "fraction_positive": 0.16666666666666666,
+                "mean_score": 0.04348858334365581,
+                "rows": 18
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.07961263916519512,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.09307359307359307,
+                "rows": 20
+              },
+              {
+                "fraction_positive": 0.13043478260869565,
+                "mean_score": 0.129319975212514,
+                "rows": 23
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.21830163192009439,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.4117647058823529,
+                "mean_score": 0.27884135472370764,
+                "rows": 17
+              },
+              {
+                "fraction_positive": 0.19230769230769232,
+                "mean_score": 0.3804271999447017,
+                "rows": 26
+              },
+              {
+                "fraction_positive": 0.5333333333333333,
+                "mean_score": 0.7645358618435765,
+                "rows": 15
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.0025422665057703853,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.008913864869446982,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.025640347351630528,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.045621304639748166,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.0829098920027415,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.14144322311594373,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.23563824594020844,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.2857142857142857,
+                "mean_score": 0.40893424124944777,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.3333333333333333,
+                "mean_score": 0.6140637880279904,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.5,
+                "mean_score": 0.8461825549602509,
+                "rows": 20
+              }
+            ]
+          },
+          "GO:0036094": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.014851020394070517,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.06151058445019381,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.08571428571428572,
+                "mean_score": 0.12065509909385924,
+                "rows": 35
+              },
+              {
+                "fraction_positive": 0.0625,
+                "mean_score": 0.13326925225555897,
+                "rows": 16
+              },
+              {
+                "fraction_positive": 0.13043478260869565,
+                "mean_score": 0.14264788575794385,
+                "rows": 23
+              },
+              {
+                "fraction_positive": 0.26666666666666666,
+                "mean_score": 0.18616654444963507,
+                "rows": 15
+              },
+              {
+                "fraction_positive": 0.23529411764705882,
+                "mean_score": 0.23881827911642414,
+                "rows": 17
+              },
+              {
+                "fraction_positive": 0.25,
+                "mean_score": 0.2813365379671849,
+                "rows": 20
+              },
+              {
+                "fraction_positive": 0.16666666666666666,
+                "mean_score": 0.34313725490196073,
+                "rows": 24
+              },
+              {
+                "fraction_positive": 0.29411764705882354,
+                "mean_score": 0.5834834312691408,
+                "rows": 17
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.011861740822149884,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.032817968123015906,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.06005876582293283,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.10127200008857817,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.16225401773339226,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.25837241609891254,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.2857142857142857,
+                "mean_score": 0.35645480099178495,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.45977994941529776,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.2857142857142857,
+                "mean_score": 0.6132833021027702,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.25,
+                "mean_score": 0.8315946161746979,
+                "rows": 20
+              }
+            ]
+          },
+          "GO:0042802": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.0030932916270103306,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.01127196622214147,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.045454545454545456,
+                "mean_score": 0.023906578817828136,
+                "rows": 22
+              },
+              {
+                "fraction_positive": 0.05,
+                "mean_score": 0.03919333228841424,
+                "rows": 20
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.06583811928118978,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.10999239023242678,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.17855197333154224,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.30661105967703317,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.38095238095238093,
+                "mean_score": 0.47475644094603403,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.15,
+                "mean_score": 0.719370675086975,
+                "rows": 20
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.0030932916270103306,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.01127196622214147,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.045454545454545456,
+                "mean_score": 0.023906578817828136,
+                "rows": 22
+              },
+              {
+                "fraction_positive": 0.05,
+                "mean_score": 0.03919333228841424,
+                "rows": 20
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.06583811928118978,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.10999239023242678,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.17855197333154224,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.30661105967703317,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.38095238095238093,
+                "mean_score": 0.47475644094603403,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.15,
+                "mean_score": 0.719370675086975,
+                "rows": 20
+              }
+            ]
+          },
+          "GO:0043167": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.01058336412755861,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.04848888659417027,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.06896551724137931,
+                "mean_score": 0.09338510012234531,
+                "rows": 29
+              },
+              {
+                "fraction_positive": 0.07142857142857142,
+                "mean_score": 0.1110776915909752,
+                "rows": 14
+              },
+              {
+                "fraction_positive": 0.05,
+                "mean_score": 0.12326281344237393,
+                "rows": 20
+              },
+              {
+                "fraction_positive": 0.13636363636363635,
+                "mean_score": 0.14650696793417908,
+                "rows": 22
+              },
+              {
+                "fraction_positive": 0.22727272727272727,
+                "mean_score": 0.21899763858595558,
+                "rows": 22
+              },
+              {
+                "fraction_positive": 0.21428571428571427,
+                "mean_score": 0.2645115850875798,
+                "rows": 28
+              },
+              {
+                "fraction_positive": 0.25,
+                "mean_score": 0.33534793224599624,
+                "rows": 12
+              },
+              {
+                "fraction_positive": 0.3,
+                "mean_score": 0.5391962142454253,
+                "rows": 20
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.008177084681977118,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.026871931827848868,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.04816275391550291,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.047619047619047616,
+                "mean_score": 0.07910004719382241,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.12696722611075356,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.18770030637582144,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.28093784266994115,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.4080621869791122,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.5738377273082733,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.3,
+                "mean_score": 0.7863667607307434,
+                "rows": 20
+              }
+            ]
+          },
+          "GO:0140096": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.034482758620689655,
+                "mean_score": 0.0,
+                "rows": 58
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.05425177230838856,
+                "rows": 6
+              },
+              {
+                "fraction_positive": 0.18181818181818182,
+                "mean_score": 0.06451612903225806,
+                "rows": 22
+              },
+              {
+                "fraction_positive": 0.045454545454545456,
+                "mean_score": 0.11815496611549925,
+                "rows": 22
+              },
+              {
+                "fraction_positive": 0.25,
+                "mean_score": 0.19549012048391937,
+                "rows": 28
+              },
+              {
+                "fraction_positive": 0.25,
+                "mean_score": 0.225,
+                "rows": 12
+              },
+              {
+                "fraction_positive": 0.23333333333333334,
+                "mean_score": 0.3133477491843987,
+                "rows": 30
+              },
+              {
+                "fraction_positive": 0.2857142857142857,
+                "mean_score": 0.36224489795918363,
+                "rows": 14
+              },
+              {
+                "fraction_positive": 0.5882352941176471,
+                "mean_score": 0.6739767088900036,
+                "rows": 17
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.004590896058029362,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.018427353352308273,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.09523809523809523,
+                "mean_score": 0.03586397958653314,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.06756280291648138,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.14285714285714285,
+                "mean_score": 0.1077042002053488,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.23809523809523808,
+                "mean_score": 0.16624815478211358,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.24119595189889273,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.19047619047619047,
+                "mean_score": 0.37387024362881977,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.38095238095238093,
+                "mean_score": 0.5641394229162306,
+                "rows": 21
+              },
+              {
+                "fraction_positive": 0.6,
+                "mean_score": 0.8698585003614425,
+                "rows": 20
+              }
+            ]
+          }
+        }
+      },
+      "frequency_prior": {
+        "folds": [
+          {
+            "evaluable_rows": 61,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.5303573560644159,
+              "fmax_precision": 0.5409836065573771,
+              "fmax_recall": 0.5201405152224822,
+              "precision_at_1": 0.6229508196721312,
+              "precision_at_3": 0.5409836065573771,
+              "precision_at_5": 0.41967213114754076,
+              "recall_at_1": 0.17480483996877438,
+              "recall_at_3": 0.5201405152224822,
+              "recall_at_5": 0.638368462138954
+            },
+            "rows": 75,
+            "validate": 1
+          },
+          {
+            "evaluable_rows": 31,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.5326157808550217,
+              "fmax_precision": 0.6290322580645161,
+              "fmax_recall": 0.4618279569892475,
+              "precision_at_1": 0.7741935483870968,
+              "precision_at_3": 0.5698924731182796,
+              "precision_at_5": 0.4129032258064516,
+              "recall_at_1": 0.2803763440860215,
+              "recall_at_3": 0.6169354838709677,
+              "recall_at_5": 0.7083333333333334
+            },
+            "rows": 37,
+            "validate": 2
+          },
+          {
+            "evaluable_rows": 37,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.5343312076181985,
+              "fmax_precision": 0.5225225225225224,
+              "fmax_recall": 0.5466859716859717,
+              "precision_at_1": 0.5945945945945946,
+              "precision_at_3": 0.5225225225225224,
+              "precision_at_5": 0.40540540540540526,
+              "recall_at_1": 0.15768983268983275,
+              "recall_at_3": 0.5466859716859717,
+              "recall_at_5": 0.6593629343629344
+            },
+            "rows": 45,
+            "validate": 3
+          },
+          {
+            "evaluable_rows": 40,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.510688676713064,
+              "fmax_precision": 0.4583333333333332,
+              "fmax_recall": 0.5765476190476189,
+              "precision_at_1": 0.675,
+              "precision_at_3": 0.4583333333333332,
+              "precision_at_5": 0.35,
+              "recall_at_1": 0.2719047619047619,
+              "recall_at_3": 0.5765476190476189,
+              "recall_at_5": 0.7023809523809523
+            },
+            "rows": 52,
+            "validate": 4
+          }
+        ],
+        "per_term": {
+          "GO:0003676": {
+            "auc": {
+              "ci_high": 0.5498084604119087,
+              "ci_low": 0.37110255781144574,
+              "value": 0.46043844367015097
+            },
+            "aupr": {
+              "ci_high": 0.2547198650471794,
+              "ci_low": 0.13444531003078264,
+              "value": 0.18369531512874643
+            },
+            "name": "nucleic acid binding",
+            "negatives": 168,
+            "positive_rate": 0.19617224880382775,
+            "positives": 41,
+            "scored": true
+          },
+          "GO:0003677": {
+            "auc": {
+              "ci_high": 0.5624055343129404,
+              "ci_low": 0.29120788767375716,
+              "value": 0.4455517744287798
+            },
+            "aupr": {
+              "ci_high": 0.14078943329140228,
+              "ci_low": 0.05897642742907104,
+              "value": 0.09409237558305025
+            },
+            "name": "DNA binding",
+            "negatives": 187,
+            "positive_rate": 0.10526315789473684,
+            "positives": 22,
+            "scored": true
+          },
+          "GO:0003723": {
+            "auc": {
+              "ci_high": 0.5547159695894167,
+              "ci_low": 0.3140832009799768,
+              "value": 0.41735537190082644
+            },
+            "aupr": {
+              "ci_high": 0.14582909602925892,
+              "ci_low": 0.06071583301131493,
+              "value": 0.09121336461997565
+            },
+            "name": "RNA binding",
+            "negatives": 187,
+            "positive_rate": 0.10526315789473684,
+            "positives": 22,
+            "scored": true
+          },
+          "GO:0003824": {
+            "auc": {
+              "ci_high": 0.4665113061601068,
+              "ci_low": 0.33144112246465185,
+              "value": 0.39911634756995584
+            },
+            "aupr": {
+              "ci_high": 0.4826895366448118,
+              "ci_low": 0.3342855392996769,
+              "value": 0.41002155482652825
+            },
+            "name": "catalytic activity",
+            "negatives": 112,
+            "positive_rate": 0.46411483253588515,
+            "positives": 97,
+            "scored": true
+          },
+          "GO:0005488": {
+            "auc": {
+              "ci_high": 0.529391793152569,
+              "ci_low": 0.38835638970691994,
+              "value": 0.45546056260341977
+            },
+            "aupr": {
+              "ci_high": 0.5951139333173964,
+              "ci_low": 0.4484752580581723,
+              "value": 0.5104209149619187
+            },
+            "name": "binding",
+            "negatives": 98,
+            "positive_rate": 0.5311004784688995,
+            "positives": 111,
+            "scored": true
+          },
+          "GO:0005515": {
+            "auc": {
+              "ci_high": 0.5267753336714803,
+              "ci_low": 0.35219998162215144,
+              "value": 0.4316712834718375
+            },
+            "aupr": {
+              "ci_high": 0.32194480887590265,
+              "ci_low": 0.18380043091973386,
+              "value": 0.24746410218466647
+            },
+            "name": "protein binding",
+            "negatives": 152,
+            "positive_rate": 0.2727272727272727,
+            "positives": 57,
+            "scored": true
+          },
+          "GO:0016740": {
+            "auc": {
+              "ci_high": 0.5172648902821316,
+              "ci_low": 0.3387195839874411,
+              "value": 0.43117536140791957
+            },
+            "aupr": {
+              "ci_high": 0.2073975081156638,
+              "ci_low": 0.1091151832687998,
+              "value": 0.15612155886773035
+            },
+            "name": "transferase activity",
+            "negatives": 172,
+            "positive_rate": 0.17703349282296652,
+            "positives": 37,
+            "scored": true
+          },
+          "GO:0016787": {
+            "auc": {
+              "ci_high": 0.514814770978814,
+              "ci_low": 0.32808056027630067,
+              "value": 0.4108265241986172
+            },
+            "aupr": {
+              "ci_high": 0.21270469674155074,
+              "ci_low": 0.10159341131455532,
+              "value": 0.1527149711307637
+            },
+            "name": "hydrolase activity",
+            "negatives": 172,
+            "positive_rate": 0.17703349282296652,
+            "positives": 37,
+            "scored": true
+          },
+          "GO:0036094": {
+            "auc": {
+              "ci_high": 0.5246729719555807,
+              "ci_low": 0.2967776996987066,
+              "value": 0.42365125240847784
+            },
+            "aupr": {
+              "ci_high": 0.21275678657738314,
+              "ci_low": 0.10614407921309281,
+              "value": 0.15348353714934404
+            },
+            "name": "small molecule binding",
+            "negatives": 173,
+            "positive_rate": 0.1722488038277512,
+            "positives": 36,
+            "scored": true
+          },
+          "GO:0042802": {
+            "auc": {
+              "ci_high": 0.6045110975899567,
+              "ci_low": 0.3690736371853278,
+              "value": 0.4691444600280505
+            },
+            "aupr": {
+              "ci_high": 0.15785222449675476,
+              "ci_low": 0.06519420714204847,
+              "value": 0.1027432935498235
+            },
+            "name": "identical protein binding",
+            "negatives": 186,
+            "positive_rate": 0.11004784688995216,
+            "positives": 23,
+            "scored": true
+          },
+          "GO:0043167": {
+            "auc": {
+              "ci_high": 0.5207354402272485,
+              "ci_low": 0.314876321656051,
+              "value": 0.4277895480225989
+            },
+            "aupr": {
+              "ci_high": 0.19201240733906008,
+              "ci_low": 0.09247387651041113,
+              "value": 0.1364235877955347
+            },
+            "name": "ion binding",
+            "negatives": 177,
+            "positive_rate": 0.15311004784688995,
+            "positives": 32,
+            "scored": true
+          },
+          "GO:0140096": {
+            "auc": {
+              "ci_high": 0.5445763346219576,
+              "ci_low": 0.3696893505957296,
+              "value": 0.4532933210218529
+            },
+            "aupr": {
+              "ci_high": 0.22217768124033402,
+              "ci_low": 0.11348734262788776,
+              "value": 0.16525863552632852
+            },
+            "name": "catalytic activity, acting on a protein",
+            "negatives": 171,
+            "positive_rate": 0.18181818181818182,
+            "positives": 38,
+            "scored": true
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "evaluable_rows": 169,
+          "metrics": {
+            "coverage": {
+              "ci_high": 1.0,
+              "ci_low": 1.0,
+              "value": 1.0
+            },
+            "fmax": {
+              "ci_high": 0.5546752059944468,
+              "ci_low": 0.5010795071897091,
+              "value": 0.531057197562822
+            },
+            "fmax_precision": {
+              "ci_high": 0.5635668573574871,
+              "ci_low": 0.5000000000000001,
+              "value": 0.5335305719921102
+            },
+            "fmax_recall": {
+              "ci_high": 0.5669509519784246,
+              "ci_low": 0.48046572516661407,
+              "value": 0.5286066497604957
+            },
+            "precision_at_1": {
+              "ci_high": 0.7410071942446043,
+              "ci_low": 0.5902378048780488,
+              "value": 0.6568047337278107
+            },
+            "precision_at_3": {
+              "ci_high": 0.5522693243496166,
+              "ci_low": 0.4868007815969448,
+              "value": 0.5226824457593685
+            },
+            "precision_at_5": {
+              "ci_high": 0.42319263725801337,
+              "ci_low": 0.37409602752580545,
+              "value": 0.39881656804733756
+            },
+            "recall_at_1": {
+              "ci_high": 0.25033243414788947,
+              "ci_low": 0.1834992790170028,
+              "value": 0.21340518455903063
+            },
+            "recall_at_3": {
+              "ci_high": 0.5946812039140473,
+              "ci_low": 0.5144601325931832,
+              "value": 0.5570583262890955
+            },
+            "recall_at_5": {
+              "ci_high": 0.700119688179187,
+              "ci_low": 0.6319512025858857,
+              "value": 0.6709495632572556
+            }
+          },
+          "rows": 209
+        },
+        "source": "prior"
+      },
+      "logreg": {
+        "folds": [
+          {
+            "evaluable_rows": 61,
+            "metrics": {
+              "coverage": 0.9344262295081968,
+              "fmax": 0.48505899819432674,
+              "fmax_precision": 0.40998329156223895,
+              "fmax_recall": 0.5937939110070259,
+              "precision_at_1": 0.5901639344262295,
+              "precision_at_3": 0.45901639344262296,
+              "precision_at_5": 0.44262295081967207,
+              "recall_at_1": 0.1732825917252147,
+              "recall_at_3": 0.38784153005464483,
+              "recall_at_5": 0.6279859484777519
+            },
+            "rows": 75,
+            "validate": 1
+          },
+          {
+            "evaluable_rows": 31,
+            "metrics": {
+              "coverage": 0.967741935483871,
+              "fmax": 0.47635835934244175,
+              "fmax_precision": 0.3592556517556517,
+              "fmax_recall": 0.7067204301075269,
+              "precision_at_1": 0.4838709677419355,
+              "precision_at_3": 0.40860215053763443,
+              "precision_at_5": 0.39354838709677414,
+              "recall_at_1": 0.1395161290322581,
+              "recall_at_3": 0.3900537634408602,
+              "recall_at_5": 0.6395161290322581
+            },
+            "rows": 37,
+            "validate": 2
+          },
+          {
+            "evaluable_rows": 37,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.5706499471989601,
+              "fmax_precision": 0.4386529386529386,
+              "fmax_recall": 0.8162805662805663,
+              "precision_at_1": 0.5945945945945946,
+              "precision_at_3": 0.4954954954954955,
+              "precision_at_5": 0.42162162162162165,
+              "recall_at_1": 0.19732947232947237,
+              "recall_at_3": 0.4908301158301158,
+              "recall_at_5": 0.7156370656370656
+            },
+            "rows": 45,
+            "validate": 3
+          },
+          {
+            "evaluable_rows": 40,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.4468300513268841,
+              "fmax_precision": 0.30099747474747474,
+              "fmax_recall": 0.8667857142857143,
+              "precision_at_1": 0.55,
+              "precision_at_3": 0.4666666666666667,
+              "precision_at_5": 0.36499999999999994,
+              "recall_at_1": 0.2294047619047619,
+              "recall_at_3": 0.5638095238095238,
+              "recall_at_5": 0.6948809523809525
+            },
+            "rows": 52,
+            "validate": 4
+          }
+        ],
+        "per_term": {
+          "GO:0003676": {
+            "auc": {
+              "ci_high": 0.8378827877991942,
+              "ci_low": 0.6935265211126553,
+              "value": 0.7664053426248548
+            },
+            "aupr": {
+              "ci_high": 0.6132058349303969,
+              "ci_low": 0.3197873332427621,
+              "value": 0.4361426076799477
+            },
+            "name": "nucleic acid binding",
+            "negatives": 168,
+            "positive_rate": 0.19617224880382775,
+            "positives": 41,
+            "scored": true
+          },
+          "GO:0003677": {
+            "auc": {
+              "ci_high": 0.8107740670461733,
+              "ci_low": 0.5636206302229738,
+              "value": 0.702722411278561
+            },
+            "aupr": {
+              "ci_high": 0.4852651222564459,
+              "ci_low": 0.1516513965099741,
+              "value": 0.26662357029116296
+            },
+            "name": "DNA binding",
+            "negatives": 187,
+            "positive_rate": 0.10526315789473684,
+            "positives": 22,
+            "scored": true
+          },
+          "GO:0003723": {
+            "auc": {
+              "ci_high": 0.8629675644651006,
+              "ci_low": 0.6804491209698532,
+              "value": 0.7729703451628586
+            },
+            "aupr": {
+              "ci_high": 0.4731751631317833,
+              "ci_low": 0.15190319036452915,
+              "value": 0.2756227383983755
+            },
+            "name": "RNA binding",
+            "negatives": 187,
+            "positive_rate": 0.10526315789473684,
+            "positives": 22,
+            "scored": true
+          },
+          "GO:0003824": {
+            "auc": {
+              "ci_high": 0.5325702702669021,
+              "ci_low": 0.38945128873891194,
+              "value": 0.45922312223858613
+            },
+            "aupr": {
+              "ci_high": 0.5084414269343995,
+              "ci_low": 0.34731483669557583,
+              "value": 0.42187500305872944
+            },
+            "name": "catalytic activity",
+            "negatives": 112,
+            "positive_rate": 0.46411483253588515,
+            "positives": 97,
+            "scored": true
+          },
+          "GO:0005488": {
+            "auc": {
+              "ci_high": 0.6569070779058582,
+              "ci_low": 0.49357119787085835,
+              "value": 0.5695899981614267
+            },
+            "aupr": {
+              "ci_high": 0.7117361409854083,
+              "ci_low": 0.5246134695726067,
+              "value": 0.6012676670805392
+            },
+            "name": "binding",
+            "negatives": 98,
+            "positive_rate": 0.5311004784688995,
+            "positives": 111,
+            "scored": true
+          },
+          "GO:0005515": {
+            "auc": {
+              "ci_high": 0.6108422805328197,
+              "ci_low": 0.44344096125167826,
+              "value": 0.5223915050784856
+            },
+            "aupr": {
+              "ci_high": 0.39420236077867254,
+              "ci_low": 0.22025008411575875,
+              "value": 0.2895237595772433
+            },
+            "name": "protein binding",
+            "negatives": 152,
+            "positive_rate": 0.2727272727272727,
+            "positives": 57,
+            "scored": true
+          },
+          "GO:0016740": {
+            "auc": {
+              "ci_high": 0.6257361947732788,
+              "ci_low": 0.45039003152241597,
+              "value": 0.542740414833438
+            },
+            "aupr": {
+              "ci_high": 0.27993561149137036,
+              "ci_low": 0.13612224283264754,
+              "value": 0.19419294858561265
+            },
+            "name": "transferase activity",
+            "negatives": 172,
+            "positive_rate": 0.17703349282296652,
+            "positives": 37,
+            "scored": true
+          },
+          "GO:0016787": {
+            "auc": {
+              "ci_high": 0.6279815452274777,
+              "ci_low": 0.4453268538418986,
+              "value": 0.5348837209302325
+            },
+            "aupr": {
+              "ci_high": 0.3040355790229357,
+              "ci_low": 0.13337522410844357,
+              "value": 0.2016298437433335
+            },
+            "name": "hydrolase activity",
+            "negatives": 172,
+            "positive_rate": 0.17703349282296652,
+            "positives": 37,
+            "scored": true
+          },
+          "GO:0036094": {
+            "auc": {
+              "ci_high": 0.6286254491431731,
+              "ci_low": 0.441050271567513,
+              "value": 0.5366088631984586
+            },
+            "aupr": {
+              "ci_high": 0.2692306624273347,
+              "ci_low": 0.12923412613873086,
+              "value": 0.1766105673569748
+            },
+            "name": "small molecule binding",
+            "negatives": 173,
+            "positive_rate": 0.1722488038277512,
+            "positives": 36,
+            "scored": true
+          },
+          "GO:0042802": {
+            "auc": {
+              "ci_high": 0.6493642625718097,
+              "ci_low": 0.4027512610640525,
+              "value": 0.5299205236091632
+            },
+            "aupr": {
+              "ci_high": 0.2700519995241342,
+              "ci_low": 0.083585042243912,
+              "value": 0.146313984185939
+            },
+            "name": "identical protein binding",
+            "negatives": 186,
+            "positive_rate": 0.11004784688995216,
+            "positives": 23,
+            "scored": true
+          },
+          "GO:0043167": {
+            "auc": {
+              "ci_high": 0.6524625468164794,
+              "ci_low": 0.47636094423514236,
+              "value": 0.5655014124293786
+            },
+            "aupr": {
+              "ci_high": 0.24742721562912598,
+              "ci_low": 0.118578959918254,
+              "value": 0.16785026441973397
+            },
+            "name": "ion binding",
+            "negatives": 177,
+            "positive_rate": 0.15311004784688995,
+            "positives": 32,
+            "scored": true
+          },
+          "GO:0140096": {
+            "auc": {
+              "ci_high": 0.7141147430697877,
+              "ci_low": 0.5276340768865686,
+              "value": 0.6121883656509696
+            },
+            "aupr": {
+              "ci_high": 0.35343032543037484,
+              "ci_low": 0.16956390900306584,
+              "value": 0.2401367658173048
+            },
+            "name": "catalytic activity, acting on a protein",
+            "negatives": 171,
+            "positive_rate": 0.18181818181818182,
+            "positives": 38,
+            "scored": true
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "evaluable_rows": 169,
+          "metrics": {
+            "coverage": {
+              "ci_high": 1.0,
+              "ci_low": 0.9480446792013956,
+              "value": 0.9704142011834319
+            },
+            "fmax": {
+              "ci_high": 0.5413544951747268,
+              "ci_low": 0.46771082277520953,
+              "value": 0.4998197365226193
+            },
+            "fmax_precision": {
+              "ci_high": 0.4163679338659388,
+              "ci_low": 0.34554277784018333,
+              "value": 0.38059009080350553
+            },
+            "fmax_recall": {
+              "ci_high": 0.8020438887233726,
+              "ci_low": 0.6752935273095437,
+              "value": 0.7278317836010143
+            },
+            "precision_at_1": {
+              "ci_high": 0.6449808184143222,
+              "ci_low": 0.4950968258590565,
+              "value": 0.5621301775147929
+            },
+            "precision_at_3": {
+              "ci_high": 0.5060849779219607,
+              "ci_low": 0.41666666666666674,
+              "value": 0.4595660749506903
+            },
+            "precision_at_5": {
+              "ci_high": 0.44893532338308473,
+              "ci_low": 0.3794117647058827,
+              "value": 0.4106508875739647
+            },
+            "recall_at_1": {
+              "ci_high": 0.2252143826368279,
+              "ci_low": 0.1549089427437641,
+              "value": 0.18563679909833744
+            },
+            "recall_at_3": {
+              "ci_high": 0.5140248510147107,
+              "ci_low": 0.4072749208594328,
+              "value": 0.45244435052127374
+            },
+            "recall_at_5": {
+              "ci_high": 0.7263841604738914,
+              "ci_low": 0.6195334147628225,
+              "value": 0.6651239785855172
+            }
+          },
+          "rows": 209
+        },
+        "source": "logreg"
+      },
+      "logreg_selection": {
+        "grid": [
+          {
+            "C": 0.01,
+            "mean_fold_fmax": 0.49472433901565316,
+            "precision_at_primary_k": 0.4574451765356049
+          },
+          {
+            "C": 0.1,
+            "mean_fold_fmax": 0.49102752713613335,
+            "precision_at_primary_k": 0.4371135380488897
+          },
+          {
+            "C": 1.0,
+            "mean_fold_fmax": 0.48527393923538165,
+            "precision_at_primary_k": 0.4382989778514633
+          },
+          {
+            "C": 10.0,
+            "mean_fold_fmax": 0.46525355538976715,
+            "precision_at_primary_k": 0.4162111840820196
+          }
+        ],
+        "rule": "mean over folds of precision@k (k = metrics.primary_k) over rows with a vocabulary positive; tie-break mean fold Fmax under nested thresholds; then the earlier grid point",
+        "selected_c": 0.01
+      },
+      "model_calibrated": {
+        "folds": [
+          {
+            "evaluable_rows": 61,
+            "metrics": {
+              "coverage": 0.9836065573770492,
+              "fmax": 0.567671544967611,
+              "fmax_precision": 0.6594444444444444,
+              "fmax_recall": 0.4983216237314598,
+              "precision_at_1": 0.8032786885245902,
+              "precision_at_3": 0.5737704918032787,
+              "precision_at_5": 0.48524590163934417,
+              "recall_at_1": 0.2730093676814988,
+              "recall_at_3": 0.5265612802498049,
+              "recall_at_5": 0.6951405152224825
+            },
+            "rows": 75,
+            "validate": 1
+          },
+          {
+            "evaluable_rows": 31,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.6228040417017651,
+              "fmax_precision": 0.4815924219150026,
+              "fmax_recall": 0.8811827956989249,
+              "precision_at_1": 0.8064516129032258,
+              "precision_at_3": 0.7204301075268816,
+              "precision_at_5": 0.5419354838709677,
+              "recall_at_1": 0.26424731182795697,
+              "recall_at_3": 0.7206989247311829,
+              "recall_at_5": 0.8663978494623655
+            },
+            "rows": 37,
+            "validate": 2
+          },
+          {
+            "evaluable_rows": 37,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.5842253904937882,
+              "fmax_precision": 0.4598670098670098,
+              "fmax_recall": 0.8007722007722007,
+              "precision_at_1": 0.8108108108108109,
+              "precision_at_3": 0.5495495495495494,
+              "precision_at_5": 0.4540540540540541,
+              "recall_at_1": 0.3468790218790218,
+              "recall_at_3": 0.5752895752895753,
+              "recall_at_5": 0.7460102960102962
+            },
+            "rows": 45,
+            "validate": 3
+          },
+          {
+            "evaluable_rows": 40,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.5777886188467612,
+              "fmax_precision": 0.48498015873015865,
+              "fmax_recall": 0.7145238095238096,
+              "precision_at_1": 0.8,
+              "precision_at_3": 0.5166666666666667,
+              "precision_at_5": 0.40499999999999997,
+              "recall_at_1": 0.35940476190476195,
+              "recall_at_3": 0.614047619047619,
+              "recall_at_5": 0.7692857142857145
+            },
+            "rows": 52,
+            "validate": 4
+          }
+        ],
+        "per_term": {
+          "GO:0003676": {
+            "auc": {
+              "ci_high": 0.7978357549312087,
+              "ci_low": 0.6225587776013912,
+              "value": 0.7068089430894309
+            },
+            "aupr": {
+              "ci_high": 0.6029891981286699,
+              "ci_low": 0.2611241572419245,
+              "value": 0.3937546162601311
+            },
+            "name": "nucleic acid binding",
+            "negatives": 168,
+            "positive_rate": 0.19617224880382775,
+            "positives": 41,
+            "scored": true
+          },
+          "GO:0003677": {
+            "auc": {
+              "ci_high": 0.8484850930856085,
+              "ci_low": 0.6332106241794446,
+              "value": 0.7530384054448226
+            },
+            "aupr": {
+              "ci_high": 0.48007428880737196,
+              "ci_low": 0.16169696008343157,
+              "value": 0.2673066930146273
+            },
+            "name": "DNA binding",
+            "negatives": 187,
+            "positive_rate": 0.10526315789473684,
+            "positives": 22,
+            "scored": true
+          },
+          "GO:0003723": {
+            "auc": {
+              "ci_high": 0.7194150432900432,
+              "ci_low": 0.5067383578431373,
+              "value": 0.6067087992221682
+            },
+            "aupr": {
+              "ci_high": 0.3621390534789681,
+              "ci_low": 0.08776238599412706,
+              "value": 0.1715215453801836
+            },
+            "name": "RNA binding",
+            "negatives": 187,
+            "positive_rate": 0.10526315789473684,
+            "positives": 22,
+            "scored": true
+          },
+          "GO:0003824": {
+            "auc": {
+              "ci_high": 0.9309553961686863,
+              "ci_low": 0.8235212703134858,
+              "value": 0.874309646539028
+            },
+            "aupr": {
+              "ci_high": 0.9085336809315393,
+              "ci_low": 0.732791280732373,
+              "value": 0.824351024189444
+            },
+            "name": "catalytic activity",
+            "negatives": 112,
+            "positive_rate": 0.46411483253588515,
+            "positives": 97,
+            "scored": true
+          },
+          "GO:0005488": {
+            "auc": {
+              "ci_high": 0.6540018674136321,
+              "ci_low": 0.5146570631271152,
+              "value": 0.5815866887295459
+            },
+            "aupr": {
+              "ci_high": 0.6749682766569509,
+              "ci_low": 0.49921115615538736,
+              "value": 0.5797939163021271
+            },
+            "name": "binding",
+            "negatives": 98,
+            "positive_rate": 0.5311004784688995,
+            "positives": 111,
+            "scored": true
+          },
+          "GO:0005515": {
+            "auc": {
+              "ci_high": 0.717671813636396,
+              "ci_low": 0.5666845788043479,
+              "value": 0.6459487534626038
+            },
+            "aupr": {
+              "ci_high": 0.47157261548624524,
+              "ci_low": 0.2708094765799195,
+              "value": 0.3596475896440172
+            },
+            "name": "protein binding",
+            "negatives": 152,
+            "positive_rate": 0.2727272727272727,
+            "positives": 57,
+            "scored": true
+          },
+          "GO:0016740": {
+            "auc": {
+              "ci_high": 0.8745335531135532,
+              "ci_low": 0.7167327802863609,
+              "value": 0.792740414833438
+            },
+            "aupr": {
+              "ci_high": 0.6837530339123115,
+              "ci_low": 0.3599867925014465,
+              "value": 0.5230389125578025
+            },
+            "name": "transferase activity",
+            "negatives": 172,
+            "positive_rate": 0.17703349282296652,
+            "positives": 37,
+            "scored": true
+          },
+          "GO:0016787": {
+            "auc": {
+              "ci_high": 0.8239588129050537,
+              "ci_low": 0.5938632554471064,
+              "value": 0.6796825895663104
+            },
+            "aupr": {
+              "ci_high": 0.553959801801534,
+              "ci_low": 0.2292657503941407,
+              "value": 0.3500116710530485
+            },
+            "name": "hydrolase activity",
+            "negatives": 172,
+            "positive_rate": 0.17703349282296652,
+            "positives": 37,
+            "scored": true
+          },
+          "GO:0036094": {
+            "auc": {
+              "ci_high": 0.6959014445316143,
+              "ci_low": 0.4825347766523204,
+              "value": 0.5922447013487476
+            },
+            "aupr": {
+              "ci_high": 0.39823093358489253,
+              "ci_low": 0.1778512892470822,
+              "value": 0.2533264150975727
+            },
+            "name": "small molecule binding",
+            "negatives": 173,
+            "positive_rate": 0.1722488038277512,
+            "positives": 36,
+            "scored": true
+          },
+          "GO:0042802": {
+            "auc": {
+              "ci_high": 0.8260110693907836,
+              "ci_low": 0.521372532266495,
+              "value": 0.7082748948106592
+            },
+            "aupr": {
+              "ci_high": 0.4066351314125648,
+              "ci_low": 0.1253160078961253,
+              "value": 0.23433978327041702
+            },
+            "name": "identical protein binding",
+            "negatives": 186,
+            "positive_rate": 0.11004784688995216,
+            "positives": 23,
+            "scored": true
+          },
+          "GO:0043167": {
+            "auc": {
+              "ci_high": 0.73934765625,
+              "ci_low": 0.5174241152955675,
+              "value": 0.6416843220338984
+            },
+            "aupr": {
+              "ci_high": 0.4102765939953195,
+              "ci_low": 0.16873734730612017,
+              "value": 0.26428752597323213
+            },
+            "name": "ion binding",
+            "negatives": 177,
+            "positive_rate": 0.15311004784688995,
+            "positives": 32,
+            "scored": true
+          },
+          "GO:0140096": {
+            "auc": {
+              "ci_high": 0.8371501833402518,
+              "ci_low": 0.6972365197269708,
+              "value": 0.7584641428131733
+            },
+            "aupr": {
+              "ci_high": 0.5651916051626682,
+              "ci_low": 0.28635714428141656,
+              "value": 0.4049571867208811
+            },
+            "name": "catalytic activity, acting on a protein",
+            "negatives": 171,
+            "positive_rate": 0.18181818181818182,
+            "positives": 38,
+            "scored": true
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "evaluable_rows": 169,
+          "metrics": {
+            "coverage": {
+              "ci_high": 1.0,
+              "ci_low": 0.987012987012987,
+              "value": 0.9940828402366864
+            },
+            "fmax": {
+              "ci_high": 0.6479670783671526,
+              "ci_low": 0.5713405139871799,
+              "value": 0.6049919412629354
+            },
+            "fmax_precision": {
+              "ci_high": 0.5825924089168055,
+              "ci_low": 0.496676787946053,
+              "value": 0.5411328420256994
+            },
+            "fmax_recall": {
+              "ci_high": 0.7739503993441235,
+              "ci_low": 0.6112178827949294,
+              "value": 0.6859397013243166
+            },
+            "precision_at_1": {
+              "ci_high": 0.8731578220011055,
+              "ci_low": 0.75,
+              "value": 0.8047337278106509
+            },
+            "precision_at_3": {
+              "ci_high": 0.6493858932461873,
+              "ci_low": 0.5341791979949875,
+              "value": 0.5818540433925048
+            },
+            "precision_at_5": {
+              "ci_high": 0.515358924539201,
+              "ci_low": 0.43620172413793135,
+              "value": 0.4698224852071009
+            },
+            "recall_at_1": {
+              "ci_high": 0.3532954934691269,
+              "ci_low": 0.2740060170708418,
+              "value": 0.30802338686954117
+            },
+            "recall_at_3": {
+              "ci_high": 0.648884384149852,
+              "ci_low": 0.549414910917567,
+              "value": 0.5935474781628629
+            },
+            "recall_at_5": {
+              "ci_high": 0.8045798574904415,
+              "ci_low": 0.7168772505742839,
+              "value": 0.7552409129332208
+            }
+          },
+          "rows": 209
+        },
+        "source": "model"
+      },
+      "model_raw": {
+        "folds": [
+          {
+            "evaluable_rows": 61,
+            "metrics": {
+              "coverage": 0.9180327868852459,
+              "fmax": 0.5995791817837056,
+              "fmax_precision": 0.6460459183673469,
+              "fmax_recall": 0.5593481654957065,
+              "precision_at_1": 0.819672131147541,
+              "precision_at_3": 0.6065573770491802,
+              "precision_at_5": 0.4786885245901638,
+              "recall_at_1": 0.28994925839188135,
+              "recall_at_3": 0.5831186572989852,
+              "recall_at_5": 0.7082552693208432
+            },
+            "rows": 75,
+            "validate": 1
+          },
+          {
+            "evaluable_rows": 31,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.6049343031000431,
+              "fmax_precision": 0.47754969045291623,
+              "fmax_recall": 0.825,
+              "precision_at_1": 0.8387096774193549,
+              "precision_at_3": 0.6559139784946235,
+              "precision_at_5": 0.5354838709677419,
+              "recall_at_1": 0.296505376344086,
+              "recall_at_3": 0.671505376344086,
+              "recall_at_5": 0.8516129032258065
+            },
+            "rows": 37,
+            "validate": 2
+          },
+          {
+            "evaluable_rows": 37,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.573071523217045,
+              "fmax_precision": 0.45280117780117785,
+              "fmax_recall": 0.7803410553410555,
+              "precision_at_1": 0.8648648648648649,
+              "precision_at_3": 0.5675675675675673,
+              "precision_at_5": 0.4486486486486487,
+              "recall_at_1": 0.3648970398970398,
+              "recall_at_3": 0.5960102960102961,
+              "recall_at_5": 0.7294079794079796
+            },
+            "rows": 45,
+            "validate": 3
+          },
+          {
+            "evaluable_rows": 40,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.6081345515937958,
+              "fmax_precision": 0.497847222222222,
+              "fmax_recall": 0.7811904761904762,
+              "precision_at_1": 0.8,
+              "precision_at_3": 0.5416666666666667,
+              "precision_at_5": 0.395,
+              "recall_at_1": 0.35940476190476195,
+              "recall_at_3": 0.6323809523809524,
+              "recall_at_5": 0.7609523809523812
+            },
+            "rows": 52,
+            "validate": 4
+          }
+        ],
+        "per_term": {
+          "GO:0003676": {
+            "auc": {
+              "ci_high": 0.8157658275876932,
+              "ci_low": 0.6484037222734491,
+              "value": 0.7304006968641115
+            },
+            "aupr": {
+              "ci_high": 0.6087329452525275,
+              "ci_low": 0.2731567122774022,
+              "value": 0.40486401733166616
+            },
+            "name": "nucleic acid binding",
+            "negatives": 168,
+            "positive_rate": 0.19617224880382775,
+            "positives": 41,
+            "scored": true
+          },
+          "GO:0003677": {
+            "auc": {
+              "ci_high": 0.8484850930856085,
+              "ci_low": 0.6332106241794446,
+              "value": 0.7530384054448226
+            },
+            "aupr": {
+              "ci_high": 0.48007428880737196,
+              "ci_low": 0.16169696008343157,
+              "value": 0.2673066930146273
+            },
+            "name": "DNA binding",
+            "negatives": 187,
+            "positive_rate": 0.10526315789473684,
+            "positives": 22,
+            "scored": true
+          },
+          "GO:0003723": {
+            "auc": {
+              "ci_high": 0.7194150432900432,
+              "ci_low": 0.5067383578431373,
+              "value": 0.6067087992221682
+            },
+            "aupr": {
+              "ci_high": 0.3621390534789681,
+              "ci_low": 0.08776238599412706,
+              "value": 0.1715215453801836
+            },
+            "name": "RNA binding",
+            "negatives": 187,
+            "positive_rate": 0.10526315789473684,
+            "positives": 22,
+            "scored": true
+          },
+          "GO:0003824": {
+            "auc": {
+              "ci_high": 0.9409919078980284,
+              "ci_low": 0.8556850947853587,
+              "value": 0.8993924889543446
+            },
+            "aupr": {
+              "ci_high": 0.929667540351059,
+              "ci_low": 0.7724508989656991,
+              "value": 0.8556466947807517
+            },
+            "name": "catalytic activity",
+            "negatives": 112,
+            "positive_rate": 0.46411483253588515,
+            "positives": 97,
+            "scored": true
+          },
+          "GO:0005488": {
+            "auc": {
+              "ci_high": 0.6848974171539961,
+              "ci_low": 0.5433551533910094,
+              "value": 0.6140834712263283
+            },
+            "aupr": {
+              "ci_high": 0.7306071807625787,
+              "ci_low": 0.5531967482564463,
+              "value": 0.6365214331185824
+            },
+            "name": "binding",
+            "negatives": 98,
+            "positive_rate": 0.5311004784688995,
+            "positives": 111,
+            "scored": true
+          },
+          "GO:0005515": {
+            "auc": {
+              "ci_high": 0.732046120913377,
+              "ci_low": 0.5862892503125472,
+              "value": 0.6612419205909511
+            },
+            "aupr": {
+              "ci_high": 0.5036892086066365,
+              "ci_low": 0.28942022579609844,
+              "value": 0.3879765137786983
+            },
+            "name": "protein binding",
+            "negatives": 152,
+            "positive_rate": 0.2727272727272727,
+            "positives": 57,
+            "scored": true
+          },
+          "GO:0016740": {
+            "auc": {
+              "ci_high": 0.8994755244755245,
+              "ci_low": 0.7716704641973869,
+              "value": 0.8324952859836581
+            },
+            "aupr": {
+              "ci_high": 0.7311166368583307,
+              "ci_low": 0.42764065611614144,
+              "value": 0.5875551275016712
+            },
+            "name": "transferase activity",
+            "negatives": 172,
+            "positive_rate": 0.17703349282296652,
+            "positives": 37,
+            "scored": true
+          },
+          "GO:0016787": {
+            "auc": {
+              "ci_high": 0.8589230767399424,
+              "ci_low": 0.6670174451037268,
+              "value": 0.7452859836580766
+            },
+            "aupr": {
+              "ci_high": 0.6359490444238278,
+              "ci_low": 0.28774247661068186,
+              "value": 0.42073184193479285
+            },
+            "name": "hydrolase activity",
+            "negatives": 172,
+            "positive_rate": 0.17703349282296652,
+            "positives": 37,
+            "scored": true
+          },
+          "GO:0036094": {
+            "auc": {
+              "ci_high": 0.6939608815805284,
+              "ci_low": 0.48463599557349557,
+              "value": 0.5956968529222865
+            },
+            "aupr": {
+              "ci_high": 0.3601202625792278,
+              "ci_low": 0.15947117225331942,
+              "value": 0.2320382590133428
+            },
+            "name": "small molecule binding",
+            "negatives": 173,
+            "positive_rate": 0.1722488038277512,
+            "positives": 36,
+            "scored": true
+          },
+          "GO:0042802": {
+            "auc": {
+              "ci_high": 0.8260110693907836,
+              "ci_low": 0.521372532266495,
+              "value": 0.7082748948106592
+            },
+            "aupr": {
+              "ci_high": 0.4066351314125648,
+              "ci_low": 0.1253160078961253,
+              "value": 0.23433978327041702
+            },
+            "name": "identical protein binding",
+            "negatives": 186,
+            "positive_rate": 0.11004784688995216,
+            "positives": 23,
+            "scored": true
+          },
+          "GO:0043167": {
+            "auc": {
+              "ci_high": 0.7442717076434328,
+              "ci_low": 0.5282922464524001,
+              "value": 0.6475988700564972
+            },
+            "aupr": {
+              "ci_high": 0.3492020678047822,
+              "ci_low": 0.15553677637059807,
+              "value": 0.2335401890997271
+            },
+            "name": "ion binding",
+            "negatives": 177,
+            "positive_rate": 0.15311004784688995,
+            "positives": 32,
+            "scored": true
+          },
+          "GO:0140096": {
+            "auc": {
+              "ci_high": 0.8759416445623341,
+              "ci_low": 0.7481129510768793,
+              "value": 0.8064019698368728
+            },
+            "aupr": {
+              "ci_high": 0.6675679329318867,
+              "ci_low": 0.36205562553519965,
+              "value": 0.5041994669646686
+            },
+            "name": "catalytic activity, acting on a protein",
+            "negatives": 171,
+            "positive_rate": 0.18181818181818182,
+            "positives": 38,
+            "scored": true
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "evaluable_rows": 169,
+          "metrics": {
+            "coverage": {
+              "ci_high": 0.9928057553956835,
+              "ci_low": 0.9496311646335106,
+              "value": 0.9704142011834319
+            },
+            "fmax": {
+              "ci_high": 0.6544723265637236,
+              "ci_low": 0.5763010087963119,
+              "value": 0.6094630105586071
+            },
+            "fmax_precision": {
+              "ci_high": 0.5762906540981741,
+              "ci_low": 0.4917705627705629,
+              "value": 0.5344520993911239
+            },
+            "fmax_recall": {
+              "ci_high": 0.793573197032436,
+              "ci_low": 0.6420463617329464,
+              "value": 0.7089673147365454
+            },
+            "precision_at_1": {
+              "ci_high": 0.8913043478260869,
+              "ci_low": 0.7751159644375725,
+              "value": 0.8284023668639053
+            },
+            "precision_at_3": {
+              "ci_high": 0.6451274694530089,
+              "ci_low": 0.5507003028336577,
+              "value": 0.5917159763313612
+            },
+            "precision_at_5": {
+              "ci_high": 0.505111381454447,
+              "ci_low": 0.4309988095238097,
+              "value": 0.46272189349112464
+            },
+            "recall_at_1": {
+              "ci_high": 0.36669478216818674,
+              "ci_low": 0.2903476936483549,
+              "value": 0.32399971823048795
+            },
+            "recall_at_3": {
+              "ci_high": 0.6581528706800446,
+              "ci_low": 0.572096973008205,
+              "value": 0.6138137503522121
+            },
+            "recall_at_5": {
+              "ci_high": 0.7927659301130524,
+              "ci_low": 0.7163412589612116,
+              "value": 0.751655395886165
+            }
+          },
+          "rows": 209
+        },
+        "source": "model"
+      },
+      "motif": {
+        "folds": [
+          {
+            "evaluable_rows": 61,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.5354132118219701,
+              "fmax_precision": 0.5027322404371584,
+              "fmax_recall": 0.57263856362217,
+              "precision_at_1": 0.6229508196721312,
+              "precision_at_3": 0.513661202185792,
+              "precision_at_5": 0.4295081967213113,
+              "recall_at_1": 0.19119828259172517,
+              "recall_at_3": 0.49311085089773593,
+              "recall_at_5": 0.6531420765027323
+            },
+            "rows": 75,
+            "validate": 1
+          },
+          {
+            "evaluable_rows": 31,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.5301784892066845,
+              "fmax_precision": 0.5763440860215054,
+              "fmax_recall": 0.49086021505376354,
+              "precision_at_1": 0.7741935483870968,
+              "precision_at_3": 0.5483870967741934,
+              "precision_at_5": 0.41935483870967744,
+              "recall_at_1": 0.28844086021505383,
+              "recall_at_3": 0.5881720430107527,
+              "recall_at_5": 0.7147849462365592
+            },
+            "rows": 37,
+            "validate": 2
+          },
+          {
+            "evaluable_rows": 37,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.5021075237152774,
+              "fmax_precision": 0.45360360360360363,
+              "fmax_recall": 0.5622265122265123,
+              "precision_at_1": 0.5945945945945946,
+              "precision_at_3": 0.44144144144144143,
+              "precision_at_5": 0.3729729729729729,
+              "recall_at_1": 0.18381595881595886,
+              "recall_at_3": 0.4721364221364221,
+              "recall_at_5": 0.6181467181467182
+            },
+            "rows": 45,
+            "validate": 3
+          },
+          {
+            "evaluable_rows": 40,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.5243669458573659,
+              "fmax_precision": 0.44258928571428563,
+              "fmax_recall": 0.6432142857142855,
+              "precision_at_1": 0.675,
+              "precision_at_3": 0.4666666666666667,
+              "precision_at_5": 0.35,
+              "recall_at_1": 0.2594047619047619,
+              "recall_at_3": 0.5598809523809523,
+              "recall_at_5": 0.6982142857142857
+            },
+            "rows": 52,
+            "validate": 4
+          }
+        ],
+        "per_term": {
+          "GO:0003676": {
+            "auc": {
+              "ci_high": 0.623392122322452,
+              "ci_low": 0.42144364040617877,
+              "value": 0.5194541231126597
+            },
+            "aupr": {
+              "ci_high": 0.3610993254008552,
+              "ci_low": 0.16330453988681992,
+              "value": 0.24240096159779256
+            },
+            "name": "nucleic acid binding",
+            "negatives": 168,
+            "positive_rate": 0.19617224880382775,
+            "positives": 41,
+            "scored": true
+          },
+          "GO:0003677": {
+            "auc": {
+              "ci_high": 0.5906840814882216,
+              "ci_low": 0.33263974201474206,
+              "value": 0.4792173067574137
+            },
+            "aupr": {
+              "ci_high": 0.1895469225020656,
+              "ci_low": 0.06508059418776355,
+              "value": 0.10665178765025488
+            },
+            "name": "DNA binding",
+            "negatives": 187,
+            "positive_rate": 0.10526315789473684,
+            "positives": 22,
+            "scored": true
+          },
+          "GO:0003723": {
+            "auc": {
+              "ci_high": 0.5547159695894167,
+              "ci_low": 0.3140832009799768,
+              "value": 0.41735537190082644
+            },
+            "aupr": {
+              "ci_high": 0.14582909602925892,
+              "ci_low": 0.06071583301131493,
+              "value": 0.09121336461997565
+            },
+            "name": "RNA binding",
+            "negatives": 187,
+            "positive_rate": 0.10526315789473684,
+            "positives": 22,
+            "scored": true
+          },
+          "GO:0003824": {
+            "auc": {
+              "ci_high": 0.4986423136401338,
+              "ci_low": 0.3480716685025932,
+              "value": 0.42949189985272457
+            },
+            "aupr": {
+              "ci_high": 0.5118668112940544,
+              "ci_low": 0.3396075440294346,
+              "value": 0.427460857928589
+            },
+            "name": "catalytic activity",
+            "negatives": 112,
+            "positive_rate": 0.46411483253588515,
+            "positives": 97,
+            "scored": true
+          },
+          "GO:0005488": {
+            "auc": {
+              "ci_high": 0.5949294310653197,
+              "ci_low": 0.4348642154652415,
+              "value": 0.5196727339584483
+            },
+            "aupr": {
+              "ci_high": 0.6698913582623514,
+              "ci_low": 0.5041931721743563,
+              "value": 0.5901690711523966
+            },
+            "name": "binding",
+            "negatives": 98,
+            "positive_rate": 0.5311004784688995,
+            "positives": 111,
+            "scored": true
+          },
+          "GO:0005515": {
+            "auc": {
+              "ci_high": 0.5267753336714803,
+              "ci_low": 0.35219998162215144,
+              "value": 0.4316712834718375
+            },
+            "aupr": {
+              "ci_high": 0.32194480887590265,
+              "ci_low": 0.18380043091973386,
+              "value": 0.24746410218466647
+            },
+            "name": "protein binding",
+            "negatives": 152,
+            "positive_rate": 0.2727272727272727,
+            "positives": 57,
+            "scored": true
+          },
+          "GO:0016740": {
+            "auc": {
+              "ci_high": 0.5172648902821316,
+              "ci_low": 0.3387195839874411,
+              "value": 0.43117536140791957
+            },
+            "aupr": {
+              "ci_high": 0.2073975081156638,
+              "ci_low": 0.1091151832687998,
+              "value": 0.15612155886773035
+            },
+            "name": "transferase activity",
+            "negatives": 172,
+            "positive_rate": 0.17703349282296652,
+            "positives": 37,
+            "scored": true
+          },
+          "GO:0016787": {
+            "auc": {
+              "ci_high": 0.506282036368174,
+              "ci_low": 0.3192920907365879,
+              "value": 0.41852608422375864
+            },
+            "aupr": {
+              "ci_high": 0.231733871116106,
+              "ci_low": 0.10072562293429933,
+              "value": 0.15723029498344998
+            },
+            "name": "hydrolase activity",
+            "negatives": 172,
+            "positive_rate": 0.17703349282296652,
+            "positives": 37,
+            "scored": true
+          },
+          "GO:0036094": {
+            "auc": {
+              "ci_high": 0.578195323590409,
+              "ci_low": 0.2936478779086306,
+              "value": 0.4519910083493899
+            },
+            "aupr": {
+              "ci_high": 0.2700738774796046,
+              "ci_low": 0.1184004639926029,
+              "value": 0.17201338262551077
+            },
+            "name": "small molecule binding",
+            "negatives": 173,
+            "positive_rate": 0.1722488038277512,
+            "positives": 36,
+            "scored": true
+          },
+          "GO:0042802": {
+            "auc": {
+              "ci_high": 0.6045110975899567,
+              "ci_low": 0.3690736371853278,
+              "value": 0.4691444600280505
+            },
+            "aupr": {
+              "ci_high": 0.15785222449675476,
+              "ci_low": 0.06519420714204847,
+              "value": 0.1027432935498235
+            },
+            "name": "identical protein binding",
+            "negatives": 186,
+            "positive_rate": 0.11004784688995216,
+            "positives": 23,
+            "scored": true
+          },
+          "GO:0043167": {
+            "auc": {
+              "ci_high": 0.5864349666371501,
+              "ci_low": 0.3136651223999419,
+              "value": 0.4644244350282486
+            },
+            "aupr": {
+              "ci_high": 0.2656150151436776,
+              "ci_low": 0.1042417860470518,
+              "value": 0.15992197876494216
+            },
+            "name": "ion binding",
+            "negatives": 177,
+            "positive_rate": 0.15311004784688995,
+            "positives": 32,
+            "scored": true
+          },
+          "GO:0140096": {
+            "auc": {
+              "ci_high": 0.5445763346219576,
+              "ci_low": 0.3696893505957296,
+              "value": 0.4532933210218529
+            },
+            "aupr": {
+              "ci_high": 0.22217768124033402,
+              "ci_low": 0.11348734262788776,
+              "value": 0.16525863552632852
+            },
+            "name": "catalytic activity, acting on a protein",
+            "negatives": 171,
+            "positive_rate": 0.18181818181818182,
+            "positives": 38,
+            "scored": true
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "evaluable_rows": 169,
+          "metrics": {
+            "coverage": {
+              "ci_high": 1.0,
+              "ci_low": 1.0,
+              "value": 1.0
+            },
+            "fmax": {
+              "ci_high": 0.5517366126020162,
+              "ci_low": 0.49879530681984185,
+              "value": 0.5285819028775673
+            },
+            "fmax_precision": {
+              "ci_high": 0.5208114536805026,
+              "ci_low": 0.45750949418228837,
+              "value": 0.4912440123978583
+            },
+            "fmax_recall": {
+              "ci_high": 0.6100605889426812,
+              "ci_low": 0.5206583038642305,
+              "value": 0.5720625528317834
+            },
+            "precision_at_1": {
+              "ci_high": 0.735324938358577,
+              "ci_low": 0.5869024917365879,
+              "value": 0.6568047337278107
+            },
+            "precision_at_3": {
+              "ci_high": 0.52465483234714,
+              "ci_low": 0.45588235294117696,
+              "value": 0.49309664694280037
+            },
+            "precision_at_5": {
+              "ci_high": 0.42074722222222216,
+              "ci_low": 0.3671566722600018,
+              "value": 0.3964497041420119
+            },
+            "recall_at_1": {
+              "ci_high": 0.2584084533693312,
+              "ci_low": 0.18974911999683589,
+              "value": 0.22356297548605253
+            },
+            "recall_at_3": {
+              "ci_high": 0.5594210307774189,
+              "ci_low": 0.4769551271238425,
+              "value": 0.5217596506058045
+            },
+            "recall_at_5": {
+              "ci_high": 0.7020199439284261,
+              "ci_low": 0.6192622701254414,
+              "value": 0.6674556213017752
+            }
+          },
+          "rows": 209
+        },
+        "source": "motif"
+      },
+      "reproduction": {
+        "decisions_identical": true,
+        "max_abs_difference": 0.0,
+        "seconds": 4.498603299958631,
+        "tolerance": 1e-09
+      },
+      "thresholds": {
+        "frequency_prior": {
+          "folds": {
+            "1": 0.25,
+            "2": 0.28662420382165604,
+            "3": 0.25,
+            "4": 0.25
+          },
+          "frozen": 0.25
+        },
+        "logreg": {
+          "folds": {
+            "1": 0.5032119867938012,
+            "2": 0.5032119867938012,
+            "3": 0.4965995493974124,
+            "4": 0.47402708768209123
+          },
+          "frozen": 0.5032119867938012
+        },
+        "model_raw": {
+          "folds": {
+            "1": 0.44597434997558594,
+            "2": 0.32247254252433777,
+            "3": 0.3328755795955658,
+            "4": 0.3196774423122406
+          },
+          "frozen": 0.32247254252433777
+        },
+        "motif": {
+          "folds": {
+            "1": 0.125,
+            "2": 0.14331210191082802,
+            "3": 0.125,
+            "4": 0.125
+          },
+          "frozen": 0.125
+        }
+      }
+    },
+    "vocabulary": {
+      "counts_scope": "subset_mask",
+      "ids": [
+        "GO:0003676",
+        "GO:0003677",
+        "GO:0003723",
+        "GO:0003824",
+        "GO:0005488",
+        "GO:0005515",
+        "GO:0016740",
+        "GO:0016787",
+        "GO:0036094",
+        "GO:0042802",
+        "GO:0043167",
+        "GO:0140096"
+      ],
+      "positives_validation": {
+        "GO:0003676": 41,
+        "GO:0003677": 22,
+        "GO:0003723": 22,
+        "GO:0003824": 97,
+        "GO:0005488": 111,
+        "GO:0005515": 57,
+        "GO:0016740": 37,
+        "GO:0016787": 37,
+        "GO:0036094": 36,
+        "GO:0042802": 23,
+        "GO:0043167": 32,
+        "GO:0140096": 38
+      },
+      "table": [
+        {
+          "ancestors_in_vocabulary": [
+            "GO:0005488"
+          ],
+          "by_partition": {
+            "1": 14,
+            "2": 7,
+            "3": 11,
+            "4": 9,
+            "5": 10
+          },
+          "id": "GO:0003676",
+          "name": "nucleic acid binding",
+          "positives_validation": 41
+        },
+        {
+          "ancestors_in_vocabulary": [
+            "GO:0003676",
+            "GO:0005488"
+          ],
+          "by_partition": {
+            "1": 9,
+            "2": 5,
+            "3": 4,
+            "4": 4,
+            "5": 4
+          },
+          "id": "GO:0003677",
+          "name": "DNA binding",
+          "positives_validation": 22
+        },
+        {
+          "ancestors_in_vocabulary": [
+            "GO:0003676",
+            "GO:0005488"
+          ],
+          "by_partition": {
+            "1": 6,
+            "2": 3,
+            "3": 7,
+            "4": 6,
+            "5": 7
+          },
+          "id": "GO:0003723",
+          "name": "RNA binding",
+          "positives_validation": 22
+        },
+        {
+          "ancestors_in_vocabulary": [],
+          "by_partition": {
+            "1": 40,
+            "2": 15,
+            "3": 26,
+            "4": 16,
+            "5": 26
+          },
+          "id": "GO:0003824",
+          "name": "catalytic activity",
+          "positives_validation": 97
+        },
+        {
+          "ancestors_in_vocabulary": [],
+          "by_partition": {
+            "1": 38,
+            "2": 24,
+            "3": 22,
+            "4": 27,
+            "5": 38
+          },
+          "id": "GO:0005488",
+          "name": "binding",
+          "positives_validation": 111
+        },
+        {
+          "ancestors_in_vocabulary": [
+            "GO:0005488"
+          ],
+          "by_partition": {
+            "1": 21,
+            "2": 14,
+            "3": 10,
+            "4": 12,
+            "5": 25
+          },
+          "id": "GO:0005515",
+          "name": "protein binding",
+          "positives_validation": 57
+        },
+        {
+          "ancestors_in_vocabulary": [
+            "GO:0003824"
+          ],
+          "by_partition": {
+            "1": 16,
+            "2": 7,
+            "3": 8,
+            "4": 6,
+            "5": 11
+          },
+          "id": "GO:0016740",
+          "name": "transferase activity",
+          "positives_validation": 37
+        },
+        {
+          "ancestors_in_vocabulary": [
+            "GO:0003824"
+          ],
+          "by_partition": {
+            "1": 17,
+            "2": 4,
+            "3": 9,
+            "4": 7,
+            "5": 13
+          },
+          "id": "GO:0016787",
+          "name": "hydrolase activity",
+          "positives_validation": 37
+        },
+        {
+          "ancestors_in_vocabulary": [
+            "GO:0005488"
+          ],
+          "by_partition": {
+            "1": 17,
+            "2": 6,
+            "3": 6,
+            "4": 7,
+            "5": 12
+          },
+          "id": "GO:0036094",
+          "name": "small molecule binding",
+          "positives_validation": 36
+        },
+        {
+          "ancestors_in_vocabulary": [
+            "GO:0005488",
+            "GO:0005515"
+          ],
+          "by_partition": {
+            "1": 9,
+            "2": 4,
+            "3": 4,
+            "4": 6,
+            "5": 11
+          },
+          "id": "GO:0042802",
+          "name": "identical protein binding",
+          "positives_validation": 23
+        },
+        {
+          "ancestors_in_vocabulary": [
+            "GO:0005488",
+            "GO:0036094"
+          ],
+          "by_partition": {
+            "1": 15,
+            "2": 5,
+            "3": 6,
+            "4": 6,
+            "5": 12
+          },
+          "id": "GO:0043167",
+          "name": "ion binding",
+          "positives_validation": 32
+        },
+        {
+          "ancestors_in_vocabulary": [
+            "GO:0003824"
+          ],
+          "by_partition": {
+            "1": 15,
+            "2": 8,
+            "3": 8,
+            "4": 7,
+            "5": 9
+          },
+          "id": "GO:0140096",
+          "name": "catalytic activity, acting on a protein",
+          "positives_validation": 38
+        }
+      ],
+      "term_floor": 20,
+      "undefined": {}
+    }
+  },
+  "frozen_sha256": "9fc6057c291e04bd66b137844cda8810f2abda12a4292c90a19e6360ed470e70",
+  "phase": 12,
+  "schema_version": 1,
+  "test": {
+    "evaluable_rows": 52,
+    "frozen_sha256": "9fc6057c291e04bd66b137844cda8810f2abda12a4292c90a19e6360ed470e70",
+    "hardware": {
+      "logical_cpus": 12,
+      "machine": "AMD64",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "python": "3.11.9"
+    },
+    "label": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+    "metrics": {
+      "frequency_prior": {
+        "folds": [
+          {
+            "evaluable_rows": 52,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.5682142193020515,
+              "fmax_precision": 0.5705128205128205,
+              "fmax_recall": 0.5659340659340658,
+              "precision_at_1": 0.7307692307692307,
+              "precision_at_3": 0.5705128205128205,
+              "precision_at_5": 0.4153846153846152,
+              "recall_at_1": 0.23960622710622712,
+              "recall_at_3": 0.5659340659340658,
+              "recall_at_5": 0.672985347985348
+            },
+            "rows": 64,
+            "validate": 5
+          }
+        ],
+        "per_term": {
+          "GO:0003676": {
+            "name": "nucleic acid binding",
+            "negatives": 54,
+            "positives": 10,
+            "scored": false
+          },
+          "GO:0003677": {
+            "name": "DNA binding",
+            "negatives": 60,
+            "positives": 4,
+            "scored": false
+          },
+          "GO:0003723": {
+            "name": "RNA binding",
+            "negatives": 57,
+            "positives": 7,
+            "scored": false
+          },
+          "GO:0003824": {
+            "auc": {
+              "ci_high": 0.5,
+              "ci_low": 0.5,
+              "value": 0.5
+            },
+            "aupr": {
+              "ci_high": 0.5316455696202531,
+              "ci_low": 0.25862068965517243,
+              "value": 0.40625
+            },
+            "name": "catalytic activity",
+            "negatives": 38,
+            "positive_rate": 0.40625,
+            "positives": 26,
+            "scored": true
+          },
+          "GO:0005488": {
+            "auc": {
+              "ci_high": 0.5,
+              "ci_low": 0.5,
+              "value": 0.5
+            },
+            "aupr": {
+              "ci_high": 0.7142857142857143,
+              "ci_low": 0.464217032967033,
+              "value": 0.59375
+            },
+            "name": "binding",
+            "negatives": 26,
+            "positive_rate": 0.59375,
+            "positives": 38,
+            "scored": true
+          },
+          "GO:0005515": {
+            "auc": {
+              "ci_high": 0.5,
+              "ci_low": 0.5,
+              "value": 0.5
+            },
+            "aupr": {
+              "ci_high": 0.509108734402852,
+              "ci_low": 0.2812362938596491,
+              "value": 0.390625
+            },
+            "name": "protein binding",
+            "negatives": 39,
+            "positive_rate": 0.390625,
+            "positives": 25,
+            "scored": true
+          },
+          "GO:0016740": {
+            "name": "transferase activity",
+            "negatives": 53,
+            "positives": 11,
+            "scored": false
+          },
+          "GO:0016787": {
+            "name": "hydrolase activity",
+            "negatives": 51,
+            "positives": 13,
+            "scored": false
+          },
+          "GO:0036094": {
+            "name": "small molecule binding",
+            "negatives": 52,
+            "positives": 12,
+            "scored": false
+          },
+          "GO:0042802": {
+            "name": "identical protein binding",
+            "negatives": 53,
+            "positives": 11,
+            "scored": false
+          },
+          "GO:0043167": {
+            "name": "ion binding",
+            "negatives": 52,
+            "positives": 12,
+            "scored": false
+          },
+          "GO:0140096": {
+            "name": "catalytic activity, acting on a protein",
+            "negatives": 55,
+            "positives": 9,
+            "scored": false
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "evaluable_rows": 52,
+          "metrics": {
+            "coverage": {
+              "ci_high": 1.0,
+              "ci_low": 1.0,
+              "value": 1.0
+            },
+            "fmax": {
+              "ci_high": 0.6249195959908798,
+              "ci_low": 0.5100411255369278,
+              "value": 0.5682142193020515
+            },
+            "fmax_precision": {
+              "ci_high": 0.6389297385620916,
+              "ci_low": 0.496124031007752,
+              "value": 0.5705128205128205
+            },
+            "fmax_recall": {
+              "ci_high": 0.6566223029066699,
+              "ci_low": 0.49656599704558413,
+              "value": 0.5659340659340658
+            },
+            "precision_at_1": {
+              "ci_high": 0.8596491228070176,
+              "ci_low": 0.5882352941176471,
+              "value": 0.7307692307692307
+            },
+            "precision_at_3": {
+              "ci_high": 0.6389297385620916,
+              "ci_low": 0.496124031007752,
+              "value": 0.5705128205128205
+            },
+            "precision_at_5": {
+              "ci_high": 0.4490566037735848,
+              "ci_low": 0.3738985507246377,
+              "value": 0.4153846153846152
+            },
+            "recall_at_1": {
+              "ci_high": 0.30471744972781745,
+              "ci_low": 0.1853673835125448,
+              "value": 0.23960622710622712
+            },
+            "recall_at_3": {
+              "ci_high": 0.6566223029066699,
+              "ci_low": 0.49656599704558413,
+              "value": 0.5659340659340658
+            },
+            "recall_at_5": {
+              "ci_high": 0.7531833791208793,
+              "ci_low": 0.6061032433387831,
+              "value": 0.672985347985348
+            }
+          },
+          "rows": 64
+        },
+        "source": "prior"
+      },
+      "logreg": {
+        "folds": [
+          {
+            "evaluable_rows": 52,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.4787833849982726,
+              "fmax_precision": 0.359569597069597,
+              "fmax_recall": 0.7162545787545789,
+              "precision_at_1": 0.5384615384615384,
+              "precision_at_3": 0.37820512820512825,
+              "precision_at_5": 0.373076923076923,
+              "recall_at_1": 0.18319597069597068,
+              "recall_at_3": 0.36108058608058613,
+              "recall_at_5": 0.5815934065934065
+            },
+            "rows": 64,
+            "validate": 5
+          }
+        ],
+        "per_term": {
+          "GO:0003676": {
+            "name": "nucleic acid binding",
+            "negatives": 54,
+            "positives": 10,
+            "scored": false
+          },
+          "GO:0003677": {
+            "name": "DNA binding",
+            "negatives": 60,
+            "positives": 4,
+            "scored": false
+          },
+          "GO:0003723": {
+            "name": "RNA binding",
+            "negatives": 57,
+            "positives": 7,
+            "scored": false
+          },
+          "GO:0003824": {
+            "auc": {
+              "ci_high": 0.5878435964373464,
+              "ci_low": 0.2946700310559006,
+              "value": 0.4230769230769231
+            },
+            "aupr": {
+              "ci_high": 0.6234405429861001,
+              "ci_low": 0.2811324789757051,
+              "value": 0.4340815901420224
+            },
+            "name": "catalytic activity",
+            "negatives": 38,
+            "positive_rate": 0.40625,
+            "positives": 26,
+            "scored": true
+          },
+          "GO:0005488": {
+            "auc": {
+              "ci_high": 0.723572198275862,
+              "ci_low": 0.38847228260869565,
+              "value": 0.5678137651821862
+            },
+            "aupr": {
+              "ci_high": 0.8066290420334886,
+              "ci_low": 0.4839129534341718,
+              "value": 0.6275954987489102
+            },
+            "name": "binding",
+            "negatives": 26,
+            "positive_rate": 0.59375,
+            "positives": 38,
+            "scored": true
+          },
+          "GO:0005515": {
+            "auc": {
+              "ci_high": 0.6664937943262411,
+              "ci_low": 0.38661541841205643,
+              "value": 0.5246153846153846
+            },
+            "aupr": {
+              "ci_high": 0.6636481571461603,
+              "ci_low": 0.32576176440883253,
+              "value": 0.4799734620554391
+            },
+            "name": "protein binding",
+            "negatives": 39,
+            "positive_rate": 0.390625,
+            "positives": 25,
+            "scored": true
+          },
+          "GO:0016740": {
+            "name": "transferase activity",
+            "negatives": 53,
+            "positives": 11,
+            "scored": false
+          },
+          "GO:0016787": {
+            "name": "hydrolase activity",
+            "negatives": 51,
+            "positives": 13,
+            "scored": false
+          },
+          "GO:0036094": {
+            "name": "small molecule binding",
+            "negatives": 52,
+            "positives": 12,
+            "scored": false
+          },
+          "GO:0042802": {
+            "name": "identical protein binding",
+            "negatives": 53,
+            "positives": 11,
+            "scored": false
+          },
+          "GO:0043167": {
+            "name": "ion binding",
+            "negatives": 52,
+            "positives": 12,
+            "scored": false
+          },
+          "GO:0140096": {
+            "name": "catalytic activity, acting on a protein",
+            "negatives": 55,
+            "positives": 9,
+            "scored": false
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "evaluable_rows": 52,
+          "metrics": {
+            "coverage": {
+              "ci_high": 1.0,
+              "ci_low": 1.0,
+              "value": 1.0
+            },
+            "fmax": {
+              "ci_high": 0.5409307749146899,
+              "ci_low": 0.4065992342344281,
+              "value": 0.4787833849982726
+            },
+            "fmax_precision": {
+              "ci_high": 0.4336493888151214,
+              "ci_low": 0.2888360461359997,
+              "value": 0.359569597069597
+            },
+            "fmax_recall": {
+              "ci_high": 0.8050074657839326,
+              "ci_low": 0.6353890931372548,
+              "value": 0.7162545787545789
+            },
+            "precision_at_1": {
+              "ci_high": 0.6557505122950819,
+              "ci_low": 0.40425531914893614,
+              "value": 0.5384615384615384
+            },
+            "precision_at_3": {
+              "ci_high": 0.4731324278438029,
+              "ci_low": 0.27657187670485545,
+              "value": 0.37820512820512825
+            },
+            "precision_at_5": {
+              "ci_high": 0.4543078817733987,
+              "ci_low": 0.2976432724252493,
+              "value": 0.373076923076923
+            },
+            "recall_at_1": {
+              "ci_high": 0.24400043966450222,
+              "ci_low": 0.128957760989011,
+              "value": 0.18319597069597068
+            },
+            "recall_at_3": {
+              "ci_high": 0.4529662566489362,
+              "ci_low": 0.2739085393772894,
+              "value": 0.36108058608058613
+            },
+            "recall_at_5": {
+              "ci_high": 0.6752010447035957,
+              "ci_low": 0.49612470238095235,
+              "value": 0.5815934065934065
+            }
+          },
+          "rows": 64
+        },
+        "source": "logreg"
+      },
+      "model_calibrated": {
+        "folds": [
+          {
+            "evaluable_rows": 52,
+            "metrics": {
+              "coverage": 0.9615384615384616,
+              "fmax": 0.6315428955958905,
+              "fmax_precision": 0.574388888888889,
+              "fmax_recall": 0.701327838827839,
+              "precision_at_1": 0.8846153846153846,
+              "precision_at_3": 0.6346153846153848,
+              "precision_at_5": 0.4884615384615384,
+              "recall_at_1": 0.325503663003663,
+              "recall_at_3": 0.6195970695970696,
+              "recall_at_5": 0.7729624542124541
+            },
+            "rows": 64,
+            "validate": 5
+          }
+        ],
+        "per_term": {
+          "GO:0003676": {
+            "name": "nucleic acid binding",
+            "negatives": 54,
+            "positives": 10,
+            "scored": false
+          },
+          "GO:0003677": {
+            "name": "DNA binding",
+            "negatives": 60,
+            "positives": 4,
+            "scored": false
+          },
+          "GO:0003723": {
+            "name": "RNA binding",
+            "negatives": 57,
+            "positives": 7,
+            "scored": false
+          },
+          "GO:0003824": {
+            "auc": {
+              "ci_high": 0.9839312397570615,
+              "ci_low": 0.7728645833333334,
+              "value": 0.9008097165991903
+            },
+            "aupr": {
+              "ci_high": 0.9782431808005853,
+              "ci_low": 0.6486144648391119,
+              "value": 0.8446527556581904
+            },
+            "name": "catalytic activity",
+            "negatives": 38,
+            "positive_rate": 0.40625,
+            "positives": 26,
+            "scored": true
+          },
+          "GO:0005488": {
+            "auc": {
+              "ci_high": 0.8247059747652726,
+              "ci_low": 0.5334711302211302,
+              "value": 0.6842105263157895
+            },
+            "aupr": {
+              "ci_high": 0.8455281588654636,
+              "ci_low": 0.5467101741864377,
+              "value": 0.6986490305510547
+            },
+            "name": "binding",
+            "negatives": 26,
+            "positive_rate": 0.59375,
+            "positives": 38,
+            "scored": true
+          },
+          "GO:0005515": {
+            "auc": {
+              "ci_high": 0.7800635809090508,
+              "ci_low": 0.5011262829912023,
+              "value": 0.6523076923076923
+            },
+            "aupr": {
+              "ci_high": 0.68571442704593,
+              "ci_low": 0.3700095254725767,
+              "value": 0.5246269354459173
+            },
+            "name": "protein binding",
+            "negatives": 39,
+            "positive_rate": 0.390625,
+            "positives": 25,
+            "scored": true
+          },
+          "GO:0016740": {
+            "name": "transferase activity",
+            "negatives": 53,
+            "positives": 11,
+            "scored": false
+          },
+          "GO:0016787": {
+            "name": "hydrolase activity",
+            "negatives": 51,
+            "positives": 13,
+            "scored": false
+          },
+          "GO:0036094": {
+            "name": "small molecule binding",
+            "negatives": 52,
+            "positives": 12,
+            "scored": false
+          },
+          "GO:0042802": {
+            "name": "identical protein binding",
+            "negatives": 53,
+            "positives": 11,
+            "scored": false
+          },
+          "GO:0043167": {
+            "name": "ion binding",
+            "negatives": 52,
+            "positives": 12,
+            "scored": false
+          },
+          "GO:0140096": {
+            "name": "catalytic activity, acting on a protein",
+            "negatives": 55,
+            "positives": 9,
+            "scored": false
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "evaluable_rows": 52,
+          "metrics": {
+            "coverage": {
+              "ci_high": 1.0,
+              "ci_low": 0.9106737012987013,
+              "value": 0.9615384615384616
+            },
+            "fmax": {
+              "ci_high": 0.6946629693434149,
+              "ci_low": 0.5634620661579873,
+              "value": 0.6315428955958905
+            },
+            "fmax_precision": {
+              "ci_high": 0.6532627865961199,
+              "ci_low": 0.501882236937328,
+              "value": 0.574388888888889
+            },
+            "fmax_recall": {
+              "ci_high": 0.791031746031746,
+              "ci_low": 0.6018299520352605,
+              "value": 0.701327838827839
+            },
+            "precision_at_1": {
+              "ci_high": 0.9643013784461153,
+              "ci_low": 0.7856366459627329,
+              "value": 0.8846153846153846
+            },
+            "precision_at_3": {
+              "ci_high": 0.7123366398992286,
+              "ci_low": 0.5399920634920636,
+              "value": 0.6346153846153848
+            },
+            "precision_at_5": {
+              "ci_high": 0.54334375,
+              "ci_low": 0.4156512605042016,
+              "value": 0.4884615384615384
+            },
+            "recall_at_1": {
+              "ci_high": 0.4014595004668533,
+              "ci_low": 0.2654887112001474,
+              "value": 0.325503663003663
+            },
+            "recall_at_3": {
+              "ci_high": 0.7093935522894699,
+              "ci_low": 0.5364886847989377,
+              "value": 0.6195970695970696
+            },
+            "recall_at_5": {
+              "ci_high": 0.855096985741971,
+              "ci_low": 0.6820326081821617,
+              "value": 0.7729624542124541
+            }
+          },
+          "rows": 64
+        },
+        "source": "model"
+      },
+      "model_raw": {
+        "folds": [
+          {
+            "evaluable_rows": 52,
+            "metrics": {
+              "coverage": 0.9230769230769231,
+              "fmax": 0.6220247467189585,
+              "fmax_precision": 0.5574322089947089,
+              "fmax_recall": 0.703548534798535,
+              "precision_at_1": 0.7115384615384616,
+              "precision_at_3": 0.5833333333333334,
+              "precision_at_5": 0.47307692307692295,
+              "recall_at_1": 0.25480769230769235,
+              "recall_at_3": 0.5748626373626373,
+              "recall_at_5": 0.755654761904762
+            },
+            "rows": 64,
+            "validate": 5
+          }
+        ],
+        "per_term": {
+          "GO:0003676": {
+            "name": "nucleic acid binding",
+            "negatives": 54,
+            "positives": 10,
+            "scored": false
+          },
+          "GO:0003677": {
+            "name": "DNA binding",
+            "negatives": 60,
+            "positives": 4,
+            "scored": false
+          },
+          "GO:0003723": {
+            "name": "RNA binding",
+            "negatives": 57,
+            "positives": 7,
+            "scored": false
+          },
+          "GO:0003824": {
+            "auc": {
+              "ci_high": 0.9854357353643539,
+              "ci_low": 0.7874816176470588,
+              "value": 0.9109311740890689
+            },
+            "aupr": {
+              "ci_high": 0.9830673893301585,
+              "ci_low": 0.7311289326141684,
+              "value": 0.8957883056644743
+            },
+            "name": "catalytic activity",
+            "negatives": 38,
+            "positive_rate": 0.40625,
+            "positives": 26,
+            "scored": true
+          },
+          "GO:0005488": {
+            "auc": {
+              "ci_high": 0.8305104166666666,
+              "ci_low": 0.5272669430251614,
+              "value": 0.687246963562753
+            },
+            "aupr": {
+              "ci_high": 0.8759941126690977,
+              "ci_low": 0.5651959892651238,
+              "value": 0.7208532682139677
+            },
+            "name": "binding",
+            "negatives": 26,
+            "positive_rate": 0.59375,
+            "positives": 38,
+            "scored": true
+          },
+          "GO:0005515": {
+            "auc": {
+              "ci_high": 0.7888543497729726,
+              "ci_low": 0.5073505140692641,
+              "value": 0.658974358974359
+            },
+            "aupr": {
+              "ci_high": 0.7301347384944082,
+              "ci_low": 0.36866715723529336,
+              "value": 0.5375490478626106
+            },
+            "name": "protein binding",
+            "negatives": 39,
+            "positive_rate": 0.390625,
+            "positives": 25,
+            "scored": true
+          },
+          "GO:0016740": {
+            "name": "transferase activity",
+            "negatives": 53,
+            "positives": 11,
+            "scored": false
+          },
+          "GO:0016787": {
+            "name": "hydrolase activity",
+            "negatives": 51,
+            "positives": 13,
+            "scored": false
+          },
+          "GO:0036094": {
+            "name": "small molecule binding",
+            "negatives": 52,
+            "positives": 12,
+            "scored": false
+          },
+          "GO:0042802": {
+            "name": "identical protein binding",
+            "negatives": 53,
+            "positives": 11,
+            "scored": false
+          },
+          "GO:0043167": {
+            "name": "ion binding",
+            "negatives": 52,
+            "positives": 12,
+            "scored": false
+          },
+          "GO:0140096": {
+            "name": "catalytic activity, acting on a protein",
+            "negatives": 55,
+            "positives": 9,
+            "scored": false
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "evaluable_rows": 52,
+          "metrics": {
+            "coverage": {
+              "ci_high": 0.9803921568627451,
+              "ci_low": 0.8461538461538461,
+              "value": 0.9230769230769231
+            },
+            "fmax": {
+              "ci_high": 0.6910958210277234,
+              "ci_low": 0.5463161536491545,
+              "value": 0.6220247467189585
+            },
+            "fmax_precision": {
+              "ci_high": 0.6410773758908325,
+              "ci_low": 0.47644835107956207,
+              "value": 0.5574322089947089
+            },
+            "fmax_recall": {
+              "ci_high": 0.7947746459694989,
+              "ci_low": 0.605384151259088,
+              "value": 0.703548534798535
+            },
+            "precision_at_1": {
+              "ci_high": 0.8333333333333334,
+              "ci_low": 0.5798617021276595,
+              "value": 0.7115384615384616
+            },
+            "precision_at_3": {
+              "ci_high": 0.6666666666666666,
+              "ci_low": 0.4842446412527275,
+              "value": 0.5833333333333334
+            },
+            "precision_at_5": {
+              "ci_high": 0.5283750601829561,
+              "ci_low": 0.40465116279069774,
+              "value": 0.47307692307692295
+            },
+            "recall_at_1": {
+              "ci_high": 0.33402264030612244,
+              "ci_low": 0.19660021828454036,
+              "value": 0.25480769230769235
+            },
+            "recall_at_3": {
+              "ci_high": 0.6823220955048686,
+              "ci_low": 0.48148790805630415,
+              "value": 0.5748626373626373
+            },
+            "recall_at_5": {
+              "ci_high": 0.8424511993108931,
+              "ci_low": 0.6631516332948275,
+              "value": 0.755654761904762
+            }
+          },
+          "rows": 64
+        },
+        "source": "model"
+      },
+      "motif": {
+        "folds": [
+          {
+            "evaluable_rows": 52,
+            "metrics": {
+              "coverage": 1.0,
+              "fmax": 0.568358155513111,
+              "fmax_precision": 0.5209706959706959,
+              "fmax_recall": 0.6252289377289378,
+              "precision_at_1": 0.7115384615384616,
+              "precision_at_3": 0.5192307692307693,
+              "precision_at_5": 0.4384615384615383,
+              "recall_at_1": 0.24761904761904766,
+              "recall_at_3": 0.5056776556776558,
+              "recall_at_5": 0.6826007326007327
+            },
+            "rows": 64,
+            "validate": 5
+          }
+        ],
+        "per_term": {
+          "GO:0003676": {
+            "name": "nucleic acid binding",
+            "negatives": 54,
+            "positives": 10,
+            "scored": false
+          },
+          "GO:0003677": {
+            "name": "DNA binding",
+            "negatives": 60,
+            "positives": 4,
+            "scored": false
+          },
+          "GO:0003723": {
+            "name": "RNA binding",
+            "negatives": 57,
+            "positives": 7,
+            "scored": false
+          },
+          "GO:0003824": {
+            "auc": {
+              "ci_high": 0.6639380081300812,
+              "ci_low": 0.38553152468415824,
+              "value": 0.5030364372469636
+            },
+            "aupr": {
+              "ci_high": 0.5747354328700752,
+              "ci_low": 0.2703834884970788,
+              "value": 0.4077347285067873
+            },
+            "name": "catalytic activity",
+            "negatives": 38,
+            "positive_rate": 0.40625,
+            "positives": 26,
+            "scored": true
+          },
+          "GO:0005488": {
+            "auc": {
+              "ci_high": 0.6431343312511075,
+              "ci_low": 0.4027662037037037,
+              "value": 0.5232793522267206
+            },
+            "aupr": {
+              "ci_high": 0.7634033613445378,
+              "ci_low": 0.4564164598842018,
+              "value": 0.6056959833795014
+            },
+            "name": "binding",
+            "negatives": 26,
+            "positive_rate": 0.59375,
+            "positives": 38,
+            "scored": true
+          },
+          "GO:0005515": {
+            "auc": {
+              "ci_high": 0.5,
+              "ci_low": 0.5,
+              "value": 0.5
+            },
+            "aupr": {
+              "ci_high": 0.509108734402852,
+              "ci_low": 0.2812362938596491,
+              "value": 0.390625
+            },
+            "name": "protein binding",
+            "negatives": 39,
+            "positive_rate": 0.390625,
+            "positives": 25,
+            "scored": true
+          },
+          "GO:0016740": {
+            "name": "transferase activity",
+            "negatives": 53,
+            "positives": 11,
+            "scored": false
+          },
+          "GO:0016787": {
+            "name": "hydrolase activity",
+            "negatives": 51,
+            "positives": 13,
+            "scored": false
+          },
+          "GO:0036094": {
+            "name": "small molecule binding",
+            "negatives": 52,
+            "positives": 12,
+            "scored": false
+          },
+          "GO:0042802": {
+            "name": "identical protein binding",
+            "negatives": 53,
+            "positives": 11,
+            "scored": false
+          },
+          "GO:0043167": {
+            "name": "ion binding",
+            "negatives": 52,
+            "positives": 12,
+            "scored": false
+          },
+          "GO:0140096": {
+            "name": "catalytic activity, acting on a protein",
+            "negatives": 55,
+            "positives": 9,
+            "scored": false
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "evaluable_rows": 52,
+          "metrics": {
+            "coverage": {
+              "ci_high": 1.0,
+              "ci_low": 1.0,
+              "value": 1.0
+            },
+            "fmax": {
+              "ci_high": 0.6385350454885258,
+              "ci_low": 0.4962774705289679,
+              "value": 0.568358155513111
+            },
+            "fmax_precision": {
+              "ci_high": 0.6025180951011407,
+              "ci_low": 0.43408472479901045,
+              "value": 0.5209706959706959
+            },
+            "fmax_recall": {
+              "ci_high": 0.7079731568530429,
+              "ci_low": 0.5478092501368363,
+              "value": 0.6252289377289378
+            },
+            "precision_at_1": {
+              "ci_high": 0.8432126696832578,
+              "ci_low": 0.5768518518518518,
+              "value": 0.7115384615384616
+            },
+            "precision_at_3": {
+              "ci_high": 0.6164195867026054,
+              "ci_low": 0.4135740740740739,
+              "value": 0.5192307692307693
+            },
+            "precision_at_5": {
+              "ci_high": 0.5076984126984125,
+              "ci_low": 0.36955685618729095,
+              "value": 0.4384615384615383
+            },
+            "recall_at_1": {
+              "ci_high": 0.3328105634881365,
+              "ci_low": 0.1836255787037037,
+              "value": 0.24761904761904766
+            },
+            "recall_at_3": {
+              "ci_high": 0.6054020909645907,
+              "ci_low": 0.42676541180988525,
+              "value": 0.5056776556776558
+            },
+            "recall_at_5": {
+              "ci_high": 0.7557867494824017,
+              "ci_low": 0.6209963235294117,
+              "value": 0.6826007326007327
+            }
+          },
+          "rows": 64
+        },
+        "source": "motif"
+      }
+    },
+    "rows": 64,
+    "scope": "subset",
+    "seconds": 8.876880599884316,
+    "touches": 1
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "bundle_sha256": "c34a1befad3ba5e01d91998197cdb418acd5263fa13a5ecc5541821a3b627d07",
+  "bundle_version": "0.12.0",
+  "calibrator": {
+    "calibration_version": "0.12.0+ba99718e08a4",
+    "file": "calibrator.json",
+    "sha256": "956e55da98c4749806f7c9cbabd7f23821e24e38c0599295ff427cb5da59a691"
+  },
+  "head": {
+    "classes": [
+      "GO:0003676",
+      "GO:0003677",
+      "GO:0003723",
+      "GO:0003824",
+      "GO:0005488",
+      "GO:0005515",
+      "GO:0016740",
+      "GO:0016787",
+      "GO:0036094",
+      "GO:0042802",
+      "GO:0043167",
+      "GO:0140096"
+    ],
+    "evidence_policy": [
+      "experimental",
+      "curated"
+    ],
+    "frozen_sha256": "6b3ee6f7bc835da9d7867fcdfc518d58a9327634aa6c5bd00c0334f7930affb8",
+    "head_config_sha256": "80b40ded567ee80367b131fe5ee95198d12e1be85c05d0cb85f119e41e6dd4a9",
+    "ontology_data_version": "releases/2026-07-26",
+    "ontology_sha256": "b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc",
+    "propagation": [
+      "is_a",
+      "part_of"
+    ],
+    "source": "model",
+    "term_floor": 20,
+    "threshold": 0.25,
+    "threshold_rule": "one global threshold on the propagated score (a term scores at least as high as any descendant); it is the CAFA-style Fmax maximiser over the labelled rows that have a vocabulary positive; fold k is scored with a threshold tuned on the out-of-fold scores of the other validation partitions; the frozen threshold is tuned on all validation rows. The calibrated threshold is tuned the same way on the cross-fitted calibrated scores",
+    "vocabulary_file": "terms.json",
+    "vocabulary_sha256": "ee8e9de5dd1f0a60ef8a31eb77b666b09e5ba6dd071e8641a15f511e603a91ba",
+    "weights_file": "final_weights.npz",
+    "weights_sha256": "1d9d77f93861444b551a058317d9c0c9175818c02bf7475bfca87bab4d0eac6f"
+  },
+  "rules": {
+    "baseline_class_map_sha256": "c1ffefe085392bc6cee8d35010f6dfe08de81a6586413717238db9f247a190dc",
+    "consistency_sha256": "fa0eec2137f30b38658671931d5ab3072637da8afc28787a407ca28b5e02241e"
+  },
+  "schema_version": 1,
+  "scope": "subset",
+  "scope_label": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+  "task": "go_function"
+}
