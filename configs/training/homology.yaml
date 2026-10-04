@@ -1,0 +1,122 @@
+# Phase 13 homology evidence: nearest Swiss-Prot homologs and homology-transferred GO terms.
+#
+# Data, not code. The database pin, the engine pin, the search and filter grids, the masks, the
+# transfer rule, the measurement settings and the bundle version live here;
+# backend/protloc/evidence/homology.py and backend/protloc/training/homology_eval.py read this
+# file and repeat none of it, and tests/unit/test_homology.py fails if the two ever disagree.
+# scripts/homology.py hashes this file into the frozen manifest, so changing it after --freeze is
+# caught by `scripts/homology.py --check`.
+# Confirmed at the Phase 13 gates (ADR-0015): native Windows MMseqs2, GO terms from the corpus
+# `DR GO` lines (the Phase 12 labels), the 108-point filter grid, stop-and-ask on a failed index.
+#
+# Evidence is independent corroboration: nothing here, and no result of it, feeds a model score,
+# a calibrator or a threshold of the localization, CRF or GO heads.
+
+name: homology
+task: homology_evidence
+
+# Must equal `seed` in configs/config.yaml (a unit test asserts it).
+seed: 20260909
+
+# The database is the FULL Swiss-Prot snapshot of the training corpus; the queries are the
+# 500-sequence subset. Bytes stay out of git (data/evidence/ is ignored).
+database:
+  source: UniProtKB/Swiss-Prot
+  release: "2026_03"
+  records: 548702
+  corpus_file: data/processed/corpus.jsonl
+  corpus_sha256: d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8
+  license: CC-BY-4.0
+  license_url: https://www.uniprot.org/help/license
+  directory: data/evidence
+  fasta: swissprot.fasta
+  meta: db_meta.tsv
+  mmseqs_directory: swissprot_mmseqs
+  mmseqs_name: db
+
+# MMseqs2 is an external binary, never linked (MIT). The pin records the release, the commit it
+# prints, and the SHA-256 of the downloaded archive and of the executable; scripts/homology.py
+# refuses any difference. License read from the tagged source on the day of download (2026-10-04).
+engine:
+  name: mmseqs2
+  release: 18-8cc5c
+  commit: 8cc5ce367b5638c4306c2d7cfc652dd099a4643f
+  platform: win64
+  archive_sha256: 9752087ca4e25e93b830775832a75044dc94ae348d66d4681f9ff0355eecfcbf
+  executable_sha256: ad319fc9fc67500ca2da9b9247d9611d2113e66cb800c15b603949f5652e2a0b
+  executable: data/evidence/bin/mmseqs-18-8cc5c/mmseqs/bin/mmseqs.exe
+  license: MIT
+  license_url: https://github.com/soedinglab/MMseqs2/blob/18-8cc5c/LICENSE.md
+  download_url: https://github.com/soedinglab/MMseqs2/releases/download/18-8cc5c/mmseqs-win64.zip
+  threads: 8
+  verbosity: 1
+
+index:
+  # createindex is refused when the drive holds fewer free bytes than this after createdb
+  # (Gate D: a failed or oversized index stops the phase and asks; nothing is deleted).
+  min_free_bytes: 3221225472
+
+search:
+  # One permissive search per query set; the hit filter is applied afterwards, so the e-value
+  # here must not be below the largest e-value in hit_filter.grid.
+  sensitivity: 5.7
+  e_value: 0.001
+  max_seqs: 1000
+  alignment_mode: 3
+
+latency:
+  # Single-query runs (createdb + search + convertalis each) on this many queries chosen evenly
+  # across the length distribution; p50 and p95 are nearest-rank over them.
+  samples: 50
+  poll_interval_seconds: 0.05
+
+masking:
+  # A scored query may only hit database sequences the model could also have been trained on.
+  # Exactly these four masks, in this order, are applied; a configuration that drops one is refused.
+  masks: [self_accession, self_sequence_sha256, same_cluster_id, same_partition]
+  # Diagnostic arm: the same filter restricted to database sequences that are in the split
+  # registry (other partitions only). Not tuned, reported beside the primary arm.
+  registry_only_diagnostic: true
+
+transfer:
+  # A hit transfers terms only when its own annotation (evidence policy of go.yaml, propagated)
+  # is non-empty. A vote is the fraction of the top-k such hits that carry the term; the training
+  # frequency prior only breaks ties, so its weight must stay below 1 / max(top_k).
+  annotated_hits_only: true
+  tiebreak_weight: 0.01
+  # Per-identity bins over the best passing hit: [edge_i, edge_i+1), the last bin closed.
+  identity_bins: [0.0, 0.3, 0.5, 0.7, 0.9, 1.0]
+  min_rows_per_bin: 10
+
+hit_filter:
+  # Tuned on partitions 1-4 only (leave-one-partition-out folds of go.yaml, nested thresholds).
+  # 4 x 3 x 3 x 3 = 108 points. Order of expansion: e_value (slowest), min_identity,
+  # min_query_coverage, top_k.
+  grid:
+    e_value: [1.0e-20, 1.0e-10, 1.0e-5, 1.0e-3]
+    min_identity: [0.0, 0.3, 0.5]
+    min_query_coverage: [0.0, 0.5, 0.8]
+    top_k: [1, 3, 5]
+  selection:
+    rule: precision_at_primary_k, fmax, earlier_grid_point
+
+# The GO labels, ontology release, evidence policy, term floor, vocabulary and metric settings are
+# the Phase 12 ones, read from go.yaml and the committed vocabulary; none is repeated here.
+go:
+  config: configs/training/go.yaml
+  labels: data/go/labels.tsv
+  vocabulary: data/go/vocabulary.json
+  annotation_source: >-
+    UniProtKB/Swiss-Prot release 2026_03 DR GO cross-references (derived from UniProt-GOA) as
+    parsed into the corpus; the same records the Phase 12 labels were mapped from
+
+# `scripts/homology.py --smoke`: every 4th query, a code check only, never frozen, no number
+# from it is reported.
+smoke:
+  query_stride: 4
+  latency_samples: 3
+  bootstrap_samples: 50
+
+bundle:
+  version: 0.13.0
+  directory: registry/evidence_homology
