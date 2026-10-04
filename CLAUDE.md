@@ -168,7 +168,7 @@ MAX_UPLOAD_BYTES=ENTER_YOUR_VALUE_HERE
 | `MODEL_VERSION`, `ARTIFACT_REVISION` | 14 | The HF model-repo commit SHA the server pins |
 | `ARTIFACT_CACHE_DIR` | 2 | Host-dependent; ephemeral on both candidates, so weights are re-pulled on cold start |
 | `MAX_BATCH_SEQUENCES` | 14 | From measured throughput; start conservative |
-| `GOA_RELEASE` | 13 | The GAF release string on the day you snapshot UniProt-GOA |
+| `GOA_RELEASE` | 13 | Unused by the Phase 13 design: GO terms for hits come from the corpus `DR GO` lines, recorded as "embedded in Swiss-Prot 2026_03" (hash = corpus SHA-256); decide in Phase 14 whether to drop it |
 | `FRONTEND_ORIGIN`, `BACKEND_URL` | 19 | The two deployed URLs; CORS is restricted to the first |
 | `RATE_LIMIT_PER_MINUTE`, `MAX_UPLOAD_BYTES` | 17 | From Phase 16 load numbers |
 
@@ -348,8 +348,8 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 10  — Calibration & per-label thresholds            MVP   5.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.10.0)
 [x] Phase 11  — Signal-peptide CRF head                       ENH   8.0 h   done 2026-10-04 (branch; 500-sequence subset only; you tag v0.11.0)
 [x] Phase 12  — GO head                                       ENH   4.0 h   done 2026-10-04 (branch; 500-sequence subset only; you tag v0.12.0)
-[ ] Phase 13  — Homology evidence (MMseqs2 index)             ENH   5.0 h   <-- NEXT
-[ ] Phase 14  — Swap the engine: model behind the same API     MVP   6.0 h
+[x] Phase 13  — Homology evidence (MMseqs2 index)             ENH   5.0 h   done 2026-10-04 (branch; 500-sequence subset queries, full Swiss-Prot database; you tag v0.13.0)
+[ ] Phase 14  — Swap the engine: model behind the same API     MVP   6.0 h   <-- NEXT
 [ ] Phase 15  — Attribution from the real model                ENH   4.0 h
 [ ] Phase 16  — Frontend upgrade & landing page                MVP   7.0 h
 [ ] Phase 17  — Limits, errors, degraded states                ENH   3.0 h
@@ -503,6 +503,22 @@ Fmax 0.622 / 0.632, frequency prior 0.571 / 0.568; the head overlaps the prior a
 corpus `d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8`, embedding cache `0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1`, residue cache `05c9bb393be0e8b25a1af2eddcea811bc3d19edafe18580c34eb547b444a3349`.
 `data/go/` is gitignored; `TASK_HEAD_KEYS["go_function"]` adds the vocabulary and ontology checks. Phase 14 needs a model-shaped GO output with `source: "model"` (`GoAnnotation` requires `source_accession`).
 UNVERIFIED: any claim beyond 500 sequences, per-term claims on 22-111 positives, seed variance, published GO parity (none fetched), Docker, GitHub Actions and the frontend gate (not runnable in the sandbox). Detail: `docs/phases/12.md`.
+
+### Phase 13 close — 2026-10-04
+
+Homology evidence (ADR-0015): an MMseqs2 `18-8cc5c` index over the full Swiss-Prot 2026_03 snapshot (548,702 records) and GO transfer from the nearest hits, scored on the **500-sequence subset queries**
+("subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers") under the Phase 12 protocol (12-term vocabulary, same rows, folds, nested thresholds, 1,000-sample cluster bootstrap, seed 20260909). Native Windows binary (MIT, licence read 2026-10-04);
+it needs `sh.exe` = a byte copy of the shipped `busybox.exe` (Gate D fix, hash recorded). GO terms for hits are the corpus `DR GO` lines mapped by the Phase 12 code (ontology `releases/2026-07-26`, `b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc`); no GAF.
+Measured: build 72.0 s; index 2.29 GiB (2,463,105,431 bytes); peak working set 2.16 GiB, peak commit 4.03 GiB; batch search of 507 queries 19.8 s; single-query p50 2.31 s, p95 2.80 s, 1.655 CPU-s (per-process, index loaded each time).
+Four leakage masks (self accession, self sha256, same cluster, same partition) with per-mask counts in the manifest; database sequences outside the split registry (514,823 of 548,702) cannot be masked by cluster or partition, so a registry-only arm is reported beside the primary one.
+Evidence never feeds a model score, calibrator or threshold (stdlib-only module, import-graph tests, manifest flags); transferred terms are `source: "homology"` with `source_accession`.
+Selected filter: e-value 1e-3, identity 0, coverage 0, top-k 5 (108-point grid on partitions 1-4). Validation (209 rows): homology_vote p@3 0.710 [0.669, 0.755], Fmax 0.736 [0.695, 0.772] vs model_raw 0.592 [0.551, 0.645] / 0.609 [0.576, 0.654] (disjoint), frequency prior 0.523 / 0.531;
+registry-only p@3 0.635 [0.598, 0.679], Fmax 0.631 [0.604, 0.668] (overlaps the model). Partition 5 scored once (`touches: 1`; 64 rows, 52 evaluable): vote p@3 0.763 [0.674, 0.836] vs model_raw 0.583 [0.484, 0.667] and the prior 0.571 [0.496, 0.639] (disjoint), Fmax 0.726 [0.614, 0.806] (overlaps the models).
+GO, CRF and localization counts are still 1 each. Hit coverage 0.982 (validation), 0.633 registry-only.
+Hashes: index `58d46319c5c0a6514592363ab76a491c06facb49d92d84e0efadcecc21ce5979`; `mmseqs.exe` `ad319fc9fc67500ca2da9b9247d9611d2113e66cb800c15b603949f5652e2a0b`; archive `9752087ca4e25e93b830775832a75044dc94ae348d66d4681f9ff0355eecfcbf`; corpus (the GOA source) `d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8`;
+registry `37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a`; bundle `registry/evidence_homology/0.13.0` `bundle_sha256` `3f6167b7b19a3c15dcbc9d3f008939952151105cdb57615c4a086f07f5231cec`; manifest `data/manifests/homology_metrics.json` `frozen_sha256` `93354fe2f4028d15fff90db8fbac4b20703659a86c0e329c06681b35d61440c2`.
+`data/evidence/` is gitignored. API wiring and the refuse-to-start check are Phase 14 (Gate F); Phase 14 also adds the model-shaped GO output (`source: "model"`).
+UNVERIFIED: any claim beyond 500 sequences, how much advantage comes from unmasked unregistered sequences, resident-server latency, `busybox.exe` licence, published comparisons (none fetched), Docker, GitHub Actions and the frontend gate. Detail: `docs/phases/13.md`.
 
 ### Two things a cold session must know
 

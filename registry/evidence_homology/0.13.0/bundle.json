@@ -1,0 +1,145 @@
+{
+  "bundle_sha256": "3f6167b7b19a3c15dcbc9d3f008939952151105cdb57615c4a086f07f5231cec",
+  "bundle_version": "0.13.0",
+  "database": {
+    "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+    "fasta_sha256": "320d2b8277ac5477929e9e6e9ee41a1bbd19032d2a6e07c3cdc833bb06939488",
+    "license": "CC-BY-4.0",
+    "meta_sha256": "9d36d530c89c9eebb36b6e72dd0784e84fadc7f09db54580a659dae34ba17838",
+    "records": 548702,
+    "release": "2026_03",
+    "source": "UniProtKB/Swiss-Prot"
+  },
+  "engine": {
+    "archive_sha256": "9752087ca4e25e93b830775832a75044dc94ae348d66d4681f9ff0355eecfcbf",
+    "commit": "8cc5ce367b5638c4306c2d7cfc652dd099a4643f",
+    "executable_sha256": "ad319fc9fc67500ca2da9b9247d9611d2113e66cb800c15b603949f5652e2a0b",
+    "license": "MIT",
+    "name": "mmseqs2",
+    "platform": "win64",
+    "release": "18-8cc5c"
+  },
+  "go": {
+    "annotation_source": "UniProtKB/Swiss-Prot release 2026_03 DR GO cross-references (derived from UniProt-GOA) as parsed into the corpus; the same records the Phase 12 labels were mapped from",
+    "evidence_policy": [
+      "experimental",
+      "curated"
+    ],
+    "hit_terms_sha256": "c7278bc329ed9d563490eb9586dc9a43c02b61ad29e79d17423bbbc625b6ac1b",
+    "ontology_data_version": "releases/2026-07-26",
+    "ontology_sha256": "b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc",
+    "propagation": [
+      "is_a",
+      "part_of"
+    ],
+    "sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+    "vocabulary_sha256": "ee8e9de5dd1f0a60ef8a31eb77b666b09e5ba6dd071e8641a15f511e603a91ba"
+  },
+  "hit_filter": {
+    "best": {
+      "e_value": 0.001,
+      "min_identity": 0.0,
+      "min_query_coverage": 0.0,
+      "top_k": 1
+    },
+    "grid_size": 108,
+    "search": {
+      "alignment_mode": 3,
+      "e_value": 0.001,
+      "max_seqs": 1000,
+      "sensitivity": 5.7
+    },
+    "vote": {
+      "e_value": 0.001,
+      "min_identity": 0.0,
+      "min_query_coverage": 0.0,
+      "top_k": 5
+    }
+  },
+  "independence": {
+    "feeds_calibrator": false,
+    "feeds_model_score": false,
+    "feeds_threshold": false
+  },
+  "index": {
+    "database_name": "db",
+    "directory": "data/evidence/swissprot_mmseqs",
+    "files": [
+      {
+        "bytes": 199155902,
+        "name": "db",
+        "sha256": "3a1c59e2d0f437141eeee1bc2acf80336f2590919c5f029d7a353e9dfdd4ac5d"
+      },
+      {
+        "bytes": 4,
+        "name": "db.dbtype",
+        "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+      },
+      {
+        "bytes": 2463105024,
+        "name": "db.idx",
+        "sha256": "9d6152203a545e546e641ac9eb5e44a9c2623f11ccc4d01b6e90945256030008"
+      },
+      {
+        "bytes": 4,
+        "name": "db.idx.dbtype",
+        "sha256": "9f076b7eb7fdc0311cd3208cdbbebbf8014dd3a05e35191c96947b358a362b40"
+      },
+      {
+        "bytes": 403,
+        "name": "db.idx.index",
+        "sha256": "32001fd19ba730bd4c26ae1b2161b9b1fc8c7152f3b28dd8ddb453a749758e4b"
+      },
+      {
+        "bytes": 11070901,
+        "name": "db.index",
+        "sha256": "407046d425941255851e26e1dc6215703ea855ba51122e13d675c2f34bc5bb7e"
+      },
+      {
+        "bytes": 8690642,
+        "name": "db.lookup",
+        "sha256": "ba1789d3f328c4181b508cc2ac87e7fa2e87c6ed0eb8d8727929b3fe61f4ae96"
+      },
+      {
+        "bytes": 18,
+        "name": "db.source",
+        "sha256": "075f0abc39bea8d4a05ae1cf4f287999bc8aec8ce010802c01b9660ec899a24d"
+      },
+      {
+        "bytes": 4412136,
+        "name": "db_h",
+        "sha256": "0beae94dfeac94f58bdbca53f843fd331ef15da86eec433372648dca2ecb0aa8"
+      },
+      {
+        "bytes": 4,
+        "name": "db_h.dbtype",
+        "sha256": "42f4aeb81c1ef81f771f3de8abca9dcf66901c575530e7672e4b1146474ae650"
+      },
+      {
+        "bytes": 9084491,
+        "name": "db_h.index",
+        "sha256": "451bc537afa8b14ec12ec41135cd5b57c7bdc2431e395086e1683e3268823a4c"
+      }
+    ],
+    "index_sha256": "58d46319c5c0a6514592363ab76a491c06facb49d92d84e0efadcecc21ce5979"
+  },
+  "masking": {
+    "masks": [
+      "self_accession",
+      "self_sequence_sha256",
+      "same_cluster_id",
+      "same_partition"
+    ]
+  },
+  "schema_version": 1,
+  "scope": "subset",
+  "scope_label": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+  "source": "homology",
+  "task": "homology_evidence",
+  "transfer": {
+    "annotated_hits_only": true,
+    "rule": "vote = fraction of the top-k annotated hits carrying the term",
+    "source": "homology",
+    "tiebreak_weight": 0.01
+  }
+}

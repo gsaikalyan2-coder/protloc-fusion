@@ -16,7 +16,7 @@ pinned in `docs/THIRD_PARTY.md`. Re-verify at any re-pin and again before submis
 | UniProtKB/Swiss-Prot (UniProt Consortium) | Training corpus: sequences and curated labels | CC BY 4.0 | Attribute UniProt, give the release string, indicate that the data was filtered and re-labelled. See `docs/DATA_LICENSING.md` |
 | Gene Ontology (`go-basic.obo`, release `releases/2026-07-26`; Gene Ontology Consortium) | Term ids, names and `is_a` / `part_of` structure for the GO head labels | CC BY 4.0 | Attribute the Gene Ontology Consortium and give the release; pointer and SHA-256 only, `b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc`. See `docs/DATA_LICENSING.md` |
 | GraphPart (`graph-part/graph-part`) | Homology-aware train/validation/test partitioning | BSD-3-Clause | Keep the copyright notice and disclaimer if redistributed |
-| MMseqs2 (`soedinglab/MMseqs2`) | Homology search for the evidence layer | MIT | Invoked as an external binary; keep the notice if bundled in an image |
+| MMseqs2 (`soedinglab/MMseqs2`), release `18-8cc5c` | Homology index and search for the evidence layer (Phase 13) | MIT (read from the tagged source on 2026-10-04) | Invoked as an external binary, downloaded at build time and never committed; keep the notice if bundled in an image. The Windows archive also contains `busybox.exe`, whose licence was not read in Phase 13 and which is not redistributed |
 | netcal (`efs-opensource/calibration-framework`) | Calibration | Apache-2.0 | Keep the licence and NOTICE if redistributed |
 | PEFT (`huggingface/peft`) | LoRA adaptation | Apache-2.0 | As above |
 | Biopython | Swiss-Prot flat-file parsing (`Bio.SwissProt`) | Biopython License Agreement (some files BSD-3-Clause) | Keep per-file headers |
