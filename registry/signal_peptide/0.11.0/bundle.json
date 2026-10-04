@@ -1,0 +1,35 @@
+{
+  "bundle_sha256": "91830aa7c14d36a389dc8327d7bd283a7b3f0c5ab66d5b78038a1c3d9ac3b169",
+  "bundle_version": "0.11.0",
+  "calibrator": {
+    "calibration_version": "0.11.0+d0197104e371",
+    "file": "calibrator.json",
+    "sha256": "be79b1f304cc7ade77a33e5c8bcb71226fcb39484a7ee122784694c69698dc0f"
+  },
+  "head": {
+    "classes": [
+      "signal_peptide"
+    ],
+    "cleavage_rule": "the last residue of the highest-scoring path given that residue 1 is a signal residue (Viterbi with the outside tag forbidden at residue 1); reported only when detection fires",
+    "detection_score": "P(any signal tag) = 1 - P(every residue outside) = the signal marginal at residue 1",
+    "encoder": "cnn",
+    "frozen_sha256": "1398bdd1de380d694422de88aaab407ad41f47012e00c33623c53cb290064891",
+    "head_config_sha256": "61c5ddc822978c6d416f36cdd728f4aa6bd5d990f2f7c9a25baef524b2819b34",
+    "length_cap": 100,
+    "source": "model",
+    "tags": [
+      "O",
+      "S"
+    ],
+    "weights_file": "final_weights.npz",
+    "weights_sha256": "5d08a194b97789799a443c4f1c214285a373fc7ae3dce5e374a13c8994d7285c"
+  },
+  "rules": {
+    "baseline_class_map_sha256": "c1ffefe085392bc6cee8d35010f6dfe08de81a6586413717238db9f247a190dc",
+    "consistency_sha256": "fa0eec2137f30b38658671931d5ab3072637da8afc28787a407ca28b5e02241e"
+  },
+  "schema_version": 1,
+  "scope": "subset",
+  "scope_label": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+  "task": "signal_peptide"
+}

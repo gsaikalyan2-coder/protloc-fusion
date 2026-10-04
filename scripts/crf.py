@@ -766,8 +766,22 @@ def _protocol(config: crf.CrfConfig, boot: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _subset_counts(ctx: Context) -> dict[str, Any]:
+    """Label counts of the subset only (the label table spans the whole corpus)."""
+    np = _np()
+    table = ctx.table
+    present = np.array(
+        [i for i, sha in enumerate(ctx.order) if sha in ctx.store.lengths], dtype=np.int64
+    )
+    index = np.flatnonzero(bm.in_sequences(table, present)).tolist()
+    accessions = [str(table["accession"][i]) for i in index]
+    partition_of = {a: int(table["partition"][i]) for a, i in zip(accessions, index, strict=True)}
+    report = crf.label_counts({a: ctx.labels[a] for a in accessions}, partition_of)
+    return {task: report[task] for task in crf.LABEL_TASKS}
+
+
 def _tag_scope(ctx: Context) -> dict[str, Any]:
-    counts = ctx.label_info["counts"]
+    counts = _subset_counts(ctx)
     undefined = {
         task: {
             "positives_with_cleavage_validation": counts[task][
@@ -1027,21 +1041,19 @@ def run_test(args: argparse.Namespace) -> int:
     }
     for name in ARMS:
         _say(_headline(f"test {name}", {"pooled": metrics[name]}))
+    seconds = time.perf_counter() - began
     manifest["test"] = {
         "touches": 1,
         "frozen_sha256": manifest["frozen_sha256"],
         "rows": len(rows),
-        "seconds": time.perf_counter() - began,
+        "seconds": seconds,
         "hardware": bm.hardware(),
         "scope": SUBSET_SCOPE,
         "label": SUBSET_LABEL,
         "metrics": metrics,
     }
     write_json(MANIFEST, manifest)
-    _say(
-        f"test partition scored once in {manifest['test']['seconds']:.1f} s "
-        f"({len(rows)} rows, CI is wide)"
-    )
+    _say(f"test partition scored once in {seconds:.1f} s ({len(rows)} rows, CI is wide)")
     return 0
 
 

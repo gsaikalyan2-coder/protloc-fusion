@@ -1,0 +1,1611 @@
+{
+  "frozen": {
+    "architecture": {
+      "batch_size": 32,
+      "embedding_dim": 640,
+      "encoder": "cnn",
+      "length_cap": 100,
+      "optimiser": "adamw",
+      "seed": 20260909,
+      "weight_decay": 0.01
+    },
+    "bundle": {
+      "bundle_sha256": "91830aa7c14d36a389dc8327d7bd283a7b3f0c5ab66d5b78038a1c3d9ac3b169",
+      "calibration_version": "0.11.0+d0197104e371",
+      "directory": "registry/signal_peptide/0.11.0",
+      "version": "0.11.0"
+    },
+    "calibration_methods": {
+      "consistent": {
+        "signal_peptide": true
+      },
+      "fold": {
+        "1": [
+          "isotonic"
+        ],
+        "2": [
+          "isotonic"
+        ],
+        "3": [
+          "isotonic"
+        ],
+        "4": [
+          "isotonic"
+        ]
+      },
+      "frozen": [
+        "isotonic"
+      ],
+      "inner": {
+        "1": {
+          "2": [
+            "isotonic"
+          ],
+          "3": [
+            "isotonic"
+          ],
+          "4": [
+            "isotonic"
+          ]
+        },
+        "2": {
+          "1": [
+            "isotonic"
+          ],
+          "3": [
+            "isotonic"
+          ],
+          "4": [
+            "isotonic"
+          ]
+        },
+        "3": {
+          "1": [
+            "isotonic"
+          ],
+          "2": [
+            "isotonic"
+          ],
+          "4": [
+            "isotonic"
+          ]
+        },
+        "4": {
+          "1": [
+            "isotonic"
+          ],
+          "2": [
+            "isotonic"
+          ],
+          "3": [
+            "isotonic"
+          ]
+        }
+      }
+    },
+    "context": {
+      "targetp": {
+        "comparable": false,
+        "signal_peptide_cleavage_accuracy": 0.83,
+        "transit_peptide_cleavage_accuracy": [
+          0.46,
+          0.49
+        ]
+      }
+    },
+    "grid": [
+      {
+        "index": 0,
+        "mean_fold_mcc": 0.8609636543824116,
+        "params": {
+          "dropout": 0.3,
+          "encoder": "cnn",
+          "learning_rate": 0.001
+        },
+        "seconds": 555.6429646001197,
+        "selector": 0.8219246031746031
+      },
+      {
+        "index": 1,
+        "mean_fold_mcc": 0.8936936587524956,
+        "params": {
+          "dropout": 0.5,
+          "encoder": "cnn",
+          "learning_rate": 0.001
+        },
+        "seconds": 709.0297020999715,
+        "selector": 0.8542162698412699
+      },
+      {
+        "index": 2,
+        "mean_fold_mcc": 0.9300110905287047,
+        "params": {
+          "dropout": 0.3,
+          "encoder": "cnn",
+          "learning_rate": 0.0003
+        },
+        "seconds": 1466.9367213998921,
+        "selector": 0.8084325396825397
+      },
+      {
+        "index": 3,
+        "mean_fold_mcc": 0.8625674908629944,
+        "params": {
+          "dropout": 0.5,
+          "encoder": "cnn",
+          "learning_rate": 0.0003
+        },
+        "seconds": 2074.4138066000305,
+        "selector": 0.776140873015873
+      },
+      {
+        "index": 4,
+        "mean_fold_mcc": 0.898081653808819,
+        "params": {
+          "dropout": 0.3,
+          "encoder": "bilstm",
+          "learning_rate": 0.001
+        },
+        "seconds": 3323.1399808998685,
+        "selector": 0.8441468253968254
+      },
+      {
+        "index": 5,
+        "mean_fold_mcc": 0.870174682788488,
+        "params": {
+          "dropout": 0.5,
+          "encoder": "bilstm",
+          "learning_rate": 0.001
+        },
+        "seconds": 3182.4609785000794,
+        "selector": 0.8118551587301587
+      },
+      {
+        "index": 6,
+        "mean_fold_mcc": 0.8963271222846195,
+        "params": {
+          "dropout": 0.3,
+          "encoder": "bilstm",
+          "learning_rate": 0.0003
+        },
+        "seconds": 3119.7409568000585,
+        "selector": 0.8385912698412699
+      },
+      {
+        "index": 7,
+        "mean_fold_mcc": 0.9300110905287047,
+        "params": {
+          "dropout": 0.5,
+          "encoder": "bilstm",
+          "learning_rate": 0.0003
+        },
+        "seconds": 2985.245183999883,
+        "selector": 0.8229662698412699
+      }
+    ],
+    "hardware": {
+      "calibrate_seconds": 3.2162351000588387,
+      "evaluate_seconds": 7.0683275000192225,
+      "train": {
+        "final_fit_seconds": 194.68104390008375,
+        "grid_seconds_total": 17416.610294899903,
+        "logical_cpus": 12,
+        "machine": "AMD64",
+        "platform": "Windows-10-10.0.26200-SP0",
+        "python": "3.11.9",
+        "seconds": 17612.45639769989,
+        "torch_threads": 10
+      }
+    },
+    "inputs": {
+      "calibration_config_sha256": "ae3195043c621a32b3894c2803d2c1f27e662dcaa614bc3d38652c378e81f7b8",
+      "calibrator_sha256": "be79b1f304cc7ade77a33e5c8bcb71226fcb39484a7ee122784694c69698dc0f",
+      "class_map_sha256": "c1ffefe085392bc6cee8d35010f6dfe08de81a6586413717238db9f247a190dc",
+      "corpus_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+      "crf_config_sha256": "61c5ddc822978c6d416f36cdd728f4aa6bd5d990f2f7c9a25baef524b2819b34",
+      "embedding_cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+      "feature_table_sha256": "2f3d36d78519776c7ae542923820accf13b67953397fc07582da49c2749dfaa8",
+      "label_table_sha256": "376f816d098b1d275709f8e344ccb12e632f86f12ebc1620e96d3cc04c88e040",
+      "oof_sha256": "d0197104e371fe18906a02f86fc4606d30390e95e4b421d5a5586599cf9b9c79",
+      "registry_sha256": "37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a",
+      "residue_cache_key": "05c9bb393be0e8b25a1af2eddcea811bc3d19edafe18580c34eb547b444a3349",
+      "training_record_sha256": "1398bdd1de380d694422de88aaab407ad41f47012e00c33623c53cb290064891",
+      "weights_sha256": "5d08a194b97789799a443c4f1c214285a373fc7ae3dce5e374a13c8994d7285c"
+    },
+    "protocol": {
+      "adr": "ADR-0013 (protocol of ADR-0010 and ADR-0011)",
+      "bootstrap": {
+        "samples": 1000,
+        "seed": 20260909,
+        "unit": "cluster_id"
+      },
+      "cleavage_rule": "the last residue of the highest-scoring path given that residue 1 is a signal residue (Viterbi with the outside tag forbidden at residue 1); reported only when detection fires",
+      "detection_score": "P(any signal tag) = 1 - P(every residue outside) = the signal marginal at residue 1",
+      "early_stopping": "negative mean NLL on an inner whole-cluster holdout of the training partitions; patience 10, at most 80 epochs",
+      "folds": [
+        {
+          "train": [
+            2,
+            3,
+            4
+          ],
+          "validate": 1
+        },
+        {
+          "train": [
+            1,
+            3,
+            4
+          ],
+          "validate": 2
+        },
+        {
+          "train": [
+            1,
+            2,
+            4
+          ],
+          "validate": 3
+        },
+        {
+          "train": [
+            1,
+            2,
+            3
+          ],
+          "validate": 4
+        }
+      ],
+      "label_states": "annotated or negative rows only (ADR-0006); unknown and not_applicable dropped",
+      "length_cap": 100,
+      "selection_rule": "mean over folds of cleavage accuracy within +-1 residue among true positives with a usable cleavage site; tie-break mean fold detection MCC under nested thresholds; then the earlier grid point",
+      "test_partition": 5,
+      "threshold_rule": "the detection score (probability of any signal tag) at which MCC is maximal; fold k is scored with a threshold tuned on the out-of-fold scores of the other validation partitions; the frozen threshold is tuned on all validation rows. The calibrated threshold is tuned the same way on the cross-fitted calibrated scores",
+      "validation_partitions": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "scope": "subset",
+    "scope_label": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+    "selected": {
+      "final_epochs": 12,
+      "index": 1,
+      "mean_fold_mcc": 0.8936936587524956,
+      "params": {
+        "dropout": 0.5,
+        "encoder": "cnn",
+        "learning_rate": 0.001
+      },
+      "selector": 0.8542162698412699,
+      "trainable_parameters": 226826
+    },
+    "software": {
+      "torch": "2.14.1",
+      "versions": {
+        "numpy": "2.4.6",
+        "pyyaml": "6.0.3",
+        "torch": "2.14.1+cpu"
+      }
+    },
+    "subset": {
+      "accessions_by_partition": {
+        "1": 146,
+        "2": 77,
+        "3": 93,
+        "4": 92,
+        "5": 99
+      },
+      "cache_directory": "0e528d4a46831b05_subset500",
+      "embedding_cache_key": "0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1",
+      "labelled_rows_per_task": {
+        "localization": 507,
+        "membrane_type": 475,
+        "signal_peptide": 495
+      },
+      "sequences": 500,
+      "sequences_sha256": "4fe25aca277748e5662afbe07ea2820bcd42f5f3f487e3dee9ba73cc40e9d5e3"
+    },
+    "tag_scope": {
+      "positives": {
+        "by_group": {
+          "eukarya": 95
+        },
+        "by_partition": {
+          "1": 45,
+          "2": 7,
+          "3": 16,
+          "4": 15,
+          "5": 12
+        },
+        "positives_with_cleavage": 95,
+        "positives_with_cleavage_validation": 83,
+        "positives_without_cleavage": 0,
+        "states": {
+          "annotated": 95,
+          "negative": 400,
+          "unknown": 12
+        }
+      },
+      "tags": [
+        "O",
+        "S"
+      ],
+      "trained": "signal_peptide",
+      "undefined": {
+        "chloroplast_transit_peptide": {
+          "positives_with_cleavage": 9,
+          "positives_with_cleavage_validation": 9,
+          "reason": "fewer than 20 positives with a cleavage site",
+          "trained": false
+        },
+        "mitochondrial_transit_peptide": {
+          "positives_with_cleavage": 19,
+          "positives_with_cleavage_validation": 18,
+          "reason": "fewer than 20 positives with a cleavage site",
+          "trained": false
+        }
+      }
+    },
+    "thresholds": {
+      "crf_calibrated": 0.25,
+      "crf_raw": 0.9964684844017029,
+      "motif": 0.3208213008246072
+    },
+    "validation": {
+      "calibration": {
+        "bootstrap": {
+          "samples": 1000,
+          "seed": 20260909,
+          "unit": "cluster_id"
+        },
+        "macro": {
+          "brier_calibrated": {
+            "ci_high": 0.038837450123324714,
+            "ci_low": 0.010018636320236715,
+            "value": 0.021953827372809816
+          },
+          "brier_delta": {
+            "ci_high": 0.006059621080691298,
+            "ci_low": -0.005504722942194896,
+            "value": 0.00016521600212765497
+          },
+          "brier_raw": {
+            "ci_high": 0.03932821530021404,
+            "ci_low": 0.010140776305795542,
+            "value": 0.02178861137068216
+          },
+          "ece_calibrated": {
+            "ci_high": 0.03562692948897936,
+            "ci_low": 0.009340979140631242,
+            "value": 0.018503556192919747
+          },
+          "ece_delta": {
+            "ci_high": 0.008001097133542858,
+            "ci_low": -0.015420658631011967,
+            "value": -0.004432260290448652
+          },
+          "ece_raw": {
+            "ci_high": 0.04102524272997424,
+            "ci_low": 0.012222704027088317,
+            "value": 0.0229358164833684
+          }
+        },
+        "per_label": {
+          "signal_peptide": {
+            "brier_calibrated": {
+              "ci_high": 0.038837450123324714,
+              "ci_low": 0.010018636320236715,
+              "value": 0.021953827372809816
+            },
+            "brier_delta": {
+              "ci_high": 0.006059621080691298,
+              "ci_low": -0.005504722942194896,
+              "value": 0.00016521600212765497
+            },
+            "brier_raw": {
+              "ci_high": 0.03932821530021404,
+              "ci_low": 0.010140776305795542,
+              "value": 0.02178861137068216
+            },
+            "ece_calibrated": {
+              "ci_high": 0.03562692948897936,
+              "ci_low": 0.009340979140631242,
+              "value": 0.018503556192919747
+            },
+            "ece_delta": {
+              "ci_high": 0.008001097133542858,
+              "ci_low": -0.015420658631011967,
+              "value": -0.004432260290448652
+            },
+            "ece_raw": {
+              "ci_high": 0.04102524272997424,
+              "ci_low": 0.012222704027088317,
+              "value": 0.0229358164833684
+            }
+          }
+        },
+        "reliability": {
+          "signal_peptide": {
+            "calibrated": [
+              {
+                "fraction_positive": 0.005235602094240838,
+                "mean_score": 0.0,
+                "rows": 191
+              },
+              {
+                "fraction_positive": 0.043478260869565216,
+                "mean_score": 0.011916054346646282,
+                "rows": 23
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.015625,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.05714285714285714,
+                "mean_score": 0.04964827527756589,
+                "rows": 35
+              },
+              {
+                "fraction_positive": 0.06666666666666667,
+                "mean_score": 0.08870898625547884,
+                "rows": 30
+              },
+              {
+                "fraction_positive": 1.0,
+                "mean_score": 0.9668837019700676,
+                "rows": 43
+              },
+              {
+                "fraction_positive": 0.918918918918919,
+                "mean_score": 0.9915482691595706,
+                "rows": 37
+              }
+            ],
+            "raw": [
+              {
+                "fraction_positive": 0.0,
+                "mean_score": -6.570893444348963e-05,
+                "rows": 49
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 9.598063057168357e-06,
+                "rows": 31
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.00015743564727017657,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.025,
+                "mean_score": 0.0006610350152186584,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.0015204386785626412,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.0,
+                "mean_score": 0.002680993394460529,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.05,
+                "mean_score": 0.006290833401726559,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.075,
+                "mean_score": 0.15797334178350866,
+                "rows": 40
+              },
+              {
+                "fraction_positive": 0.9512195121951219,
+                "mean_score": 0.9989170199487267,
+                "rows": 41
+              },
+              {
+                "fraction_positive": 0.9743589743589743,
+                "mean_score": 0.9999999449803278,
+                "rows": 39
+              }
+            ]
+          }
+        }
+      },
+      "crf_calibrated": {
+        "folds": [
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.7857142857142857,
+              "cleavage_detected_mae": 0.40476190476190477,
+              "cleavage_detected_within_1": 0.8809523809523809,
+              "cleavage_detected_within_2": 0.9761904761904762,
+              "cleavage_detected_within_3": 0.9761904761904762,
+              "cleavage_exact": 0.7333333333333333,
+              "cleavage_mae": 2.1777777777777776,
+              "cleavage_within_1": 0.8222222222222222,
+              "cleavage_within_2": 0.9111111111111111,
+              "cleavage_within_3": 0.9111111111111111,
+              "detection_auc": 0.9810996563573883,
+              "detection_f1": 0.9655172413793104,
+              "detection_mcc": 0.9514900595031633,
+              "residue_f1": 0.9378590078328982
+            },
+            "rows": 142,
+            "validate": 1
+          },
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.8333333333333334,
+              "cleavage_detected_mae": 0.16666666666666666,
+              "cleavage_detected_within_1": 1.0,
+              "cleavage_detected_within_2": 1.0,
+              "cleavage_detected_within_3": 1.0,
+              "cleavage_exact": 0.7142857142857143,
+              "cleavage_mae": 4.142857142857143,
+              "cleavage_within_1": 0.8571428571428571,
+              "cleavage_within_2": 0.8571428571428571,
+              "cleavage_within_3": 0.8571428571428571,
+              "detection_auc": 0.957983193277311,
+              "detection_f1": 0.8,
+              "detection_mcc": 0.7800282840501516,
+              "residue_f1": 0.7563025210084033
+            },
+            "rows": 75,
+            "validate": 2
+          },
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.8,
+              "cleavage_detected_mae": 0.26666666666666666,
+              "cleavage_detected_within_1": 0.9333333333333333,
+              "cleavage_detected_within_2": 1.0,
+              "cleavage_detected_within_3": 1.0,
+              "cleavage_exact": 0.8125,
+              "cleavage_mae": 0.25,
+              "cleavage_within_1": 0.9375,
+              "cleavage_within_2": 1.0,
+              "cleavage_within_3": 1.0,
+              "detection_auc": 0.9904166666666666,
+              "detection_f1": 0.9090909090909091,
+              "detection_mcc": 0.8895886195482027,
+              "residue_f1": 0.9129353233830846
+            },
+            "rows": 91,
+            "validate": 3
+          },
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.7142857142857143,
+              "cleavage_detected_mae": 1.2857142857142858,
+              "cleavage_detected_within_1": 0.7857142857142857,
+              "cleavage_detected_within_2": 0.8571428571428571,
+              "cleavage_detected_within_3": 0.8571428571428571,
+              "cleavage_exact": 0.7333333333333333,
+              "cleavage_mae": 1.2,
+              "cleavage_within_1": 0.8,
+              "cleavage_within_2": 0.8666666666666667,
+              "cleavage_within_3": 0.8666666666666667,
+              "detection_auc": 0.9961038961038962,
+              "detection_f1": 0.9655172413793104,
+              "detection_mcc": 0.9598789097420161,
+              "residue_f1": 0.9397217928902627
+            },
+            "rows": 92,
+            "validate": 4
+          }
+        ],
+        "groups": {
+          "eukarya": {
+            "bootstrap": {
+              "samples": 1000,
+              "seed": 20260909,
+              "unit": "cluster_id"
+            },
+            "metrics": {
+              "cleavage_detected_exact": {
+                "ci_high": 0.8536585365853658,
+                "ci_low": 0.656148097826087,
+                "value": 0.7792207792207793
+              },
+              "cleavage_detected_mae": {
+                "ci_high": 0.970647853736089,
+                "ci_low": 0.2380639097744361,
+                "value": 0.5194805194805194
+              },
+              "cleavage_detected_within_1": {
+                "ci_high": 0.9565217391304348,
+                "ci_low": 0.8124705188679245,
+                "value": 0.8831168831168831
+              },
+              "cleavage_detected_within_2": {
+                "ci_high": 1.0,
+                "ci_low": 0.9038109756097561,
+                "value": 0.961038961038961
+              },
+              "cleavage_detected_within_3": {
+                "ci_high": 1.0,
+                "ci_low": 0.9038109756097561,
+                "value": 0.961038961038961
+              },
+              "cleavage_exact": {
+                "ci_high": 0.8235294117647058,
+                "ci_low": 0.6153508771929825,
+                "value": 0.7469879518072289
+              },
+              "cleavage_mae": {
+                "ci_high": 4.0417173913043465,
+                "ci_low": 0.718609118852459,
+                "value": 1.7951807228915662
+              },
+              "cleavage_within_1": {
+                "ci_high": 0.9183673469387755,
+                "ci_low": 0.7618386243386243,
+                "value": 0.8433734939759037
+              },
+              "cleavage_within_2": {
+                "ci_high": 0.9643013784461153,
+                "ci_low": 0.8333333333333334,
+                "value": 0.9156626506024096
+              },
+              "cleavage_within_3": {
+                "ci_high": 0.9643013784461153,
+                "ci_low": 0.8333333333333334,
+                "value": 0.9156626506024096
+              },
+              "detection_auc": {
+                "ci_high": 0.992431075114499,
+                "ci_low": 0.9379457686987616,
+                "value": 0.9745923758123979
+              },
+              "detection_f1": {
+                "ci_high": 0.972972972972973,
+                "ci_low": 0.860458864716179,
+                "value": 0.9390243902439024
+              },
+              "detection_mcc": {
+                "ci_high": 0.9651232182863032,
+                "ci_low": 0.8379827904232955,
+                "value": 0.9234127026432446
+              },
+              "residue_f1": {
+                "ci_high": 0.9553837069013693,
+                "ci_low": 0.8297836917258601,
+                "value": 0.9153908138597905
+              }
+            },
+            "positives": 83,
+            "positives_with_cleavage": 83,
+            "reported": true,
+            "rows": 400,
+            "undefined": {
+              "cleavage": false,
+              "detection": false
+            }
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "metrics": {
+            "cleavage_detected_exact": {
+              "ci_high": 0.8536585365853658,
+              "ci_low": 0.656148097826087,
+              "value": 0.7792207792207793
+            },
+            "cleavage_detected_mae": {
+              "ci_high": 0.970647853736089,
+              "ci_low": 0.2380639097744361,
+              "value": 0.5194805194805194
+            },
+            "cleavage_detected_within_1": {
+              "ci_high": 0.9565217391304348,
+              "ci_low": 0.8124705188679245,
+              "value": 0.8831168831168831
+            },
+            "cleavage_detected_within_2": {
+              "ci_high": 1.0,
+              "ci_low": 0.9038109756097561,
+              "value": 0.961038961038961
+            },
+            "cleavage_detected_within_3": {
+              "ci_high": 1.0,
+              "ci_low": 0.9038109756097561,
+              "value": 0.961038961038961
+            },
+            "cleavage_exact": {
+              "ci_high": 0.8235294117647058,
+              "ci_low": 0.6153508771929825,
+              "value": 0.7469879518072289
+            },
+            "cleavage_mae": {
+              "ci_high": 4.0417173913043465,
+              "ci_low": 0.718609118852459,
+              "value": 1.7951807228915662
+            },
+            "cleavage_within_1": {
+              "ci_high": 0.9183673469387755,
+              "ci_low": 0.7618386243386243,
+              "value": 0.8433734939759037
+            },
+            "cleavage_within_2": {
+              "ci_high": 0.9643013784461153,
+              "ci_low": 0.8333333333333334,
+              "value": 0.9156626506024096
+            },
+            "cleavage_within_3": {
+              "ci_high": 0.9643013784461153,
+              "ci_low": 0.8333333333333334,
+              "value": 0.9156626506024096
+            },
+            "detection_auc": {
+              "ci_high": 0.992431075114499,
+              "ci_low": 0.9379457686987616,
+              "value": 0.9745923758123979
+            },
+            "detection_f1": {
+              "ci_high": 0.972972972972973,
+              "ci_low": 0.860458864716179,
+              "value": 0.9390243902439024
+            },
+            "detection_mcc": {
+              "ci_high": 0.9651232182863032,
+              "ci_low": 0.8379827904232955,
+              "value": 0.9234127026432446
+            },
+            "residue_f1": {
+              "ci_high": 0.9553837069013693,
+              "ci_low": 0.8297836917258601,
+              "value": 0.9153908138597905
+            }
+          },
+          "positives": 83,
+          "positives_with_cleavage": 83,
+          "rows": 400,
+          "undefined": {
+            "cleavage": false,
+            "detection": false
+          }
+        },
+        "source": "model"
+      },
+      "crf_raw": {
+        "folds": [
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.7857142857142857,
+              "cleavage_detected_mae": 0.40476190476190477,
+              "cleavage_detected_within_1": 0.8809523809523809,
+              "cleavage_detected_within_2": 0.9761904761904762,
+              "cleavage_detected_within_3": 0.9761904761904762,
+              "cleavage_exact": 0.7333333333333333,
+              "cleavage_mae": 2.1777777777777776,
+              "cleavage_within_1": 0.8222222222222222,
+              "cleavage_within_2": 0.9111111111111111,
+              "cleavage_within_3": 0.9111111111111111,
+              "detection_auc": 0.979495990836197,
+              "detection_f1": 0.9655172413793104,
+              "detection_mcc": 0.9514900595031633,
+              "residue_f1": 0.9378590078328982
+            },
+            "rows": 142,
+            "validate": 1
+          },
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.8333333333333334,
+              "cleavage_detected_mae": 0.16666666666666666,
+              "cleavage_detected_within_1": 1.0,
+              "cleavage_detected_within_2": 1.0,
+              "cleavage_detected_within_3": 1.0,
+              "cleavage_exact": 0.7142857142857143,
+              "cleavage_mae": 4.142857142857143,
+              "cleavage_within_1": 0.8571428571428571,
+              "cleavage_within_2": 0.8571428571428571,
+              "cleavage_within_3": 0.8571428571428571,
+              "detection_auc": 0.9789915966386554,
+              "detection_f1": 0.8,
+              "detection_mcc": 0.7800282840501516,
+              "residue_f1": 0.7563025210084033
+            },
+            "rows": 75,
+            "validate": 2
+          },
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.8,
+              "cleavage_detected_mae": 0.26666666666666666,
+              "cleavage_detected_within_1": 0.9333333333333333,
+              "cleavage_detected_within_2": 1.0,
+              "cleavage_detected_within_3": 1.0,
+              "cleavage_exact": 0.8125,
+              "cleavage_mae": 0.25,
+              "cleavage_within_1": 0.9375,
+              "cleavage_within_2": 1.0,
+              "cleavage_within_3": 1.0,
+              "detection_auc": 0.98875,
+              "detection_f1": 0.9375,
+              "detection_mcc": 0.9241666666666667,
+              "residue_f1": 0.9302915082382763
+            },
+            "rows": 91,
+            "validate": 3
+          },
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.6923076923076923,
+              "cleavage_detected_mae": 1.3846153846153846,
+              "cleavage_detected_within_1": 0.7692307692307693,
+              "cleavage_detected_within_2": 0.8461538461538461,
+              "cleavage_detected_within_3": 0.8461538461538461,
+              "cleavage_exact": 0.7333333333333333,
+              "cleavage_mae": 1.2,
+              "cleavage_within_1": 0.8,
+              "cleavage_within_2": 0.8666666666666667,
+              "cleavage_within_3": 0.8666666666666667,
+              "detection_auc": 1.0,
+              "detection_f1": 0.9285714285714286,
+              "detection_mcc": 0.9190896247900008,
+              "residue_f1": 0.9041533546325878
+            },
+            "rows": 92,
+            "validate": 4
+          }
+        ],
+        "groups": {
+          "eukarya": {
+            "bootstrap": {
+              "samples": 1000,
+              "seed": 20260909,
+              "unit": "cluster_id"
+            },
+            "metrics": {
+              "cleavage_detected_exact": {
+                "ci_high": 0.8478804347826087,
+                "ci_low": 0.6486486486486487,
+                "value": 0.7763157894736842
+              },
+              "cleavage_detected_mae": {
+                "ci_high": 0.9788043478260865,
+                "ci_low": 0.24388595912986155,
+                "value": 0.5263157894736842
+              },
+              "cleavage_detected_within_1": {
+                "ci_high": 0.9545707070707071,
+                "ci_low": 0.8084471260717687,
+                "value": 0.881578947368421
+              },
+              "cleavage_detected_within_2": {
+                "ci_high": 1.0,
+                "ci_low": 0.902427068388331,
+                "value": 0.9605263157894737
+              },
+              "cleavage_detected_within_3": {
+                "ci_high": 1.0,
+                "ci_low": 0.902427068388331,
+                "value": 0.9605263157894737
+              },
+              "cleavage_exact": {
+                "ci_high": 0.8235294117647058,
+                "ci_low": 0.6153508771929825,
+                "value": 0.7469879518072289
+              },
+              "cleavage_mae": {
+                "ci_high": 4.0417173913043465,
+                "ci_low": 0.718609118852459,
+                "value": 1.7951807228915662
+              },
+              "cleavage_within_1": {
+                "ci_high": 0.9183673469387755,
+                "ci_low": 0.7618386243386243,
+                "value": 0.8433734939759037
+              },
+              "cleavage_within_2": {
+                "ci_high": 0.9643013784461153,
+                "ci_low": 0.8333333333333334,
+                "value": 0.9156626506024096
+              },
+              "cleavage_within_3": {
+                "ci_high": 0.9643013784461153,
+                "ci_low": 0.8333333333333334,
+                "value": 0.9156626506024096
+              },
+              "detection_auc": {
+                "ci_high": 0.9972429449739227,
+                "ci_low": 0.9602583368441114,
+                "value": 0.9849302573068298
+              },
+              "detection_f1": {
+                "ci_high": 0.9727334152334153,
+                "ci_low": 0.8602150537634409,
+                "value": 0.9382716049382716
+              },
+              "detection_mcc": {
+                "ci_high": 0.9647110481665712,
+                "ci_low": 0.83765471109391,
+                "value": 0.9230519830075286
+              },
+              "residue_f1": {
+                "ci_high": 0.953821799677955,
+                "ci_low": 0.8244916205928885,
+                "value": 0.9129373474369405
+              }
+            },
+            "positives": 83,
+            "positives_with_cleavage": 83,
+            "reported": true,
+            "rows": 400,
+            "undefined": {
+              "cleavage": false,
+              "detection": false
+            }
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "metrics": {
+            "cleavage_detected_exact": {
+              "ci_high": 0.8478804347826087,
+              "ci_low": 0.6486486486486487,
+              "value": 0.7763157894736842
+            },
+            "cleavage_detected_mae": {
+              "ci_high": 0.9788043478260865,
+              "ci_low": 0.24388595912986155,
+              "value": 0.5263157894736842
+            },
+            "cleavage_detected_within_1": {
+              "ci_high": 0.9545707070707071,
+              "ci_low": 0.8084471260717687,
+              "value": 0.881578947368421
+            },
+            "cleavage_detected_within_2": {
+              "ci_high": 1.0,
+              "ci_low": 0.902427068388331,
+              "value": 0.9605263157894737
+            },
+            "cleavage_detected_within_3": {
+              "ci_high": 1.0,
+              "ci_low": 0.902427068388331,
+              "value": 0.9605263157894737
+            },
+            "cleavage_exact": {
+              "ci_high": 0.8235294117647058,
+              "ci_low": 0.6153508771929825,
+              "value": 0.7469879518072289
+            },
+            "cleavage_mae": {
+              "ci_high": 4.0417173913043465,
+              "ci_low": 0.718609118852459,
+              "value": 1.7951807228915662
+            },
+            "cleavage_within_1": {
+              "ci_high": 0.9183673469387755,
+              "ci_low": 0.7618386243386243,
+              "value": 0.8433734939759037
+            },
+            "cleavage_within_2": {
+              "ci_high": 0.9643013784461153,
+              "ci_low": 0.8333333333333334,
+              "value": 0.9156626506024096
+            },
+            "cleavage_within_3": {
+              "ci_high": 0.9643013784461153,
+              "ci_low": 0.8333333333333334,
+              "value": 0.9156626506024096
+            },
+            "detection_auc": {
+              "ci_high": 0.9972429449739227,
+              "ci_low": 0.9602583368441114,
+              "value": 0.9849302573068298
+            },
+            "detection_f1": {
+              "ci_high": 0.9727334152334153,
+              "ci_low": 0.8602150537634409,
+              "value": 0.9382716049382716
+            },
+            "detection_mcc": {
+              "ci_high": 0.9647110481665712,
+              "ci_low": 0.83765471109391,
+              "value": 0.9230519830075286
+            },
+            "residue_f1": {
+              "ci_high": 0.953821799677955,
+              "ci_low": 0.8244916205928885,
+              "value": 0.9129373474369405
+            }
+          },
+          "positives": 83,
+          "positives_with_cleavage": 83,
+          "rows": 400,
+          "undefined": {
+            "cleavage": false,
+            "detection": false
+          }
+        },
+        "source": "model"
+      },
+      "motif_floor": {
+        "folds": [
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.4523809523809524,
+              "cleavage_detected_mae": 1.7142857142857142,
+              "cleavage_detected_within_1": 0.5476190476190477,
+              "cleavage_detected_within_2": 0.8333333333333334,
+              "cleavage_detected_within_3": 0.8571428571428571,
+              "cleavage_exact": 0.4222222222222222,
+              "cleavage_mae": 3.5555555555555554,
+              "cleavage_within_1": 0.5111111111111111,
+              "cleavage_within_2": 0.7777777777777778,
+              "cleavage_within_3": 0.8,
+              "detection_auc": 0.9676975945017182,
+              "detection_f1": 0.8936170212765957,
+              "detection_mcc": 0.8428313618857609,
+              "residue_f1": 0.8303700144161461
+            },
+            "rows": 142,
+            "validate": 1
+          },
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.6,
+              "cleavage_detected_mae": 1.6,
+              "cleavage_detected_within_1": 0.6,
+              "cleavage_detected_within_2": 0.6,
+              "cleavage_detected_within_3": 0.6,
+              "cleavage_exact": 0.5714285714285714,
+              "cleavage_mae": 2.0,
+              "cleavage_within_1": 0.5714285714285714,
+              "cleavage_within_2": 0.5714285714285714,
+              "cleavage_within_3": 0.5714285714285714,
+              "detection_auc": 0.9800420168067226,
+              "detection_f1": 0.7142857142857143,
+              "detection_mcc": 0.6848739495798319,
+              "residue_f1": 0.6646153846153846
+            },
+            "rows": 75,
+            "validate": 2
+          },
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.26666666666666666,
+              "cleavage_detected_mae": 2.466666666666667,
+              "cleavage_detected_within_1": 0.4666666666666667,
+              "cleavage_detected_within_2": 0.6666666666666666,
+              "cleavage_detected_within_3": 0.8,
+              "cleavage_exact": 0.25,
+              "cleavage_mae": 3.8125,
+              "cleavage_within_1": 0.4375,
+              "cleavage_within_2": 0.625,
+              "cleavage_within_3": 0.75,
+              "detection_auc": 0.94,
+              "detection_f1": 0.8108108108108109,
+              "detection_mcc": 0.7747580267412529,
+              "residue_f1": 0.7320261437908496
+            },
+            "rows": 91,
+            "validate": 3
+          },
+          {
+            "metrics": {
+              "cleavage_detected_exact": 0.6428571428571429,
+              "cleavage_detected_mae": 0.7857142857142857,
+              "cleavage_detected_within_1": 0.7857142857142857,
+              "cleavage_detected_within_2": 0.7857142857142857,
+              "cleavage_detected_within_3": 1.0,
+              "cleavage_exact": 0.6,
+              "cleavage_mae": 2.1333333333333333,
+              "cleavage_within_1": 0.7333333333333333,
+              "cleavage_within_2": 0.7333333333333333,
+              "cleavage_within_3": 0.9333333333333333,
+              "detection_auc": 0.9688311688311688,
+              "detection_f1": 0.8484848484848485,
+              "detection_mcc": 0.8207382491460196,
+              "residue_f1": 0.791005291005291
+            },
+            "rows": 92,
+            "validate": 4
+          }
+        ],
+        "groups": {
+          "eukarya": {
+            "bootstrap": {
+              "samples": 1000,
+              "seed": 20260909,
+              "unit": "cluster_id"
+            },
+            "metrics": {
+              "cleavage_detected_exact": {
+                "ci_high": 0.576532507739938,
+                "ci_low": 0.34089700193423594,
+                "value": 0.4605263157894737
+              },
+              "cleavage_detected_mae": {
+                "ci_high": 2.159381929046563,
+                "ci_low": 1.1720807210031348,
+                "value": 1.6842105263157894
+              },
+              "cleavage_detected_within_1": {
+                "ci_high": 0.7058823529411765,
+                "ci_low": 0.4729542042042042,
+                "value": 0.5789473684210527
+              },
+              "cleavage_detected_within_2": {
+                "ci_high": 0.8490667478190302,
+                "ci_low": 0.6222072072072072,
+                "value": 0.7763157894736842
+              },
+              "cleavage_detected_within_3": {
+                "ci_high": 0.925,
+                "ci_low": 0.7454352030947776,
+                "value": 0.8552631578947368
+              },
+              "cleavage_exact": {
+                "ci_high": 0.5278186274509804,
+                "ci_low": 0.29989436619718307,
+                "value": 0.43373493975903615
+              },
+              "cleavage_mae": {
+                "ci_high": 6.220749999999999,
+                "ci_low": 1.9227272727272728,
+                "value": 3.216867469879518
+              },
+              "cleavage_within_1": {
+                "ci_high": 0.6447642543859649,
+                "ci_low": 0.42857142857142855,
+                "value": 0.5421686746987951
+              },
+              "cleavage_within_2": {
+                "ci_high": 0.8125146028037383,
+                "ci_low": 0.5405405405405406,
+                "value": 0.7228915662650602
+              },
+              "cleavage_within_3": {
+                "ci_high": 0.8690746753246753,
+                "ci_low": 0.6511627906976745,
+                "value": 0.7951807228915663
+              },
+              "detection_auc": {
+                "ci_high": 0.9797592472802117,
+                "ci_low": 0.9320119006468817,
+                "value": 0.9639314355212649
+              },
+              "detection_f1": {
+                "ci_high": 0.9140636982361963,
+                "ci_low": 0.7173810500410172,
+                "value": 0.8539325842696629
+              },
+              "detection_mcc": {
+                "ci_high": 0.8840401270165346,
+                "ci_low": 0.6720174162687137,
+                "value": 0.8154391371970399
+              },
+              "residue_f1": {
+                "ci_high": 0.8574436456950595,
+                "ci_low": 0.6456964733879273,
+                "value": 0.7877450980392157
+              }
+            },
+            "positives": 83,
+            "positives_with_cleavage": 83,
+            "reported": true,
+            "rows": 400,
+            "undefined": {
+              "cleavage": false,
+              "detection": false
+            }
+          }
+        },
+        "pooled": {
+          "bootstrap": {
+            "samples": 1000,
+            "seed": 20260909,
+            "unit": "cluster_id"
+          },
+          "metrics": {
+            "cleavage_detected_exact": {
+              "ci_high": 0.576532507739938,
+              "ci_low": 0.34089700193423594,
+              "value": 0.4605263157894737
+            },
+            "cleavage_detected_mae": {
+              "ci_high": 2.159381929046563,
+              "ci_low": 1.1720807210031348,
+              "value": 1.6842105263157894
+            },
+            "cleavage_detected_within_1": {
+              "ci_high": 0.7058823529411765,
+              "ci_low": 0.4729542042042042,
+              "value": 0.5789473684210527
+            },
+            "cleavage_detected_within_2": {
+              "ci_high": 0.8490667478190302,
+              "ci_low": 0.6222072072072072,
+              "value": 0.7763157894736842
+            },
+            "cleavage_detected_within_3": {
+              "ci_high": 0.925,
+              "ci_low": 0.7454352030947776,
+              "value": 0.8552631578947368
+            },
+            "cleavage_exact": {
+              "ci_high": 0.5278186274509804,
+              "ci_low": 0.29989436619718307,
+              "value": 0.43373493975903615
+            },
+            "cleavage_mae": {
+              "ci_high": 6.220749999999999,
+              "ci_low": 1.9227272727272728,
+              "value": 3.216867469879518
+            },
+            "cleavage_within_1": {
+              "ci_high": 0.6447642543859649,
+              "ci_low": 0.42857142857142855,
+              "value": 0.5421686746987951
+            },
+            "cleavage_within_2": {
+              "ci_high": 0.8125146028037383,
+              "ci_low": 0.5405405405405406,
+              "value": 0.7228915662650602
+            },
+            "cleavage_within_3": {
+              "ci_high": 0.8690746753246753,
+              "ci_low": 0.6511627906976745,
+              "value": 0.7951807228915663
+            },
+            "detection_auc": {
+              "ci_high": 0.9797592472802117,
+              "ci_low": 0.9320119006468817,
+              "value": 0.9639314355212649
+            },
+            "detection_f1": {
+              "ci_high": 0.9140636982361963,
+              "ci_low": 0.7173810500410172,
+              "value": 0.8539325842696629
+            },
+            "detection_mcc": {
+              "ci_high": 0.8840401270165346,
+              "ci_low": 0.6720174162687137,
+              "value": 0.8154391371970399
+            },
+            "residue_f1": {
+              "ci_high": 0.8574436456950595,
+              "ci_low": 0.6456964733879273,
+              "value": 0.7877450980392157
+            }
+          },
+          "positives": 83,
+          "positives_with_cleavage": 83,
+          "rows": 400,
+          "undefined": {
+            "cleavage": false,
+            "detection": false
+          }
+        },
+        "source": "motif"
+      },
+      "reproduction": {
+        "decisions_identical": true,
+        "max_abs_difference": 0.0,
+        "seconds": 4.626268800115213,
+        "tolerance": 1e-09
+      },
+      "thresholds": {
+        "crf_raw": {
+          "folds": {
+            "1": 0.9964684844017029,
+            "2": 0.8894763588905334,
+            "3": 0.9964684844017029,
+            "4": 0.9974750280380249
+          },
+          "frozen": 0.9964684844017029,
+          "source": "model"
+        },
+        "motif": {
+          "folds": {
+            "1": 0.3208213008246072,
+            "2": 0.4056884486738522,
+            "3": 0.3208213008246072,
+            "4": 0.3208213008246072
+          },
+          "frozen": 0.3208213008246072,
+          "source": "motif"
+        }
+      }
+    }
+  },
+  "frozen_sha256": "f5f2728cfbe7027e4c861ec4bb712914a1d2f86ac3fb8b30eb7c944034bbd3be",
+  "phase": 11,
+  "schema_version": 1,
+  "test": {
+    "frozen_sha256": "f5f2728cfbe7027e4c861ec4bb712914a1d2f86ac3fb8b30eb7c944034bbd3be",
+    "hardware": {
+      "logical_cpus": 12,
+      "machine": "AMD64",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "python": "3.11.9"
+    },
+    "label": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+    "metrics": {
+      "crf_calibrated": {
+        "bootstrap": {
+          "samples": 1000,
+          "seed": 20260909,
+          "unit": "cluster_id"
+        },
+        "metrics": {
+          "cleavage_detected_exact": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_detected_mae": {
+            "ci_high": 2.0848214285714275,
+            "ci_low": 0.0,
+            "value": 0.8333333333333334
+          },
+          "cleavage_detected_within_1": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_detected_within_2": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_detected_within_3": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_exact": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_mae": {
+            "ci_high": 2.0848214285714275,
+            "ci_low": 0.0,
+            "value": 0.8333333333333334
+          },
+          "cleavage_within_1": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_within_2": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_within_3": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "detection_auc": {
+            "ci_high": 1.0,
+            "ci_low": 0.967948717948718,
+            "value": 0.9879518072289156
+          },
+          "detection_f1": {
+            "ci_high": 1.0,
+            "ci_low": 0.8,
+            "value": 0.9230769230769231
+          },
+          "detection_mcc": {
+            "ci_high": 1.0,
+            "ci_low": 0.7962445766759819,
+            "value": 0.9145976232160387
+          },
+          "residue_f1": {
+            "ci_high": 0.990557638800737,
+            "ci_low": 0.5077254202750892,
+            "value": 0.7343976777939042
+          }
+        },
+        "positives": 12,
+        "positives_with_cleavage": 12,
+        "rows": 95,
+        "undefined": {
+          "cleavage": false,
+          "detection": false
+        }
+      },
+      "crf_raw": {
+        "bootstrap": {
+          "samples": 1000,
+          "seed": 20260909,
+          "unit": "cluster_id"
+        },
+        "metrics": {
+          "cleavage_detected_exact": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_detected_mae": {
+            "ci_high": 2.0848214285714275,
+            "ci_low": 0.0,
+            "value": 0.8333333333333334
+          },
+          "cleavage_detected_within_1": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_detected_within_2": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_detected_within_3": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_exact": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_mae": {
+            "ci_high": 2.0848214285714275,
+            "ci_low": 0.0,
+            "value": 0.8333333333333334
+          },
+          "cleavage_within_1": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_within_2": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "cleavage_within_3": {
+            "ci_high": 1.0,
+            "ci_low": 0.5830357142857143,
+            "value": 0.8333333333333334
+          },
+          "detection_auc": {
+            "ci_high": 1.0,
+            "ci_low": 0.9698142414860681,
+            "value": 0.9904618473895582
+          },
+          "detection_f1": {
+            "ci_high": 1.0,
+            "ci_low": 0.8,
+            "value": 0.9230769230769231
+          },
+          "detection_mcc": {
+            "ci_high": 1.0,
+            "ci_low": 0.7962445766759819,
+            "value": 0.9145976232160387
+          },
+          "residue_f1": {
+            "ci_high": 0.990557638800737,
+            "ci_low": 0.5077254202750892,
+            "value": 0.7343976777939042
+          }
+        },
+        "positives": 12,
+        "positives_with_cleavage": 12,
+        "rows": 95,
+        "undefined": {
+          "cleavage": false,
+          "detection": false
+        }
+      },
+      "motif_floor": {
+        "bootstrap": {
+          "samples": 1000,
+          "seed": 20260909,
+          "unit": "cluster_id"
+        },
+        "metrics": {
+          "cleavage_detected_exact": {
+            "ci_high": 1.0,
+            "ci_low": 0.4,
+            "value": 0.7
+          },
+          "cleavage_detected_mae": {
+            "ci_high": 1.375,
+            "ci_low": 0.0,
+            "value": 0.6
+          },
+          "cleavage_detected_within_1": {
+            "ci_high": 1.0,
+            "ci_low": 0.5,
+            "value": 0.8
+          },
+          "cleavage_detected_within_2": {
+            "ci_high": 1.0,
+            "ci_low": 0.6666666666666666,
+            "value": 0.9
+          },
+          "cleavage_detected_within_3": {
+            "ci_high": 1.0,
+            "ci_low": 1.0,
+            "value": 1.0
+          },
+          "cleavage_exact": {
+            "ci_high": 0.9092803030303028,
+            "ci_low": 0.26625000000000004,
+            "value": 0.5833333333333334
+          },
+          "cleavage_mae": {
+            "ci_high": 10.375,
+            "ci_low": 0.1111111111111111,
+            "value": 4.75
+          },
+          "cleavage_within_1": {
+            "ci_high": 1.0,
+            "ci_low": 0.3333333333333333,
+            "value": 0.6666666666666666
+          },
+          "cleavage_within_2": {
+            "ci_high": 1.0,
+            "ci_low": 0.44427083333333334,
+            "value": 0.75
+          },
+          "cleavage_within_3": {
+            "ci_high": 1.0,
+            "ci_low": 0.625,
+            "value": 0.8333333333333334
+          },
+          "detection_auc": {
+            "ci_high": 0.9972333916083916,
+            "ci_low": 0.9321189839572193,
+            "value": 0.9718875502008032
+          },
+          "detection_f1": {
+            "ci_high": 0.9,
+            "ci_low": 0.521658615136876,
+            "value": 0.7407407407407407
+          },
+          "detection_mcc": {
+            "ci_high": 0.8860935088261744,
+            "ci_low": 0.48210441228717976,
+            "value": 0.7043206682671798
+          },
+          "residue_f1": {
+            "ci_high": 0.8709299617864819,
+            "ci_low": 0.4446257890993154,
+            "value": 0.6825127334465195
+          }
+        },
+        "positives": 12,
+        "positives_with_cleavage": 12,
+        "rows": 95,
+        "undefined": {
+          "cleavage": false,
+          "detection": false
+        }
+      }
+    },
+    "rows": 95,
+    "scope": "subset",
+    "seconds": 3.1631983001716435,
+    "touches": 1
+  }
+}
