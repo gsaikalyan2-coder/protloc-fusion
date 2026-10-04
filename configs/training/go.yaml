@@ -1,0 +1,132 @@
+# Phase 12 GO head: multi-label GO molecular-function prediction from frozen per-residue ESM-2 states.
+#
+# Data, not code. The ontology pin, the evidence policy, the term floor, the architecture, the grid,
+# the loss cap, the schedule, the metric settings and the bundle version live here;
+# backend/protloc/training/go.py reads this file and repeats none of it, and
+# tests/unit/test_go.py fails if the two ever disagree. scripts/go.py hashes this file into the
+# frozen manifest, so changing it after --freeze is caught by `scripts/go.py --check`.
+# Confirmed at the Phase 12 gates (ADR-0014).
+
+name: go
+task: go_function
+
+# Must equal `seed` in configs/config.yaml (a unit test asserts it).
+seed: 20260909
+
+# The Gene Ontology release the labels are mapped onto (docs/DATA_LICENSING.md). The bytes stay out
+# of git (data/raw/ is ignored); this block is the pointer. scripts/go.py recomputes the SHA-256 and
+# refuses on any difference.
+ontology:
+  file: data/raw/go-basic.obo
+  data_version: releases/2026-07-26
+  sha256: b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc
+  bytes: 32227785
+  term_stanzas: 48340
+  obsolete_stanzas: 10248
+  # The one GO aspect this head predicts; biological_process and cellular_component are out of scope.
+  namespace: molecular_function
+  # The root of that aspect. It is on every annotated row, so it is not a label.
+  root: GO:0003674
+  # True-path rule: a row annotated with a term is annotated with every ancestor reached over these
+  # relations. Both stay inside molecular_function in this release (measured: 0 cross-aspect edges).
+  propagate_over: [is_a, part_of]
+  license: CC-BY-4.0
+  license_url: https://creativecommons.org/licenses/by/4.0/
+
+labels:
+  # GO evidence codes grouped into classes. Every code that occurs in the corpus must be in exactly
+  # one class (scripts/go.py --labels refuses an unknown code).
+  evidence_classes:
+    experimental: [EXP, IDA, IPI, IMP, IGI, IEP, HTP, HDA, HMP, HGI, HEP]
+    curated: [TAS, IC]
+    electronic: [IEA]
+    similarity: [ISS, ISO, ISA, ISM, IGC, IBA, IBD, IKR, IRD, RCA]
+    author: [NAS]
+    no_data: [ND]
+  # Gate B1: a term occurrence is a label only if at least one of its codes is in these classes.
+  # A row with no such term is `unknown` for this policy (open world), never negative.
+  evidence_policy: [experimental, curated]
+  # Gate B2: a term needs this many positives in partitions 1-4 (after propagation, subset rows only)
+  # to be trained; below it the term is undefined and recorded as such.
+  term_floor: 20
+  # ADR-0006: GO is open-world. This rule is applied at loss and metric time over labelled rows only
+  # and is written to the run manifest.
+  closed_world: >-
+    a row is labelled when it is annotated and has at least one policy term; for such a row a
+    vocabulary term absent from its propagated annotation is a negative; unknown rows and annotated
+    rows with no policy term are not labelled and are never negatives
+
+architecture:
+  # Must equal model.trunk.embedding_dim and head.yaml (a unit test asserts both).
+  embedding_dim: 640
+  # Same attention pooling as the Phase 9 head (reused code), with this head's own parameters.
+  heads: 1
+  attention_hidden: 64
+
+loss:
+  # Per-term pos_weight = negatives / positives over the fit rows, capped here, times the focal factor.
+  pos_weight_cap: 10.0
+
+grid:
+  # Order of expansion: learning_rate (slowest), dropout, hidden, gamma. 2 x 2 x 2 x 1 = 8 points.
+  # gamma is an axis with one value (0 is plain BCE with the capped pos_weight); a second value
+  # doubles the grid.
+  learning_rate: [0.001, 0.0003]
+  dropout: [0.3, 0.5]
+  hidden: [256, 128]
+  gamma: [0.0]
+
+optimiser:
+  name: adamw
+  weight_decay: 0.01
+
+schedule:
+  batch_size: 32
+  max_epochs: 80
+  # Early stopping watches the negative mean BCE on an inner whole-cluster holdout.
+  patience: 10
+  inner_holdout_fraction: 0.2
+
+metrics:
+  # precision@k and recall@k for each k; primary_k is the selector. A k above the vocabulary size is
+  # capped at the vocabulary size.
+  k_values: [1, 3, 5]
+  primary_k: 3
+  # A per-term AUC / AUPR is reported only for a term with at least this many positives in the rows
+  # scored; the others are listed with their counts and not scored.
+  per_term_min_positives: 20
+  # Fmax searches the distinct scores; above this many it searches evenly spaced order statistics.
+  max_threshold_candidates: 1000
+
+selection:
+  # Order of the criteria: mean fold precision@primary_k, then mean fold Fmax, then the earlier point.
+  rule: precision_at_primary_k, fmax, earlier_grid_point
+
+evaluation:
+  # The scores recomputed from the saved fold weights must agree with the scores --train wrote to
+  # within this absolute difference, or --evaluate fails.
+  reproduction_tolerance: 1.0e-9
+
+floors:
+  # The motif floor scores a vocabulary term 1 + weight * prior when an engine motif maps to it (or to
+  # a descendant), and weight * prior otherwise; ties inside the motif hits are broken by the prior.
+  motif_tiebreak_weight: 0.5
+
+# The frozen per-term calibrators and the global threshold: registry/<task>/<version>/ (ADR-0014).
+bundle:
+  version: 0.12.0
+  directory: registry/go_function
+  vocabulary_file: terms.json
+
+# The Phase 10 calibration machinery is reused: isotonic for a term with at least the isotonic minimum
+# of positives and negatives, the identity otherwise (the Platt fallback is switched off by raising its
+# minimum to the isotonic one).
+calibration:
+  config: configs/training/calibration.yaml
+  platt_fallback: false
+
+# `scripts/go.py --smoke`: every 4th row, a code check only, never frozen, no number from it is reported.
+smoke:
+  stride: 4
+  max_epochs: 2
+  grid_points: 2

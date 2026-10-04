@@ -35,7 +35,9 @@ CALIBRATOR_FILE = "calibrator.json"
 RULE_KEYS: tuple[str, ...] = ("baseline_class_map", "consistency")
 #: Head keys a task's bundle must carry beyond the common three. The localization head needs
 #: none; the signal-peptide CRF also records how its tags, detection score and cleavage site are
-#: defined, so a bundle cannot be served with another head's reading of the output.
+#: defined, so a bundle cannot be served with another head's reading of the output; the GO head
+#: records its vocabulary file (hash-bound), the ontology release it was mapped onto, the evidence
+#: policy and the one global threshold, so a bundle cannot be served against another ontology.
 TASK_HEAD_KEYS: dict[str, tuple[str, ...]] = {
     "localization": (),
     "signal_peptide": (
@@ -44,6 +46,18 @@ TASK_HEAD_KEYS: dict[str, tuple[str, ...]] = {
         "encoder",
         "detection_score",
         "cleavage_rule",
+        "source",
+    ),
+    "go_function": (
+        "vocabulary_file",
+        "vocabulary_sha256",
+        "ontology_sha256",
+        "ontology_data_version",
+        "evidence_policy",
+        "term_floor",
+        "propagation",
+        "threshold",
+        "threshold_rule",
         "source",
     ),
 }
@@ -185,11 +199,47 @@ def _rule_problems(document: Mapping[str, Any], rules: Mapping[str, Path]) -> li
     return found
 
 
-def load_bundle(directory: Path, rules: Mapping[str, Path], weights: Path | None = None) -> Bundle:
+def _vocabulary_problems(
+    document: Mapping[str, Any], directory: Path, ontology: str | None
+) -> list[str]:
+    """The GO head's vocabulary file is the one the bundle hashed, on the ontology it names."""
+    head = _section(document, "head")
+    name = head.get("vocabulary_file")
+    if not isinstance(name, str) or Path(name).name != name or not (directory / name).is_file():
+        return ["the vocabulary file the bundle names is missing from the bundle directory"]
+    raw = _read_bytes(directory / name)
+    found: list[str] = []
+    for key in ("vocabulary_sha256", "ontology_sha256"):
+        if not is_sha256(head.get(key)):
+            found.append(f"head.{key} is not a SHA-256")
+    if head.get("vocabulary_sha256") != sha256_hex(raw):
+        found.append("the vocabulary file does not match the SHA-256 the bundle records")
+    vocabulary = _parse_object(raw, name)
+    terms = vocabulary.get("terms")
+    listed = terms if isinstance(terms, list) else []
+    ids = [str(t.get("id")) for t in listed if isinstance(t, dict)]
+    if not ids or ids != list(head.get("classes", [])):
+        found.append("the vocabulary terms and head.classes disagree on the term order")
+    named = vocabulary.get("ontology")
+    if not isinstance(named, dict) or named.get("sha256") != head.get("ontology_sha256"):
+        found.append("the vocabulary file names another ontology release than the bundle")
+    if ontology is not None and head.get("ontology_sha256") != ontology:
+        found.append("the bundle was built on another ontology release than the one supplied")
+    return found
+
+
+def load_bundle(
+    directory: Path,
+    rules: Mapping[str, Path],
+    weights: Path | None = None,
+    ontology: str | None = None,
+) -> Bundle:
     """Load and verify a bundle; raise :class:`BundleError` unless every hash agrees.
 
     ``rules`` maps ``baseline_class_map`` and ``consistency`` to the files to hash. ``weights``
     is optional: CI has no weights, the service passes them and gets the weights hash checked.
+    ``ontology`` is the SHA-256 of the Gene Ontology release in use; a GO bundle built on another
+    release is refused. It is optional for the same reason: CI does not hold the ontology bytes.
     """
     document = _parse_object(_read_bytes(directory / BUNDLE_FILE), BUNDLE_FILE)
     problems = _document_problems(document)
@@ -200,6 +250,8 @@ def load_bundle(directory: Path, rules: Mapping[str, Path], weights: Path | None
         raise BundleError(f"{CALIBRATOR_FILE} is unsound: {error}") from error
     problems += _calibrator_problems(document, raw, calibrators)
     problems += _rule_problems(document, rules)
+    if document.get("task") == "go_function":
+        problems += _vocabulary_problems(document, directory, ontology)
     if weights is not None:
         expected = _section(document, "head").get("weights_sha256")
         if not weights.is_file() or file_sha256(weights) != expected:
