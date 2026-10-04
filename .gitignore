@@ -89,3 +89,6 @@ data/head/
 
 # Phase 10 calibration working files (the frozen manifest and the registry bundle are committed)
 data/calibration/
+
+# Phase 11 signal-peptide CRF working files (the frozen manifest and the registry bundle are committed)
+data/crf/

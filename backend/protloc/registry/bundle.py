@@ -33,6 +33,20 @@ _CHUNK = 1 << 20
 BUNDLE_FILE = "bundle.json"
 CALIBRATOR_FILE = "calibrator.json"
 RULE_KEYS: tuple[str, ...] = ("baseline_class_map", "consistency")
+#: Head keys a task's bundle must carry beyond the common three. The localization head needs
+#: none; the signal-peptide CRF also records how its tags, detection score and cleavage site are
+#: defined, so a bundle cannot be served with another head's reading of the output.
+TASK_HEAD_KEYS: dict[str, tuple[str, ...]] = {
+    "localization": (),
+    "signal_peptide": (
+        "tags",
+        "length_cap",
+        "encoder",
+        "detection_score",
+        "cleavage_rule",
+        "source",
+    ),
+}
 
 
 class BundleError(ValueError):
@@ -129,6 +143,9 @@ def _document_problems(document: Mapping[str, Any]) -> list[str]:
     for key in ("weights_sha256", "frozen_sha256", "head_config_sha256"):
         if not is_sha256(head.get(key)):
             found.append(f"head.{key} is not a SHA-256")
+    for key in TASK_HEAD_KEYS.get(str(document.get("task")), ()):
+        if head.get(key) in (None, "", []):
+            found.append(f"head.{key} is required for the {document.get('task')} task")
     rules = _section(document, "rules")
     if set(rules) != {f"{key}_sha256" for key in RULE_KEYS}:
         found.append(f"rules must hold exactly {[f'{key}_sha256' for key in RULE_KEYS]}")
