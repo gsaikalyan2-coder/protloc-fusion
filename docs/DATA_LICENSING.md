@@ -14,7 +14,10 @@ fetched at build time from its original source, pinned by release and SHA-256.
 | Split registry and `leakage_report.json` | Generated | Project (Apache-2.0) | Yes, once small and text | Yes |
 | SignalP 6.0 / TargetP 2.0 / DeepLoc 2.0 benchmark sets | Authors' sites | **Not yet verified** — read the terms at download time | **No** | **No** |
 | Gene Ontology `go-basic.obo` (release `2026-07-26`, SHA-256 `b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc`) | geneontology.org | CC BY 4.0 (<https://creativecommons.org/licenses/by/4.0/>), read at the Phase 12 pin | No — pointer and hash only (`data/raw/` is ignored) | No — fetched at build time; cite the Gene Ontology Consortium and the release |
-| GOA GAF snapshot | EBI GOA | **Not yet verified** — record at download time | No | No — fetched at build time |
+| GOA GAF snapshot | EBI GOA | **Not used.** Phase 13 reads GO annotations from the corpus `DR GO` lines (embedded in Swiss-Prot 2026_03, CC BY 4.0); no GAF was downloaded | No | No |
+| Swiss-Prot FASTA, entry table, MMseqs2 database and index, hit files (`data/evidence/`) | Derived from the corpus (Swiss-Prot 2026_03) | CC BY 4.0 (derivative) | No (`data/evidence/` is ignored) | No — rebuilt with `scripts/homology.py --index` |
+| MMseqs2 `18-8cc5c` Windows binary (`data/evidence/bin/`) | github.com/soedinglab/MMseqs2 release, SHA-256 pinned in `configs/training/homology.yaml` | MIT, read from the tagged source on 2026-10-04. The archive also ships `busybox.exe`; its licence was not read in Phase 13 | No | No — downloaded at build time |
+| `data/manifests/homology_metrics.json`, `registry/evidence_homology/0.13.0/bundle.json` | Generated | Project (Apache-2.0) | **Yes** (hashes and counts only) | Yes |
 | Embeddings (`*.h5`, `*.pt`) | Generated | Derived from ESM-2 (MIT) and the corpus | No | No |
 | Trained weights | Generated | See the model card (Phase 20) | No — Hugging Face Hub, pinned by revision | Per model card |
 
