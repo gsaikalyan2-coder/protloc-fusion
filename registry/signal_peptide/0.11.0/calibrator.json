@@ -1,0 +1,50 @@
+{
+  "calibration_version": "0.11.0+d0197104e371",
+  "classes": [
+    "signal_peptide"
+  ],
+  "head": {
+    "frozen_sha256": "1398bdd1de380d694422de88aaab407ad41f47012e00c33623c53cb290064891",
+    "weights_sha256": "5d08a194b97789799a443c4f1c214285a373fc7ae3dce5e374a13c8994d7285c"
+  },
+  "labels": [
+    {
+      "calibrated": true,
+      "intercept": 0.0,
+      "knots_x": [
+        -0.0001525995321571827,
+        0.0008236352587118745,
+        0.0008693728595972061,
+        0.004703867714852095,
+        0.004810171201825142,
+        0.6487955451011658,
+        0.8894763588905334,
+        0.9947639107704163,
+        0.9964684844017029,
+        1.0
+      ],
+      "knots_y": [
+        0.0,
+        0.0,
+        0.009523809523809525,
+        0.009523809523809525,
+        0.047619047619047616,
+        0.047619047619047616,
+        0.4,
+        0.4,
+        0.9871794871794872,
+        0.9871794871794872
+      ],
+      "label": "signal_peptide",
+      "logit_eps": 0.0,
+      "method": "isotonic",
+      "negatives": 317,
+      "positives": 83,
+      "slope": 0.0,
+      "threshold": 0.25
+    }
+  ],
+  "schema_version": 1,
+  "task": "signal_peptide",
+  "threshold_rule": "the detection score (probability of any signal tag) at which MCC is maximal; fold k is scored with a threshold tuned on the out-of-fold scores of the other validation partitions; the frozen threshold is tuned on all validation rows. The calibrated threshold is tuned the same way on the cross-fitted calibrated scores"
+}

@@ -346,8 +346,8 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 8   — Classical baselines (metric floor)            ENH   3.0 h   done 2026-10-03 (branch; you tag v0.8.0)
 [x] Phase 9   — Localization head (attention pooling + MLP)   MVP   7.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.9.0)
 [x] Phase 10  — Calibration & per-label thresholds            MVP   5.0 h   done 2026-10-03 (branch; 500-sequence subset only; you tag v0.10.0)
-[ ] Phase 11  — Signal-peptide CRF head                       ENH   8.0 h   <-- NEXT
-[ ] Phase 12  — GO head                                       ENH   4.0 h
+[x] Phase 11  — Signal-peptide CRF head                       ENH   8.0 h   done 2026-10-04 (branch; 500-sequence subset only; you tag v0.11.0)
+[ ] Phase 12  — GO head                                       ENH   4.0 h   <-- NEXT
 [ ] Phase 13  — Homology evidence (MMseqs2 index)             ENH   5.0 h
 [ ] Phase 14  — Swap the engine: model behind the same API     MVP   6.0 h
 [ ] Phase 15  — Attribution from the real model                ENH   4.0 h
@@ -473,6 +473,20 @@ macro Brier 0.0928 -> 0.0688, macro F1 0.4763 -> 0.4578 (CIs overlap), Jaccard 0
 Platt in the frozen fit but uncalibrated in two folds. Partition 5 was not read (the Phase 9 head touched it once). `data/calibration/` is gitignored.
 UNVERIFIED: any claim beyond 500 sequences, per-label claims on 6-18 positives, seed variance, DeepLoc parity, Docker, GitHub Actions and the frontend gate (not runnable in the sandbox).
 Detail: `docs/phases/10.md`.
+
+### Phase 11 close — 2026-10-04
+
+Signal-peptide CRF head: a CNN encoder and a linear-chain CRF (plain torch) over frozen per-residue ESM-2 states, tags O/S, length cap 100, selected from an 8-point grid (ADR-0013).
+Transit-peptide tags are undefined and not trained (18 mitochondrial and 9 chloroplast validation positives on the subset, floor 20). **500-sequence subset only**
+("subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers"). Frozen in `registry/signal_peptide/0.11.0/{bundle.json,calibrator.json}`
+(`bundle_sha256` `91830aa7c14d36a389dc8327d7bd283a7b3f0c5ab66d5b78038a1c3d9ac3b169`; `head.frozen_sha256` `1398bdd1de380d694422de88aaab407ad41f47012e00c33623c53cb290064891` is the training record's hash).
+Manifest `data/manifests/crf_metrics.json`, frozen_sha256 `f5f2728cfbe7027e4c861ec4bb712914a1d2f86ac3fb8b30eb7c944034bbd3be`; weights `5d08a194b97789799a443c4f1c214285a373fc7ae3dce5e374a13c8994d7285c`.
+Chosen: CNN, lr 1e-3, dropout 0.5 (cleavage +-1 selector 0.8542). Validation pooled over partitions 1-4 (83 positives), CRF vs the motif floor: cleavage +-1 0.843 [0.762, 0.918] vs 0.542 [0.429, 0.645] (intervals disjoint);
+detection MCC 0.923 [0.838, 0.965] vs 0.815 [0.672, 0.884], AUC 0.985 vs 0.964, per-residue F1 0.913 vs 0.788 (intervals overlap). Partition 5 scored once (`touches: 1`; 95 rows, 12 positives): CRF MCC 0.915, cleavage +-1 0.833, floor 0.704 and 0.667, intervals very wide;
+the localization head's count is still 1. Training took 17,612 s on CPU. Keys: registry `37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a`, corpus `d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8`,
+embedding cache `0e528d4a46831b052b6232333be803d2fd9f11f3902d2e743d53c5dfc70be0d1`, residue cache `05c9bb393be0e8b25a1af2eddcea811bc3d19edafe18580c34eb547b444a3349`. `data/crf/` is gitignored; the registry bundle has a per-task head contract (`TASK_HEAD_KEYS`).
+TargetP's 83% / 46-49% are context only (`comparable: false`). UNVERIFIED: any claim beyond 500 sequences or one organism group, partition 5 (12 positives), seed variance, TargetP parity,
+10 sandbox golden-test hydropathy failures (unattributed), Docker, GitHub Actions and the frontend gate (not runnable in the sandbox). Detail: `docs/phases/11.md`.
 
 ### Two things a cold session must know
 
