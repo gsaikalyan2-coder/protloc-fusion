@@ -14,6 +14,7 @@ pinned in `docs/THIRD_PARTY.md`. Re-verify at any re-pin and again before submis
 |---|---|---|---|
 | ESM-2 (`facebookresearch/esm`; weights via Hugging Face `facebook/esm2_*`) | Frozen protein-language-model embeddings | MIT | Keep the copyright and permission notice; record the checkpoint revision in every run manifest |
 | UniProtKB/Swiss-Prot (UniProt Consortium) | Training corpus: sequences and curated labels | CC BY 4.0 | Attribute UniProt, give the release string, indicate that the data was filtered and re-labelled. See `docs/DATA_LICENSING.md` |
+| Gene Ontology (`go-basic.obo`, release `releases/2026-07-26`; Gene Ontology Consortium) | Term ids, names and `is_a` / `part_of` structure for the GO head labels | CC BY 4.0 | Attribute the Gene Ontology Consortium and give the release; pointer and SHA-256 only, `b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc`. See `docs/DATA_LICENSING.md` |
 | GraphPart (`graph-part/graph-part`) | Homology-aware train/validation/test partitioning | BSD-3-Clause | Keep the copyright notice and disclaimer if redistributed |
 | MMseqs2 (`soedinglab/MMseqs2`) | Homology search for the evidence layer | MIT | Invoked as an external binary; keep the notice if bundled in an image |
 | netcal (`efs-opensource/calibration-framework`) | Calibration | Apache-2.0 | Keep the licence and NOTICE if redistributed |
