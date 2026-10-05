@@ -1,0 +1,70 @@
+{
+  "protocol": {
+    "baselines": [
+      "random",
+      "bottom_occlusion",
+      "bottom_pooling_attention"
+    ],
+    "bootstrap": {
+      "interval": [
+        2.5,
+        97.5
+      ],
+      "samples": 1000,
+      "seed": 20261005,
+      "unit": "cluster_code"
+    },
+    "failing_method": "dropped from the served path (Gate D); recorded here as failed",
+    "illustrative_motif_check": "not run",
+    "k_grid_percent": [
+      5,
+      10,
+      20,
+      40
+    ],
+    "methods": {
+      "go_function": [
+        "occlusion",
+        "pooling_attention"
+      ],
+      "localization": [
+        "occlusion",
+        "pooling_attention",
+        "motif"
+      ]
+    },
+    "occlusion": {
+      "max_forward_passes": 64,
+      "stride": 1,
+      "window": 5
+    },
+    "partition_5_touched": 0,
+    "partitions": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "pass_rule": "for every k in the grid the 2.5th percentile of the cluster bootstrap of (deletion drop of the method - deletion drop of random) is above 0",
+    "random_baseline": {
+      "draws": 20,
+      "per": "sequence and draw",
+      "seed_base": 20261005
+    },
+    "residues_removed": "ceil(k/100 * length), never all of them",
+    "rows": "localization-labelled accessions of registry partitions 1-4 (stride 1), one row per distinct sequence; cluster = the registry cluster_code",
+    "scope": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+    "signal_peptide": {
+      "mask": "residues 1..cleavage within the CRF length cap",
+      "metric": "pooled-residue AUROC with the same cluster bootstrap",
+      "rows": "annotated signal-peptide accessions of partitions 1-4, usable cleavage site",
+      "scores": [
+        "crf_posterior",
+        "motif_hydropathy",
+        "position_prior"
+      ]
+    },
+    "target": "the head's own top class: argmax of the raw sigmoid over all of its classes"
+  },
+  "protocol_sha256": "67b09db9f9720325703e1e8d40da4540b3f542a062dfa3e77cc9a8d6a4652750"
+}

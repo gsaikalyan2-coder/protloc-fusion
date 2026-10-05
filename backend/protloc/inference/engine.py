@@ -32,6 +32,7 @@ from protloc.config.serving import ServingSettings
 from protloc.data.embeddings import EmbeddingError
 from protloc.data.records import normalize_sequence, sequence_sha256
 from protloc.data.residue_cache import ResidueStore, read_residue_index, verify_residue_cache
+from protloc.domain.types import ATTRIBUTION_CLAIMS, AttributionMethod
 from protloc.evidence import homology
 from protloc.evidence.homology import Hit, HitFilter, TransferredTerm
 from protloc.evidence.ontology import OboTerm, TermStore, read_obo
@@ -42,7 +43,16 @@ from protloc.features.classical import (
     extract,
     membrane_type,
     normalize,
-    residue_attribution,
+)
+from protloc.inference.attribution import (
+    METHOD_OCCLUSION,
+    METHOD_POOLING,
+    OcclusionSettings,
+    Track,
+    attention_track,
+    crf_track,
+    occlusion_track,
+    rounded,
 )
 from protloc.inference.motif import RULES, confidence_band
 from protloc.models.attention_head import AttentionHeadNet, ModelError
@@ -307,8 +317,7 @@ class Engine:
             "go_function": go_rows,
             "features": features,
             "hydropathy": motif.hydropathy,
-            "attribution": residue_attribution(scored_form, motif, top),
-            "attribution_source": SOURCE_MOTIF,
+            **self._attribution(states, loc, sp, top, len(sequence)),
             "consistency_flags": [],
             "evidence": [],
             "evidence_go": [],
@@ -316,6 +325,50 @@ class Engine:
             "evidence_agreement": None,
             "provenance": self.provenance,
             "_motif": motif,
+        }
+
+    # -- stage 3b: per-residue attribution from the trained heads (ADR-0017) --------------
+    def _attribution(self, states: Any, loc: Any, sp: Any, top: str, length: int) -> dict[str, Any]:
+        """Tracks for the top localization label and the CRF signal posterior.
+
+        Reads states and heads only; nothing here feeds a score, a calibrator or a threshold.
+        """
+        config = self._p.attribution
+        digits = int(config["round_digits"])
+        labels = self._p.bundles["localization"].calibrators.labels
+        class_index = [self._p.codes[e.label] for e in labels].index(top)
+        settings = OcclusionSettings(
+            int(config["window"]), int(config["stride"]), int(config["max_forward_passes"])
+        )
+        built: dict[str, Track] = {
+            METHOD_OCCLUSION: occlusion_track(self._p.loc_net, states, class_index, settings),
+            METHOD_POOLING: attention_track(loc),
+        }
+        default = built[str(config["default_method"])]
+        return {
+            "attribution": rounded(default.values, digits),
+            "attribution_source": SOURCE_MODEL,
+            "attribution_method": default.method,
+            "attribution_signed": default.signed,
+            "attribution_target": top,
+            "attribution_tracks": {
+                name: self._track_block(track, digits, top) for name, track in built.items()
+            },
+            "signal_track": self._track_block(crf_track(sp, length), digits, "SP"),
+        }
+
+    @staticmethod
+    def _track_block(track: Track, digits: int, target: str) -> dict[str, Any]:
+        return {
+            "method": track.method,
+            "signed": track.signed,
+            "target": target,
+            "values": rounded(track.values, digits),
+            "window": track.window,
+            "stride": track.stride,
+            "forward_passes": track.forward_passes,
+            "scored_length": track.scored_length,
+            "claim": ATTRIBUTION_CLAIMS[AttributionMethod(track.method)],
         }
 
     def _task_source(self, task: str, calibrated: bool) -> dict[str, Any]:
@@ -595,6 +648,7 @@ class _Parts:
     top_k: int
     manifests: dict[str, dict[str, Any]]
     gallery: list[dict[str, Any]]
+    attribution: dict[str, Any]
 
 
 def _tensors(path: Path) -> dict[str, Any]:
@@ -841,6 +895,7 @@ def _build(  # noqa: PLR0913, PLR0917
         "scope_label": str(bundles["localization"].document["scope_label"]),
         "encoder": {"mode": "cache_only", "cached_sequences": len(store.lengths)},
     }
+    attribution = _attribution_config(pins.section("attribution"))
     secreted = frozenset({codes["extracellular"]})
     gallery = _read_gallery(settings.DATA_ROOT / str(pins.section("gallery")["file"]))
     return _Parts(
@@ -868,7 +923,23 @@ def _build(  # noqa: PLR0913, PLR0917
         top_k=settings.EVIDENCE_TOP_K,
         manifests=manifests,
         gallery=gallery,
+        attribution=attribution,
     )
+
+
+def _attribution_config(section: dict[str, Any]) -> dict[str, Any]:
+    """The ``attribution`` block of ``engine.json``, refused if it cannot be used."""
+    problems = []
+    if section.get("default_method") not in (METHOD_OCCLUSION, METHOD_POOLING):
+        problems.append("default_method must be 'occlusion' or 'pooling_attention'")
+    minimums = (("window", 1), ("stride", 1), ("max_forward_passes", 2), ("round_digits", 0))
+    for key, minimum in minimums:
+        value = section.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value < minimum:
+            problems.append(f"{key} must be an integer >= {minimum}")
+    if problems:
+        raise EngineStartError(f"{CONFIG_FILE.name} attribution: " + "; ".join(problems))
+    return dict(section)
 
 
 def versions_of(bundles: Mapping[str, Bundle], evidence_doc: Mapping[str, Any], task: str) -> str:

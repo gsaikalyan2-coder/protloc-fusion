@@ -1,0 +1,215 @@
+{
+  "labels_read": 0,
+  "partition_5_touched": 0,
+  "scope": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+  "tasks": {
+    "go_function": {
+      "attention_heads": 1,
+      "classes": 12,
+      "effective_fraction_of_length": {
+        "max": 0.9260109940761295,
+        "mean": 0.21947802054470883,
+        "median": 0.14723001000705993,
+        "min": 0.00940925381916938
+      },
+      "effective_residues_attended": {
+        "max": 949.6315569502109,
+        "mean": 78.21589480863638,
+        "median": 47.97767196296192,
+        "min": 3.486015112533173
+      },
+      "effective_residues_by_length_bin": {
+        "1-150": {
+          "max": 113.90858563166472,
+          "mean": 29.308200854965413,
+          "median": 25.925976970620972,
+          "min": 3.486015112533173,
+          "n": 82
+        },
+        "151-300": {
+          "max": 189.6246287519779,
+          "mean": 51.485836968383396,
+          "median": 36.30037250174588,
+          "min": 6.359556594152938,
+          "n": 104
+        },
+        "301-500": {
+          "max": 325.2988396847224,
+          "mean": 63.652131105612604,
+          "median": 50.564177382502905,
+          "min": 5.803242431240715,
+          "n": 138
+        },
+        "501-800": {
+          "max": 405.92222027265825,
+          "mean": 98.36179557479082,
+          "median": 69.78277917456035,
+          "min": 18.041178701752386,
+          "n": 109
+        },
+        "801-10000": {
+          "max": 949.6315569502109,
+          "mean": 176.78683700406594,
+          "median": 97.33760467846378,
+          "min": 10.557182785108044,
+          "n": 67
+        }
+      },
+      "entropy_nats": {
+        "max": 6.856074074577972,
+        "mean": 3.9272252219700516,
+        "median": 3.870735686015455,
+        "min": 1.2487592822958828
+      },
+      "max_abs_deviation_from_sum_1": 1.7161437426693738e-07,
+      "max_weight": {
+        "max": 0.7023844718933105,
+        "mean": 0.16294257292710246,
+        "median": 0.13437475264072418,
+        "min": 0.01276540756225586
+      },
+      "position_bias": {
+        "deciles": [
+          1.0039,
+          1.0511,
+          0.9868,
+          0.9598,
+          1.0439,
+          1.149,
+          0.9655,
+          1.0616,
+          0.9776,
+          0.7943
+        ],
+        "note": "attention mass in each relative-position decile divided by the mass a uniform head would put there, averaged over sequences; 1.0 = uniform",
+        "sequences_per_decile": [
+          500,
+          499,
+          500,
+          498,
+          499,
+          500,
+          498,
+          500,
+          499,
+          497
+        ]
+      },
+      "sequences": 500,
+      "shape": "(heads, length), softmax over residues",
+      "shared_across_classes": {
+        "attention_bit_identical": 500,
+        "method": "replace class 0's fc2 row and bias, recompute",
+        "of": 500,
+        "scores_changed": 500
+      },
+      "task": "go_function"
+    },
+    "localization": {
+      "attention_heads": 1,
+      "classes": 10,
+      "effective_fraction_of_length": {
+        "max": 0.9963760422025085,
+        "mean": 0.31124488390483634,
+        "median": 0.2585810084182814,
+        "min": 0.03793537783864952
+      },
+      "effective_residues_attended": {
+        "max": 914.5105143430219,
+        "mean": 124.73188788484374,
+        "median": 92.56567743640278,
+        "min": 3.985504168810034
+      },
+      "effective_residues_by_length_bin": {
+        "1-150": {
+          "max": 97.74426133174998,
+          "mean": 31.8794312135125,
+          "median": 27.989592073524967,
+          "min": 3.985504168810034,
+          "n": 82
+        },
+        "151-300": {
+          "max": 199.1656261815232,
+          "mean": 73.9586174761001,
+          "median": 63.39272337854544,
+          "min": 9.321552745947304,
+          "n": 104
+        },
+        "301-500": {
+          "max": 328.36170700881354,
+          "mean": 103.94806900482648,
+          "median": 94.57574348823205,
+          "min": 18.474529007422316,
+          "n": 138
+        },
+        "501-800": {
+          "max": 459.0728407687031,
+          "mean": 154.63696374636882,
+          "median": 133.1130314819205,
+          "min": 26.71563205504601,
+          "n": 109
+        },
+        "801-10000": {
+          "max": 914.5105143430219,
+          "mean": 311.3413700653608,
+          "median": 248.0152323756036,
+          "min": 62.40749574031155,
+          "n": 67
+        }
+      },
+      "entropy_nats": {
+        "max": 6.818388965132811,
+        "mean": 4.462648354645167,
+        "median": 4.527913139495804,
+        "min": 1.3826638208795314
+      },
+      "max_abs_deviation_from_sum_1": 2.39349901676178e-07,
+      "max_weight": {
+        "max": 0.553160548210144,
+        "mean": 0.09888694734312593,
+        "median": 0.08206483349204063,
+        "min": 0.008228575810790062
+      },
+      "position_bias": {
+        "deciles": [
+          1.8386,
+          1.2622,
+          0.967,
+          0.8945,
+          0.9027,
+          0.91,
+          0.8193,
+          0.887,
+          0.806,
+          0.694
+        ],
+        "note": "attention mass in each relative-position decile divided by the mass a uniform head would put there, averaged over sequences; 1.0 = uniform",
+        "sequences_per_decile": [
+          500,
+          499,
+          500,
+          498,
+          499,
+          500,
+          498,
+          500,
+          499,
+          497
+        ]
+      },
+      "sequences": 500,
+      "shape": "(heads, length), softmax over residues",
+      "shared_across_classes": {
+        "attention_bit_identical": 500,
+        "method": "replace class 0's fc2 row and bias, recompute",
+        "of": 500,
+        "scores_changed": 500
+      },
+      "task": "localization"
+    }
+  },
+  "weights_sha256": {
+    "go_function": "1d9d77f93861444b551a058317d9c0c9175818c02bf7475bfca87bab4d0eac6f",
+    "localization": "7bd18e3a93510369c7676439a22b70af763361d42c1e2caca127fef1e2ccb8ca"
+  }
+}

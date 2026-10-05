@@ -79,6 +79,13 @@ def test_a_gallery_sequence_round_trips_through_the_queue(
         assert job["finished_at"] >= job["started_at"]
         result = job["results"][0]
         assert result["task_sources"]["localization"]["source"] == "model"
+        assert result["attribution_source"] == "model"
+        assert result["attribution_method"] == ENGINE_JSON["attribution"]["default_method"]
+        assert len(result["attribution"]) == result["length"]
+        assert set(result["attribution_tracks"]) == {"occlusion", "pooling_attention"}
+        assert result["signal_track"]["method"] == "crf_marginal"
+        assert len(result["signal_track"]["values"]) == result["length"]
+        assert result["hydropathy"]  # still the motif track
         assert job["model_version"] == body["model_version"]
         assert client.get("/demo/version").json()["tau"] is None
     get_serving_settings.cache_clear()

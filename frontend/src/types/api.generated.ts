@@ -221,6 +221,15 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /**
+     * AttributionMethod
+     * @description How a per-residue attribution track was computed (Phase 15, ADR-0017).
+     *
+     *     Each method makes a different claim, so the wire carries the method beside the source and
+     *     the claim is in :data:`ATTRIBUTION_CLAIMS`, the one place it is written.
+     * @enum {string}
+     */
+    AttributionMethod: "pooling_attention" | "occlusion" | "crf_marginal" | "motif";
     /** BatchSubmission */
     BatchSubmission: {
       /**
@@ -973,7 +982,7 @@ export interface components {
       residue: string;
       /**
        * Score
-       * @description Signed attribution. Positive supports the predicted label, negative argues against it. Comparable within one task and sequence only — never across tasks, and never as a probability.
+       * @description Per-residue weight. What it means depends on the task's attribution method; each method's claim is: [pooling_attention] Where the head's pooled vector looked, as a share of the total (sums to 1). The same for every label: it shows what the head attended to, not why a given label won. [occlusion] How much this label's raw score fell when a window of residues was removed from the head's pooling input (signed: positive supports the label, negative argues against it). Computed on the head's input only: the frozen encoder is not re-run, so context already encoded in neighbouring residues remains. Not causal importance, not a binding site. [crf_marginal] Probability, from the CRF forward-backward marginals, that the residue is part of the N-terminal signal peptide (0 to 1). Only the residues up to the CRF's length cap are scored; later residues read 0.0 because the model did not look at them. [motif] A heuristic weight painted from detected motifs (hydrophobic region, nuclear localization signal, transmembrane segments). Not computed by a trained model. Comparable within one task and sequence only — never across tasks, and never as a probability.
        */
       score: number;
     };
@@ -1074,11 +1083,15 @@ export interface components {
      * @description Per-residue attribution for one task.
      */
     TaskAttribution: {
+      /** @description How the weights were computed; the claim each method makes is in the description of ResidueAttribution.score. Absent in a payload from before Phase 15. */
+      method?: components["schemas"]["AttributionMethod"] | null;
       /**
        * Residues
        * @description One entry per residue, in sequence order.
        */
       residues: components["schemas"]["ResidueAttribution"][];
+      /** @description model when a trained head produced the weights, motif otherwise. Absent in a payload from before Phase 15. */
+      source?: components["schemas"]["EngineSource"] | null;
       /** @description The head being explained. */
       task: components["schemas"]["TaskName"];
     };

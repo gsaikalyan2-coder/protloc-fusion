@@ -46,6 +46,13 @@
     "forbidden_transitions": [["O", "S"]],
     "forbidden_score": -10000.0
   },
+  "attribution": {
+    "default_method": "occlusion",
+    "window": 5,
+    "stride": 1,
+    "max_forward_passes": 64,
+    "round_digits": 4
+  },
   "organism_groups_with_trained_heads": ["eukaryote", "plant"],
   "ontology": {
     "file": "raw/go-basic.obo",

@@ -14,6 +14,8 @@ from typing import Any
 import pytest
 import yaml
 
+from protloc.domain.types import ATTRIBUTION_CLAIMS, AttributionMethod
+from protloc.inference.attribution import METHODS
 from protloc.inference.engine import composite_version
 
 REPO = Path(__file__).resolve().parents[3]
@@ -71,7 +73,15 @@ def test_only_eukaryotic_groups_are_served() -> None:
 
 
 # -- evidence independence ------------------------------------------------------------------
-_SCORING_STAGES = ("_score", "_localization", "_signal", "_go", "_task_source")
+_SCORING_STAGES = (
+    "_score",
+    "_localization",
+    "_signal",
+    "_go",
+    "_task_source",
+    "_attribution",
+    "_track_block",
+)
 _EVIDENCE_NAMES = frozenset({"search", "homology", "Evidence", "_evidence", "evidence", "terms"})
 
 
@@ -104,3 +114,23 @@ def test_the_pipeline_order_is_stated_once_in_predict_many() -> None:
     tokens = ("self._score(", "self._consistency(", "self._evidence(")
     positions = [body.index(token) for token in tokens]
     assert positions == sorted(positions)
+
+
+# -- attribution (Phase 15) -----------------------------------------------------------------
+PROTOCOL_FILE = REPO / "data" / "manifests" / "attribution_protocol.json"
+
+
+@pytest.mark.skipif(not PROTOCOL_FILE.is_file(), reason="the frozen protocol is not present")
+def test_the_served_occlusion_settings_are_the_ones_the_protocol_validated() -> None:
+    frozen = json.loads(PROTOCOL_FILE.read_text())["protocol"]["occlusion"]
+    served = ENGINE["attribution"]
+    assert {k: served[k] for k in ("window", "stride", "max_forward_passes")} == frozen
+
+
+def test_the_default_attribution_method_is_a_class_specific_or_attention_track() -> None:
+    assert ENGINE["attribution"]["default_method"] in ("occlusion", "pooling_attention")
+
+
+def test_every_attribution_method_has_one_claim_and_the_two_lists_agree() -> None:
+    assert {m.value for m in AttributionMethod} == set(METHODS)
+    assert set(ATTRIBUTION_CLAIMS) == set(AttributionMethod)

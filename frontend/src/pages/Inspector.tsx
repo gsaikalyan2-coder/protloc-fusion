@@ -32,7 +32,9 @@ export default function Inspector({
   const { examples } = useExamples();
   const [seq, setSeq] = useState(seed?.sequence ?? "");
   const [group, setGroup] = useState(seed?.group ?? "eukaryote");
-  const [mode, setMode] = useState<"attribution" | "hydropathy">("attribution");
+  const [mode, setMode] = useState<"attribution" | "attention" | "signal" | "hydropathy">(
+    "attribution",
+  );
   const { run, job, done, error, busy } = useJob();
 
   useEffect(() => {
@@ -188,9 +190,12 @@ export default function Inspector({
               <div className="row">
                 <span
                   className={`badge ${r.attribution_source}`}
-                  title="Which engine produced the per-residue weights. A trained-model attribution arrives with Phase 15."
+                  title={
+                    r.attribution_tracks[r.attribution_method]?.claim ??
+                    "Which engine produced the per-residue weights."
+                  }
                 >
-                  attribution · {r.attribution_source}
+                  attribution · {r.attribution_source} · {r.attribution_method}
                 </span>
                 <button
                   className="btn"
@@ -200,6 +205,26 @@ export default function Inspector({
                   disabled={mode === "attribution"}
                 >
                   attribution
+                </button>
+                <button
+                  className="btn"
+                  title={r.attribution_tracks.pooling_attention?.claim}
+                  onClick={() => {
+                    setMode("attention");
+                  }}
+                  disabled={mode === "attention"}
+                >
+                  attention
+                </button>
+                <button
+                  className="btn"
+                  title={r.signal_track.claim}
+                  onClick={() => {
+                    setMode("signal");
+                  }}
+                  disabled={mode === "signal"}
+                >
+                  signal peptide
                 </button>
                 <button
                   className="btn"
@@ -222,6 +247,11 @@ export default function Inspector({
             }
           >
             <SequenceTrack result={r} mode={mode} />
+            <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+              {mode === "hydropathy"
+                ? "Kyte-Doolittle hydropathy from the motif engine, not a trained-model output."
+                : "Shows what the trained head's score depended on; not causal importance and not a binding site. Comparable within this sequence and label only."}
+            </p>
           </Card>
 
           <Card title="Consistency check">

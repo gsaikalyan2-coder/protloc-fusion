@@ -147,6 +147,44 @@ class EngineSource(StrEnum):
 
 
 @unique
+class AttributionMethod(StrEnum):
+    """How a per-residue attribution track was computed (Phase 15, ADR-0017).
+
+    Each method makes a different claim, so the wire carries the method beside the source and
+    the claim is in :data:`ATTRIBUTION_CLAIMS`, the one place it is written.
+    """
+
+    POOLING_ATTENTION = "pooling_attention"
+    OCCLUSION = "occlusion"
+    CRF_MARGINAL = "crf_marginal"
+    MOTIF = "motif"
+
+
+ATTRIBUTION_CLAIMS: dict[AttributionMethod, str] = {
+    AttributionMethod.POOLING_ATTENTION: (
+        "Where the head's pooled vector looked, as a share of the total (sums to 1). The same "
+        "for every label: it shows what the head attended to, not why a given label won."
+    ),
+    AttributionMethod.OCCLUSION: (
+        "How much this label's raw score fell when a window of residues was removed from the "
+        "head's pooling input (signed: positive supports the label, negative argues against "
+        "it). Computed on the head's input only: the frozen encoder is not re-run, so context "
+        "already encoded in neighbouring residues remains. Not causal importance, not a "
+        "binding site."
+    ),
+    AttributionMethod.CRF_MARGINAL: (
+        "Probability, from the CRF forward-backward marginals, that the residue is part of the "
+        "N-terminal signal peptide (0 to 1). Only the residues up to the CRF's length cap are "
+        "scored; later residues read 0.0 because the model did not look at them."
+    ),
+    AttributionMethod.MOTIF: (
+        "A heuristic weight painted from detected motifs (hydrophobic region, nuclear "
+        "localization signal, transmembrane segments). Not computed by a trained model."
+    ),
+}
+
+
+@unique
 class ConfidenceBand(StrEnum):
     """A coarse reading of how far a probability clears its threshold.
 
