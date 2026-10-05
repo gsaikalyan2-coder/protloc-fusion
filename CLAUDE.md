@@ -42,7 +42,7 @@
 | Frontend styling | CSS custom properties from `docs/DESIGN.md` | `tokens.css` is generated, never hand-edited |
 | Backend | FastAPI + Uvicorn (Python 3.11) | Thin routers; all logic in the module layers |
 | Validation | Pydantic v2 | Every request and response has a schema |
-| ML | PyTorch 2.x, CPU wheel for serving | Pin the exact version in the run manifest |
+| ML | PyTorch 2.x for training only; **numpy for serving** (ADR-0016) | Pin the exact version in the run manifest. The served heads are numpy forward passes with a torch parity test; serving never imports `training/` |
 | Representation | **ESM-2 150M** (`facebook/esm2_t30_150M_UR50D`) — 30 layers, hidden dim 640, MIT | Revised 2026-10-02. 650M was the old pick; DeepLoc's authors tested 650M **and** 15B and reported no improvement on this task, and 150M matched 3B across 36–40 DMS datasets. `esm2_t12_35M_UR50D` is the dev tier. ESM-C 300M (MIT) is the one swap worth a same-day test once caching is encoder-generic |
 | Adaptation | **None — frozen encoder, trained heads** | Revised 2026-10-02. LoRA and full fine-tuning are both out of budget for one week. Attention pooling + MLP heads per DeepLoc's published recipe |
 | Loss | Per-label weighted focal loss, averaged over labels | DeepLoc 2.x recipe |
@@ -78,7 +78,12 @@ backend/protloc/
   api/               app.py · app_v2.py (the live app) · deps.py · routers/
   features/          classical.py — the motif engine; becomes the hand-crafted
                      feature branch beside the PLM embeddings, not deleted
-  inference/         service.py — predict / scan / triage / landscape / evidence
+  inference/         engine.py (the trained pipeline: features -> model -> calibration ->
+                     consistency -> evidence; the only place that order is written) · trust.py ·
+                     motif.py + service.py (the Phase 0 motif engine, kept for the scanner,
+                     membrane type, attribution and the frozen golden set)
+  models/            attention_head.py · crf_tagger.py — numpy forward passes of the frozen heads
+  evidence/          ontology.py · search.py (MMseqs2 subprocess, deadline, degraded state)
   jobs/              queue.py — in-memory 202 + poll + cancel + retention
   data/              build.py · parse.py · validate.py · manifest.py · rules.py
                      reference_demo.py (synthetic; deleted at Phase 6)
@@ -165,10 +170,11 @@ MAX_UPLOAD_BYTES=ENTER_YOUR_VALUE_HERE
 | `MAX_SEQUENCE_LENGTH` | 5 | Decided from the corpus length distribution; record in the dataset card |
 | `ESM_REVISION` | 7 | Filled 2026-10-03: `a695f604…` (huggingface.co/api/models); do not float it |
 | `HF_TOKEN` | 7 (read) · 19 (write) | huggingface.co → Settings → Access Tokens |
-| `MODEL_VERSION`, `ARTIFACT_REVISION` | 14 | The HF model-repo commit SHA the server pins |
+| `MODEL_VERSION` | 14 | Filled 2026-10-05: the composite of the four registry bundle versions (`localization-0.10.0+signal_peptide-0.11.0+go_function-0.12.0+evidence_homology-0.13.0`); the service refuses to start if it differs from what is loaded |
+| `ARTIFACT_REVISION` | 19 | The HF model-repo commit SHA the server pins (left for Phase 19, Gate D) |
 | `ARTIFACT_CACHE_DIR` | 2 | Host-dependent; ephemeral on both candidates, so weights are re-pulled on cold start |
-| `MAX_BATCH_SEQUENCES` | 14 | From measured throughput; start conservative |
-| `GOA_RELEASE` | 13 | Unused by the Phase 13 design: GO terms for hits come from the corpus `DR GO` lines, recorded as "embedded in Swiss-Prot 2026_03" (hash = corpus SHA-256); decide in Phase 14 whether to drop it |
+| `MAX_BATCH_SEQUENCES` | 14 | Filled 2026-10-05: **20**, half the largest batch measured (40) on one 12-core machine (`data/manifests/serving_measurements.json`); re-measure in Phase 19 |
+| `GOA_RELEASE` | 13 | Unused by the Phase 13 design: GO terms for hits come from the corpus `DR GO` lines, recorded as "embedded in Swiss-Prot 2026_03" (hash = corpus SHA-256); Phase 14 dropped it from the serving contract; it is never read |
 | `FRONTEND_ORIGIN`, `BACKEND_URL` | 19 | The two deployed URLs; CORS is restricted to the first |
 | `RATE_LIMIT_PER_MINUTE`, `MAX_UPLOAD_BYTES` | 17 | From Phase 16 load numbers |
 
@@ -349,8 +355,8 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 11  — Signal-peptide CRF head                       ENH   8.0 h   done 2026-10-04 (branch; 500-sequence subset only; you tag v0.11.0)
 [x] Phase 12  — GO head                                       ENH   4.0 h   done 2026-10-04 (branch; 500-sequence subset only; you tag v0.12.0)
 [x] Phase 13  — Homology evidence (MMseqs2 index)             ENH   5.0 h   done 2026-10-04 (branch; 500-sequence subset queries, full Swiss-Prot database; you tag v0.13.0)
-[ ] Phase 14  — Swap the engine: model behind the same API     MVP   6.0 h   <-- NEXT
-[ ] Phase 15  — Attribution from the real model                ENH   4.0 h
+[x] Phase 14  — Swap the engine: model behind the same API     MVP   6.0 h   done 2026-10-05 (branch; 500-sequence subset only, cache-only encoder; you tag v0.14.0)
+[ ] Phase 15  — Attribution from the real model                ENH   4.0 h   <-- NEXT
 [ ] Phase 16  — Frontend upgrade & landing page                MVP   7.0 h
 [ ] Phase 17  — Limits, errors, degraded states                ENH   3.0 h
 [ ] Phase 18  — Nightingale visual rebuild                     ENH   5.0 h
@@ -381,7 +387,11 @@ docs say so rather than promising durability the host cannot deliver.
 | 0009 | Frozen encoder + trained heads; ESM-2 150M; sliding window for sequences over 1022 residues | Accepted 2026-10-03 (measured cost filled at the Phase 7 close) | 7, 9 |
 | 0010 | Baseline protocol: leave-one-partition-out on registry partitions 1-4, per-class MCC-optimal thresholds, test partition 5 scored once after freeze | Accepted 2026-10-03 | 8, 9 |
 | 0011 | Localization head: attention pooling over per-residue ESM-2 states + MLP; per-residue cache for the 500-sequence subset; inner whole-cluster early stopping; subset-only numbers | Accepted 2026-10-03 | 9, 10 |
+| 0012 | Per-label calibration and thresholds frozen in the registry bundle; loader refuses a hash mismatch | Accepted 2026-10-03 | 10, 14 |
+| 0013 | Signal-peptide CRF head: CNN encoder + linear-chain CRF, tags O/S, cap 100 | Accepted 2026-10-04 | 11, 14 |
 | 0014 | GO head: multi-label molecular function, evidence policy experimental + curated, term floor 20 (12 terms), open-world labels, three floors, subset-only numbers | Accepted 2026-10-04 | 12, 13, 14 |
+| 0015 | Homology evidence: local MMseqs2 index, GO transfer from hits, never feeds a score | Accepted 2026-10-04 | 13, 14 |
+| 0016 | Serving engine: numpy heads over cached ESM-2 states, served groups, one engine config, refuse to start | Accepted 2026-10-05 | 14, 15, 19 |
 
 ### Phase 0 close — 2026-09-28
 
@@ -520,14 +530,24 @@ registry `37ca5e0583b783a6aa4945f582fa2342b9fdf5b1008f68f71e9eb87869de276a`; bun
 `data/evidence/` is gitignored. API wiring and the refuse-to-start check are Phase 14 (Gate F); Phase 14 also adds the model-shaped GO output (`source: "model"`).
 UNVERIFIED: any claim beyond 500 sequences, how much advantage comes from unmasked unregistered sequences, resident-server latency, `busybox.exe` licence, published comparisons (none fetched), Docker, GitHub Actions and the frontend gate. Detail: `docs/phases/13.md`.
 
+### Phase 14 close — 2026-10-05
+
+The served path (`/demo/*`, `api/app_v2.py`, API 1.2.0) returns trained-model output (ADR-0016): localization (Phase 10 calibrated, per-label thresholds), signal peptide with cleavage site (Phase 11 CRF) and GO function (Phase 12, `source: "model"`, no accession), all from registry bundles; homology terms from the Phase 13 bundle are `source: "homology"` with `source_accession`, in their own field, never mixed with model terms.
+**Only the 500-sequence subset is answerable** ("subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers"): the encoder is the verified residue cache, a sequence not in it is refused with `not_in_embedding_cache`. Served groups: `eukaryote` (9 classes) and `plant` (10); bacterial groups are refused (no head was trained on bacteria).
+Serving is numpy (`numpy==2.4.6`, `serve` extra) with a parity test against the torch forward; `test_layering` is green. `load_engine` refuses to start on a missing or tampered bundle, a calibrator or rule mismatch, a changed index byte or a changed GO source or ontology hash, listing every problem at once.
+`MODEL_VERSION` is the composite of the four bundle versions; `ARTIFACT_REVISION` is left for Phase 19. Measured on one Windows 10, 12-logical-CPU machine through the real queue API (`data/manifests/serving_measurements.json`): single-sequence compute p95 2.59 s, 33 sequential jobs, queue wait 0; burst of 10, time-to-result p95 21.1 s of which queue wait p95 19.1 s and compute p95 2.6 s; a 40-sequence batch 6.0 s (0.149 s per sequence). `MAX_BATCH_SEQUENCES=20`. Host timing is Phase 19.
+Golden set: `golden_set_motif.json` is a byte copy of `golden_set.json` (Phase 4 record, prefix `424e61c2e450`) and guards the motif module; the served engine refuses all 67 golden inputs (48 not cached, 17 unsupported group, 1 invalid, 1 unknown group). On the 408 cached real sequences the served top location equals the motif engine's for 54.2% of 397 comparable (11 outside the motif engine's 30-3000 range). Membrane type, the scanner, the residue attribution and the hydropathy track are still `source: "motif"`; consistency rule R06 is inactive (Phase 13 hits carry no location); `rules_version` is still "demo-0.1.0". `data/reference_demo.py` was **not** deleted (Gate E). The UI banner shows the model version instead of "synthetic".
+UNVERIFIED: any claim beyond 500 sequences, gallery sequences are in-sample, Docker, GitHub Actions, host timing, the search-executable tamper test, seed variance. Detail: `docs/phases/14.md`.
+
 ### Two things a cold session must know
 
-1. **The predictor is a motif engine and the reference data is synthetic.** Real
-   Kyte-Doolittle hydropathy, real h-region detection with an AxA cleavage search, real
-   TM windows and NLS/KDEL/PTS1/LPXTG patterns — every number on screen is computed live
-   from the sequence, which is why mutating a residue changes the answer. But no model is
-   trained and the reference set and benchmark are constructed with known labels. The app
-   says so in a banner, and the banner stays until Phase 14.
+1. **The served path is trained models for 500 sequences, and a motif engine for the rest of the screen.**
+   Localization, signal peptide, cleavage site and GO function come from the frozen registry
+   bundles (numpy, ADR-0016) but only for the 500 sequences in the residue cache; anything else
+   is refused with a reason, not guessed. Membrane type, the in-silico scanner, the residue
+   attribution and the hydropathy track are still the Phase 0 motif engine (`source: "motif"`)
+   until Phase 15 and later, and the scanner still uses a synthetic-fit tau. The banner shows
+   the model version.
 2. **`docs/api/openapi.yaml` is generated.** Edit
    `backend/protloc/domain/contracts.py` and the route decorators, then run
    `python scripts/export_openapi.py`. A hand edit is reverted by the next build and

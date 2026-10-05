@@ -77,6 +77,7 @@ it has a row. Versions below were read on **2026-09-15**. The tag SHAs came from
 | 13 | UniProtKB/Swiss-Prot — `uniprot_sprot.dat.gz` (UniProt Consortium) | The training corpus: sequences and curated labels (Phase 3, decision D1: Swiss-Prot only) | **CC BY 4.0** — see §2.10. *Unverified at pin* | The release in `reldate.txt` on the snapshot day, recorded with its SHA-256 in `data/manifests/snapshot.json` (Phase 3 §3.4) | Permitted with attribution. The derived corpus may be published in the HF data repo (ADR-0005) if it carries the UniProt attribution and the release |
 | 14 | `iterative/dvc` | Data versioning: pointers in git, bytes outside it | Apache-2.0 | `3.67.1` → `356dfa03278058b02df42124f243c2c345329dae` | Dev and training tooling only. Never in the serving image |
 | 15 | `biopython/biopython` | Parsing the Swiss-Prot flat file (`Bio.SwissProt`) | **Biopython License Agreement**; some files dual-licensed with BSD-3-Clause — see §2.11 | `biopython-188` (PyPI `1.88`) → `d7e4b8b19399668b09442a5b35765d9186b5f665` | Permissive, with notice retention. Build-time only. Never in the serving image |
+| 16 | `numpy/numpy` | Numpy forward passes of the localization, GO and signal-peptide heads in the serving process (Phase 14, ADR-0016) | **BSD-3-Clause**, with bundled components under 0BSD, MIT, Zlib and CC0-1.0 — see §2.13. *2.4.6 licence file unverified* | `numpy==2.4.6` (`serve` extra in `backend/pyproject.toml`); the licence text was read from the 2.5.3 wheel on 2026-10-05, not from 2.4.6 | Permissive, with notice retention. **Ships in the serving image** (unlike rows 14 and 15) |
 
 ## 2. Per-repository detail
 
@@ -234,6 +235,16 @@ it has a row. Versions below were read on **2026-09-15**. The tag SHAs came from
   rather than inside them (Phase 3 §4.5).
 - **Remote:** a local remote fits the ≤ 20 GB budget (decision D2). The HF data
   repo (ADR-0005) becomes the shared remote in Phase 16.
+
+### 2.13 NumPy
+
+- **License:** BSD-3-Clause for NumPy itself, with bundled components under 0BSD,
+  MIT, Zlib and CC0-1.0 (the wheel's `LICENSE.txt`, read from 2.5.3 on 2026-10-05).
+  The pinned 2.4.6 file was not read: UNVERIFIED until it is.
+- **Role:** the only new serving dependency of Phase 14. `protloc.models.attention_head`
+  and `protloc.models.crf_tagger` run the frozen head weights as plain forward passes;
+  PyTorch is training-only (ADR-0016). Parity with the torch forward is tested.
+- **Files copied:** none.
 
 ---
 
