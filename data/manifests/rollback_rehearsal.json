@@ -1,0 +1,26 @@
+{
+  "environment": "local machine, not the deployment host; not Docker",
+  "scope": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+  "correct_pin": "localization-0.10.0+signal_peptide-0.11.0+go_function-0.12.0+evidence_homology-0.13.0",
+  "stale_pin": {
+    "served_requests": false,
+    "process_exited": true,
+    "exit_code": 3,
+    "log_tail": [
+      "    service.configure(load_engine(settings))",
+      "                      ^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"C:\\Users\\saika\\protloc-fusion\\backend\\protloc\\inference\\engine.py\", line 764, in load_engine",
+      "    raise EngineStartError(",
+      "protloc.inference.engine.EngineStartError: the service will not start:",
+      "  - MODEL_VERSION is 'stale-0.0.0', the pinned bundles are 'localization-0.10.0+signal_peptide-0.11.0+go_function-0.12.0+evidence_homology-0.13.0'",
+      "",
+      "ERROR:    Application startup failed. Exiting."
+    ],
+    "result": "refused to serve (read log_tail for the reason)"
+  },
+  "correct_pin_time_to_ready_s": 5.72,
+  "reported_model_version": "localization-0.10.0+signal_peptide-0.11.0+go_function-0.12.0+evidence_homology-0.13.0",
+  "examples_status": 200,
+  "examples_s": 0.003,
+  "restart_outage_s": 5.68
+}

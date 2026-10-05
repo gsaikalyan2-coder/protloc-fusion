@@ -158,6 +158,11 @@ button.btn.primary {
   color: var(--text-inverse);
   border-color: var(--accent);
 }
+button.btn[aria-pressed="true"] {
+  color: var(--accent);
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+}
 button.btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -256,6 +261,10 @@ tr.on td {
   color: var(--accent);
   background: var(--accent-subtle);
 }
+.badge.insample {
+  color: var(--state-warn);
+  background: var(--state-warn-bg);
+}
 .badge.homology {
   color: var(--state-note);
   background: var(--state-note-bg);
@@ -338,4 +347,81 @@ tr.on td {
 input[type="range"] {
   accent-color: var(--accent);
   padding: 0;
+}
+
+ul.plain {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+}
+ul.plain li {
+  max-width: 78ch;
+}
+
+/* Strongest residue shade, per theme: keeps the letter at 4.5:1 or better (measured, docs/phases/16.md). */
+:root {
+  --shade-max: 60%;
+}
+:root[data-theme="dark"] {
+  --shade-max: 40%;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --shade-max: 40%;
+  }
+}
+
+/* Sequence viewer: a keyboard-operable listbox. The cursor residue is always marked; the focus
+   ring is the same token as everywhere else and is never removed (DESIGN.md). */
+.seq:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.seq .cursor {
+  outline: 1px dotted var(--text-secondary);
+  outline-offset: 1px;
+}
+.seq:focus .cursor {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+/* Phase 16: the 3D backbone view. Colours come from tokens; the canvas reads them at draw time. */
+.structure-canvas {
+  display: block;
+  width: 100%;
+  height: 420px;
+  margin: var(--space-3) 0;
+  background: var(--surface-0);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: grab;
+  touch-action: none;
+}
+.structure-canvas:active {
+  cursor: grabbing;
+}
+.structure-canvas:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.structure-status {
+  font-size: var(--text-xs);
+  margin: 0 0 var(--space-2);
+}
+.structure-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+.structure-legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: var(--space-1);
+  border-radius: 50%;
 }

@@ -25,7 +25,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from protloc.config.serving import get_serving_settings
-from protloc.inference import service
+from protloc.inference import service, structures
 from protloc.inference.engine import EngineRefusal, load_engine
 from protloc.inference.trust import trust_payload
 from protloc.jobs import queue as jobs
@@ -68,6 +68,22 @@ class PredictIn(BaseModel):
     sequence: str = Field(min_length=1, max_length=20000)
     organism_group: str = "eukaryote"
     id: str = "query"
+
+
+class StructureOut(BaseModel):
+    """An AlphaFold backbone for one cached sequence: C-alpha points and per-residue pLDDT."""
+
+    sequence_sha256: str
+    accession: str
+    source: str
+    license: str
+    entry_id: str | None = None
+    model_version: int | str | None = None
+    model_created: str | None = None
+    length: int
+    ca: list[list[float]]
+    plddt: list[float]
+    note: str
 
 
 class BatchIn(BaseModel):
@@ -194,6 +210,31 @@ def trust() -> dict[str, Any]:
     return trust_payload(
         engine.manifests["localization"], engine.localization_codes, service.provenance()
     )
+
+
+_STRUCTURE_NOTE = (
+    "AlphaFold DB prediction, shown for orientation. It is not an experimental structure, not "
+    "this model's output, and it never feeds a score."
+)
+
+
+@app.get("/demo/structure/{sequence_sha256}", response_model=StructureOut)
+def get_structure(sequence_sha256: str) -> dict[str, Any]:
+    """The AlphaFold backbone of a cached sequence, served only if its bytes match the manifest."""
+    if not structures.is_sha256(sequence_sha256):
+        raise HTTPException(400, "sequence_sha256 must be 64 lowercase hex characters")
+    store = structures.store_for(get_serving_settings().DATA_ROOT / "structures")
+    try:
+        document = store.get(sequence_sha256)
+    except structures.StructureError as exc:
+        raise HTTPException(500, f"Structure refused: {exc}") from exc
+    if document is None:
+        raise HTTPException(
+            404,
+            "No structure for this sequence: AlphaFold DB has no model for it, or its sequence "
+            "differs from the one scored here.",
+        )
+    return {**document, "note": _STRUCTURE_NOTE}
 
 
 @app.post("/demo/predict")

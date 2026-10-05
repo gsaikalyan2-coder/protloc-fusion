@@ -8,6 +8,8 @@
 import { useEffect, useState } from "react";
 import { getVersion } from "./services/demoApi";
 import Evidence from "./pages/Evidence";
+import Gallery from "./pages/Gallery";
+import Home from "./pages/Home";
 import Inspector from "./pages/Inspector";
 import Scanner from "./pages/Scanner";
 import Triage from "./pages/Triage";
@@ -15,8 +17,19 @@ import Trust from "./pages/Trust";
 import "./styles/tokens.css";
 import "./styles/app.css";
 
-type Screen = "triage" | "inspector" | "evidence" | "scanner" | "trust";
+type Theme = "system" | "light" | "dark";
+const NEXT_THEME: Record<Theme, Theme> = { system: "light", light: "dark", dark: "system" };
+
+type Screen = "home" | "gallery" | "triage" | "inspector" | "evidence" | "scanner" | "trust";
+interface Seed {
+  sequence: string;
+  group: string;
+  id?: string;
+  autorun?: boolean;
+}
 const NAV: [Screen, string, string][] = [
+  ["home", "Home", "what it answers, and its limits"],
+  ["gallery", "Gallery", "cached examples, in-sample"],
   ["triage", "Triage Board", "which proteins need a human"],
   ["inspector", "Inspector", "seven outputs, one sequence"],
   ["evidence", "Evidence Ledger", "model vs. homology"],
@@ -25,10 +38,11 @@ const NAV: [Screen, string, string][] = [
 ];
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>("triage");
-  const [seed, setSeed] = useState<{ sequence: string; group: string } | null>(null);
+  const [screen, setScreen] = useState<Screen>("home");
+  const [seed, setSeed] = useState<Seed | null>(null);
   const [version, setVersion] = useState<Record<string, any> | null>(null);
   const [down, setDown] = useState(false);
+  const [theme, setTheme] = useState<Theme>("system");
 
   useEffect(() => {
     getVersion()
@@ -37,6 +51,13 @@ export default function App() {
         setDown(true);
       });
   }, []);
+
+  // "system" removes the attribute so the prefers-color-scheme rule in tokens.css decides.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === "system") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", theme);
+  }, [theme]);
 
   const openIn = (next: Screen) => (sequence: string, group: string) => {
     setSeed({ sequence, group });
@@ -63,7 +84,20 @@ export default function App() {
             </button>
           ))}
         </nav>
-        <div className="prov" style={{ marginTop: "auto", flexDirection: "column", gap: 2 }}>
+        <button
+          className="btn"
+          style={{ marginTop: "auto" }}
+          aria-label={`Theme: ${theme}. Switch to ${NEXT_THEME[theme]}.`}
+          onClick={() => {
+            setTheme(NEXT_THEME[theme]);
+          }}
+        >
+          Theme: {theme}
+        </button>
+        <div
+          className="prov"
+          style={{ marginTop: "var(--space-3)", flexDirection: "column", gap: 2 }}
+        >
           <span>model {version?.model_version ?? "—"}</span>
           <span>config {version?.config_hash ?? "—"}</span>
           <span>rules {version?.rules_version ?? "—"}</span>
@@ -92,6 +126,23 @@ export default function App() {
           </div>
         )}
 
+        {screen === "home" && (
+          <Home
+            version={version}
+            down={down}
+            onStart={() => {
+              setScreen("gallery");
+            }}
+          />
+        )}
+        {screen === "gallery" && (
+          <Gallery
+            onOpen={(e) => {
+              setSeed({ sequence: e.sequence, group: e.group, id: e.id, autorun: true });
+              setScreen("inspector");
+            }}
+          />
+        )}
         {screen === "triage" && <Triage onOpen={openIn("inspector")} />}
         {screen === "inspector" && <Inspector seed={seed} onScan={openIn("scanner")} />}
         {screen === "evidence" && <Evidence />}

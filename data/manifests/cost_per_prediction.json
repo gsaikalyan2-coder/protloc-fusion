@@ -1,0 +1,67 @@
+{
+  "scope": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+  "machine_measured_on": {
+    "cpu_count": 12,
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+    "python": "3.11.9"
+  },
+  "assumptions": {
+    "vcpu": 2.0,
+    "gib": 8.0,
+    "vcpu_rate_usd_per_s": 2.4e-05,
+    "gib_rate_usd_per_s": 2.5e-06,
+    "request_rate_usd_per_million": 0.4,
+    "note": "rates are published list prices, not measured; compute time is from the measuring machine, not Cloud Run; idle and cold-start time are not billed here"
+  },
+  "rows": [
+    {
+      "sequences": 1,
+      "compute_s_median": 2.492,
+      "cost_usd_per_job": 0.00016986,
+      "cost_usd_per_prediction": 0.00016986,
+      "predictions_per_hour_one_instance": 1444.6,
+      "free_tier_predictions_per_month": 18057
+    },
+    {
+      "sequences": 2,
+      "compute_s_median": 2.509,
+      "cost_usd_per_job": 0.00017101,
+      "cost_usd_per_prediction": 8.551e-05,
+      "predictions_per_hour_one_instance": 2869.7,
+      "free_tier_predictions_per_month": 35870
+    },
+    {
+      "sequences": 5,
+      "compute_s_median": 3.447,
+      "cost_usd_per_job": 0.0002348,
+      "cost_usd_per_prediction": 4.696e-05,
+      "predictions_per_hour_one_instance": 5221.9,
+      "free_tier_predictions_per_month": 65274
+    },
+    {
+      "sequences": 10,
+      "compute_s_median": 4.205,
+      "cost_usd_per_job": 0.00028634,
+      "cost_usd_per_prediction": 2.863e-05,
+      "predictions_per_hour_one_instance": 8561.2,
+      "free_tier_predictions_per_month": 107015
+    },
+    {
+      "sequences": 20,
+      "compute_s_median": 5.837,
+      "cost_usd_per_job": 0.00039732,
+      "cost_usd_per_prediction": 1.987e-05,
+      "predictions_per_hour_one_instance": 12335.1,
+      "free_tier_predictions_per_month": 154188
+    },
+    {
+      "sequences": 40,
+      "compute_s_median": 11.403,
+      "cost_usd_per_job": 0.0007758,
+      "cost_usd_per_prediction": 1.94e-05,
+      "predictions_per_hour_one_instance": 12628.3,
+      "free_tier_predictions_per_month": 157853
+    }
+  ]
+}
