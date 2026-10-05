@@ -1,17 +1,22 @@
 /* Shared building blocks. Chip = compartment (color + code); ConfidenceRow = DESIGN.md 3.1. */
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactElement, type ReactNode } from "react";
 import {
   getExamples,
   getVersion,
   type Flag,
   type JobBody,
   type LocRow,
+  type Accepted,
   type Provenance,
   type TaskSource,
 } from "../services/demoApi";
+import { describeError, type Problem } from "../services/problems";
 
-export const locVar = (code: string) => `var(--loc-${code.toLowerCase()})`;
-export const locText = (code: string) => `var(--loc-${code.toLowerCase()}-text)`;
+/* Compartment colour tokens are generated as --loc-<code>-fill / -ink (docs/DESIGN.md section 2).
+   A code with no token (PCM, not served today) falls back to neutral instead of to nothing. */
+export const locVar = (code: string) => `var(--loc-${code.toLowerCase()}-fill, var(--surface-2))`;
+export const locText = (code: string) =>
+  `var(--loc-${code.toLowerCase()}-ink, var(--text-secondary))`;
 
 export function Chip({
   code,
@@ -119,17 +124,46 @@ export function ProvenanceBar({ p }: { p: Provenance | null }) {
       <span>config {p.config_hash}</span>
       <span>rules {p.rules_version}</span>
       <span>{p.experiment_id}</span>
+      {p.scope_label && <span>{p.scope_label}</span>}
     </div>
   );
 }
 
-export function JobState({ job, error }: { job: JobBody | null; error: string | null }) {
-  if (error) return <p className="err">Backend error: {error}</p>;
-  if (!job) return null;
-  if (job.status === "completed") return null;
+const BLOCKING: readonly string[] = ["unreachable", "server_error", "job_failed"];
+
+/** A failure stated in words: what happened, why, and what to do. Never a stack trace. */
+export function ProblemNotice({ problem }: { problem: Problem }): ReactElement {
   return (
-    <p className="muted mono" style={{ fontSize: "var(--text-sm)" }}>
-      job {job.job_id.slice(0, 8)} · {job.status} · {job.completed_count}/{job.total}
+    <div className={`flag ${BLOCKING.includes(problem.kind) ? "blocked" : "warning"}`} role="alert">
+      <strong>{problem.title}.</strong> {problem.message}
+      <div style={{ fontSize: "var(--text-sm)", marginTop: "var(--space-1)" }}>{problem.hint}</div>
+    </div>
+  );
+}
+
+/** Queue and run state for the job in flight (ADR-0001: 202, then poll), or the failure. */
+export function JobState({
+  job,
+  error,
+  accepted,
+}: {
+  job: JobBody | null;
+  error: Problem | null;
+  accepted?: Accepted | null;
+}): ReactElement | null {
+  if (error) return <ProblemNotice problem={error} />;
+  if (job?.status === "completed") return null;
+  if (!job && !accepted) return null;
+  const wait = accepted?.estimated_wait_seconds;
+  const queued = (job?.status ?? "queued") === "queued";
+  return (
+    <p className="muted mono" role="status" style={{ fontSize: "var(--text-sm)" }}>
+      job {(job?.job_id ?? accepted?.job_id ?? "").slice(0, 8)} · {job?.status ?? "queued"}
+      {job ? ` · ${String(job.completed_count)}/${String(job.total)}` : ""}
+      {queued && accepted ? ` · position ${String(accepted.queue_position)} in the queue` : ""}
+      {queued && typeof wait === "number"
+        ? ` · about ${String(Math.max(1, Math.round(wait)))} s until done (estimate from measured speed)`
+        : ""}
     </p>
   );
 }
@@ -163,6 +197,14 @@ export interface Example {
   sequence: string;
   note: string;
   in_training_set?: boolean;
+  organism?: string;
+  sequence_sha256?: string;
+  length?: number;
+  partition?: number;
+  database_labels?: {
+    localization?: string[];
+    signal_peptide_cleavage_site?: number | null;
+  };
 }
 
 /** Examples come from GET /demo/examples — the pickers are never hardcoded. */
@@ -175,7 +217,7 @@ export function useExamples() {
         setExamples(b.examples);
       })
       .catch((e) => {
-        setError(String(e));
+        setError(describeError(e));
       });
   }, []);
   return { examples, error };

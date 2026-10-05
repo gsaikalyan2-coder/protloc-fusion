@@ -7,6 +7,7 @@
  * a call is asserted when a label clears its own threshold, and "no confident call" is the
  * answer when none does.
  */
+import { describeError } from "../services/problems";
 import { useEffect, useState } from "react";
 import { getTrust, getVersion } from "../services/demoApi";
 import { Card, Chip, ProvenanceBar } from "../components/ui";
@@ -77,7 +78,7 @@ export default function Trust() {
         setPick(body.labels[0]?.label ?? "");
       })
       .catch((e) => {
-        setError(String(e));
+        setError(describeError(e));
       });
     getVersion()
       .then((v) => {
@@ -127,7 +128,7 @@ export default function Trust() {
           ] as const
         ).map(([l, v]) => (
           <div className="card" key={l} style={{ marginBottom: 0 }}>
-            <div className="kpi-v" style={{ fontSize: "var(--text-md)" }}>
+            <div className="kpi-v" style={{ fontSize: "var(--text-lg)" }}>
               {v}
             </div>
             <div className="kpi-l">{l}</div>

@@ -22,7 +22,7 @@ export default function Triage({ onOpen }: { onOpen: (seq: string, group: string
   const { examples } = useExamples();
   const [group, setGroup] = useState("eukaryote");
   const [fasta, setFasta] = useState("");
-  const { run, job, done, error, busy } = useJob();
+  const { run, job, done, error, accepted, busy } = useJob();
 
   // Seed the textarea from the live /demo/examples payload, then run once.
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function Triage({ onOpen }: { onOpen: (seq: string, group: string
           }}
           spellCheck={false}
         />
-        <JobState job={job} error={error} />
+        <JobState job={job} error={error} accepted={accepted} />
         {done?.failures?.length ? (
           <p className="err">
             {done.failures.length} sequence(s) rejected:{" "}

@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from "node:url";
 
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 
 // The dev and preview servers proxy /demo (the routes the five screens call) to the backend,
 // so the browser makes same-origin requests. The backend address is VITE_BACKEND_URL, default
@@ -22,6 +22,11 @@ export default defineConfig({
   },
   preview: {
     proxy: { "/demo": backend },
+  },
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
+    include: ["src/**/*.test.{ts,tsx}"],
   },
   build: {
     outDir: "dist",

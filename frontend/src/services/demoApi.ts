@@ -1,6 +1,7 @@
 /* Single place that talks to the demo backend. Every screen goes through here. */
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ConfidenceBand, EngineSource, ThresholdPolicy } from "@/types/api";
+import { DemoApiError, jobProblem, problemOf, type Problem } from "./problems";
 
 export interface Provenance {
   model_version: string;
@@ -256,13 +257,18 @@ export type JobBody = {
 } & Provenance;
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
-    ...init,
-    ...(init?.body ? { headers: { "content-type": "application/json" } } : {}),
-  });
+  let res: Response;
+  try {
+    res = await fetch(path, {
+      ...init,
+      ...(init?.body ? { headers: { "content-type": "application/json" } } : {}),
+    });
+  } catch (e) {
+    throw new DemoApiError(0, e instanceof Error ? e.message : String(e));
+  }
   const body = await res.json().catch(() => ({}));
   if (!res.ok && res.status !== 202)
-    throw new Error(body?.detail ?? `${res.status} ${res.statusText}`);
+    throw new DemoApiError(res.status, body?.detail ?? res.statusText);
   return body as T;
 }
 
@@ -280,7 +286,7 @@ export const getExamples = () =>
     }[];
   }>("/demo/examples");
 export const getTrust = () => call<Record<string, any>>("/demo/trust");
-interface Accepted {
+export interface Accepted {
   job_id: string;
   result_url: string;
   queue_position: number;
@@ -296,7 +302,8 @@ const post = (p: string, b: unknown) =>
  */
 export function useJob() {
   const [job, setJob] = useState<JobBody | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Problem | null>(null);
+  const [accepted, setAccepted] = useState<Accepted | null>(null);
   const [busy, setBusy] = useState(false);
   const timer = useRef<number | null>(null);
 
@@ -313,8 +320,10 @@ export function useJob() {
     setError(null);
     setBusy(true);
     setJob(null);
+    setAccepted(null);
     try {
       const acc = await post(path, body);
+      setAccepted(acc);
       timer.current = window.setInterval(async () => {
         try {
           const b = await call<JobBody>(acc.result_url);
@@ -322,22 +331,23 @@ export function useJob() {
           if (b.status === "completed" || b.status === "failed" || b.status === "cancelled") {
             stop();
             setBusy(false);
-            if (b.status === "failed") setError(b.error ?? "Job failed");
+            const problem = jobProblem(b);
+            if (problem) setError(problem);
           }
         } catch (e) {
           stop();
           setBusy(false);
-          setError(String(e));
+          setError(problemOf(e));
         }
       }, 350);
     } catch (e) {
       setBusy(false);
-      setError(e instanceof Error ? e.message : String(e));
+      setError(problemOf(e));
     }
   }, []);
 
   const done = job?.status === "completed" ? job : null;
-  return { run, job, done, error, busy };
+  return { run, job, done, error, accepted, busy };
 }
 
 export const predict = (sequence: string, organism_group: string, id = "query") =>
@@ -351,3 +361,54 @@ export const scanReq = (
   mutations: string,
   substitute: string,
 ) => ["/demo/scan", { sequence, organism_group, target, mutations, substitute }] as const;
+
+/** An AlphaFold DB backbone for one cached sequence (GET /demo/structure/{sha256}). */
+export interface StructureDoc {
+  sequence_sha256: string;
+  accession: string;
+  source: string;
+  license: string;
+  entry_id?: string | null;
+  model_version?: number | string | null;
+  model_created?: string | null;
+  length: number;
+  /** C-alpha positions in Angstrom, one [x, y, z] per residue. */
+  ca: number[][];
+  /** Per-residue pLDDT from AlphaFold, 0 to 100. */
+  plddt: number[];
+  note: string;
+}
+
+export const getStructure = (sha256: string): Promise<StructureDoc> =>
+  call<StructureDoc>(`/demo/structure/${sha256}`);
+
+export type StructureState =
+  | { status: "loading" }
+  | { status: "ready"; data: StructureDoc }
+  | { status: "missing"; message: string }
+  | { status: "error"; problem: Problem };
+
+/** Loads the backbone for a sequence hash; a 404 is "missing", not an error. */
+export function useStructure(sha256: string): StructureState {
+  const [state, setState] = useState<StructureState>({ status: "loading" });
+  useEffect(() => {
+    let live = true;
+    setState({ status: "loading" });
+    getStructure(sha256)
+      .then((data) => {
+        if (live) setState({ status: "ready", data });
+      })
+      .catch((e: unknown) => {
+        if (!live) return;
+        if (e instanceof DemoApiError && e.status === 404) {
+          setState({ status: "missing", message: e.problem.message });
+        } else {
+          setState({ status: "error", problem: problemOf(e) });
+        }
+      });
+    return () => {
+      live = false;
+    };
+  }, [sha256]);
+  return state;
+}

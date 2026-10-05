@@ -7,8 +7,11 @@
  * engine produced it: model or motif. POST /demo/predict, then poll (ADR-0001).
  */
 import { useEffect, useState } from "react";
-import { predict, useJob } from "../services/demoApi";
+import { predict, useJob, type AttributionTrack, type Result } from "../services/demoApi";
 import { SequenceTrack } from "../components/SequenceTrack";
+import { DownloadButtons } from "../components/DownloadButtons";
+import { SourceSummary } from "../components/SourceSummary";
+import { StructurePanel } from "../components/StructurePanel";
 import {
   Card,
   Chip,
@@ -22,27 +25,37 @@ import {
   useExamples,
 } from "../components/ui";
 
+type Mode = "attribution" | "attention" | "signal" | "hydropathy";
+
+/** The track a mode draws, so its claim can be printed beside it. Hydropathy has none. */
+function trackFor(mode: Mode, r: Result): AttributionTrack | undefined {
+  if (mode === "attribution") return r.attribution_tracks[r.attribution_method];
+  if (mode === "attention") return r.attribution_tracks.pooling_attention;
+  if (mode === "signal") return r.signal_track;
+  return undefined;
+}
+
 export default function Inspector({
   seed,
   onScan,
 }: {
-  seed: { sequence: string; group: string } | null;
+  seed: { sequence: string; group: string; id?: string; autorun?: boolean } | null;
   onScan: (seq: string, group: string) => void;
 }) {
   const { examples } = useExamples();
   const [seq, setSeq] = useState(seed?.sequence ?? "");
   const [group, setGroup] = useState(seed?.group ?? "eukaryote");
-  const [mode, setMode] = useState<"attribution" | "attention" | "signal" | "hydropathy">(
-    "attribution",
-  );
-  const { run, job, done, error, busy } = useJob();
+  const [mode, setMode] = useState<Mode>("attribution");
+  const [cursor, setCursor] = useState(0);
+  const { run, job, done, error, accepted, busy } = useJob();
 
   useEffect(() => {
     if (seed) {
       setSeq(seed.sequence);
       setGroup(seed.group);
+      if (seed.autorun) void run(...predict(seed.sequence, seed.group, seed.id));
     }
-  }, [seed]);
+  }, [seed, run]);
 
   useEffect(() => {
     const ex = examples[0];
@@ -53,6 +66,10 @@ export default function Inspector({
   }, [examples, seq]);
 
   const r = done?.results?.[0] ?? null;
+  const track = r ? trackFor(mode, r) : undefined;
+  const inSample =
+    r !== null &&
+    examples.some((e) => e.sequence_sha256 === r.sequence_sha256 && e.in_training_set === true);
 
   return (
     <>
@@ -91,11 +108,26 @@ export default function Inspector({
           }}
           spellCheck={false}
         />
-        <JobState job={job} error={error} />
+        <JobState job={job} error={error} accepted={accepted} />
       </Card>
 
       {r && (
         <>
+          {inSample && (
+            <div className="flag warning">
+              <strong>In-sample sequence.</strong> The heads were fitted on this sequence, so this
+              result is not evidence of accuracy.
+            </div>
+          )}
+          <SourceSummary result={r} />
+          {!r.evidence_status.available && (
+            <div className="flag uncertain" role="status">
+              <strong>Homology evidence is unavailable.</strong>{" "}
+              {r.evidence_status.unavailable_reason ?? "No reason was reported"}. The model results
+              on this page are unaffected, and nothing was substituted for the missing evidence.
+            </div>
+          )}
+          <DownloadButtons result={r} jobId={done?.job_id ?? "unknown"} />
           <div className="grid two">
             <Card
               title="Localization"
@@ -187,7 +219,7 @@ export default function Inspector({
           <Card
             title="Per-residue explanation"
             aside={
-              <div className="row">
+              <div className="row" role="group" aria-label="Per-residue explanation method">
                 <span
                   className={`badge ${r.attribution_source}`}
                   title={
@@ -202,9 +234,9 @@ export default function Inspector({
                   onClick={() => {
                     setMode("attribution");
                   }}
-                  disabled={mode === "attribution"}
+                  aria-pressed={mode === "attribution"}
                 >
-                  attribution
+                  {r.attribution_method.replace("_", " ")}
                 </button>
                 <button
                   className="btn"
@@ -212,7 +244,7 @@ export default function Inspector({
                   onClick={() => {
                     setMode("attention");
                   }}
-                  disabled={mode === "attention"}
+                  aria-pressed={mode === "attention"}
                 >
                   attention
                 </button>
@@ -222,7 +254,7 @@ export default function Inspector({
                   onClick={() => {
                     setMode("signal");
                   }}
-                  disabled={mode === "signal"}
+                  aria-pressed={mode === "signal"}
                 >
                   signal peptide
                 </button>
@@ -231,7 +263,7 @@ export default function Inspector({
                   onClick={() => {
                     setMode("hydropathy");
                   }}
-                  disabled={mode === "hydropathy"}
+                  aria-pressed={mode === "hydropathy"}
                 >
                   hydropathy
                 </button>
@@ -246,13 +278,26 @@ export default function Inspector({
               </div>
             }
           >
-            <SequenceTrack result={r} mode={mode} />
+            <SequenceTrack result={r} mode={mode} onCursor={setCursor} />
             <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
               {mode === "hydropathy"
                 ? "Kyte-Doolittle hydropathy from the motif engine, not a trained-model output."
-                : "Shows what the trained head's score depended on; not causal importance and not a binding site. Comparable within this sequence and label only."}
+                : (track?.claim ?? "")}
+            </p>
+            {track && (
+              <p className="mono muted" style={{ fontSize: "var(--text-xs)" }}>
+                method {track.method} · target {track.target} ·{" "}
+                {track.signed ? "signed" : "unsigned"} · {String(track.forward_passes)} forward
+                passes
+              </p>
+            )}
+            <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+              Comparable within this sequence and label only. It describes the trained head, not
+              causal importance and not a binding site.
             </p>
           </Card>
+
+          <StructurePanel result={r} mode={mode} cursor={cursor} />
 
           <Card title="Consistency check">
             <Flags flags={r.consistency_flags} />
