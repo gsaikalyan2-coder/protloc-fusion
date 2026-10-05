@@ -37,6 +37,8 @@ from uuid import UUID
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
 
 from protloc.domain.types import (
+    ATTRIBUTION_CLAIMS,
+    AttributionMethod,
     ConfidenceBand,
     EngineSource,
     JobStatus,
@@ -51,7 +53,7 @@ from protloc.domain.types import (
 #: a narrowed type. Adding an optional field does not change it. It lives here
 #: rather than in ``api/`` because it versions the contract, and the contract is
 #: what this module is.
-API_VERSION = "1.2.0"
+API_VERSION = "1.3.0"
 
 # Every model forbids unknown fields. A response a client cannot fully account for
 # is a response whose shape the OpenAPI document does not actually describe, and
@@ -358,9 +360,11 @@ class ResidueAttribution(BaseModel):
     )
     score: float = Field(
         description=(
-            "Signed attribution. Positive supports the predicted label, negative "
-            "argues against it. Comparable within one task and sequence only — "
-            "never across tasks, and never as a probability."
+            "Per-residue weight. What it means depends on the task's attribution method; each "
+            "method's claim is: "
+            + " ".join(f"[{m.value}] {text}" for m, text in ATTRIBUTION_CLAIMS.items())
+            + " Comparable within one task and sequence only — never across tasks, and never "
+            "as a probability."
         ),
     )
 
@@ -373,6 +377,16 @@ class TaskAttribution(BaseModel):
     task: TaskName = Field(description="The head being explained.")
     residues: list[ResidueAttribution] = Field(
         description="One entry per residue, in sequence order.",
+    )
+    source: EngineSource | None = Field(
+        default=None,
+        description="model when a trained head produced the weights, motif otherwise. Absent in "
+        "a payload from before Phase 15.",
+    )
+    method: AttributionMethod | None = Field(
+        default=None,
+        description="How the weights were computed; the claim each method makes is in the "
+        "description of ResidueAttribution.score. Absent in a payload from before Phase 15.",
     )
 
 

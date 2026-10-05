@@ -43,7 +43,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     service.configure(None)
 
 
-app = FastAPI(title="ProtLoc Fusion", version="1.2.0", lifespan=lifespan)
+app = FastAPI(title="ProtLoc Fusion", version="1.3.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=os.getenv("DEMO_CORS", "http://localhost:5174,http://127.0.0.1:5174").split(","),
@@ -174,8 +174,9 @@ def version() -> dict[str, Any]:
             "scored; the gallery lists examples (ADR-0016).",
             "Numbers are from a 500-sequence subset, not comparable to DeepLoc or to the "
             "Phase 8 full-corpus numbers.",
-            "Membrane type, the scanner and the residue attribution are motif-engine outputs "
-            "and say so.",
+            "Membrane type and the scanner are motif-engine outputs and say so. The residue "
+            "attribution is computed from the trained localization head (method named in the "
+            "result); the hydropathy track is a motif output.",
         ],
     }
 

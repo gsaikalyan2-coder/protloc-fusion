@@ -108,6 +108,19 @@ export interface EvidenceAgreement {
   homology_only: string[];
   agrees: boolean;
 }
+export type AttributionMethod = "pooling_attention" | "occlusion" | "crf_marginal" | "motif";
+export interface AttributionTrack {
+  method: AttributionMethod;
+  signed: boolean;
+  target: string;
+  values: number[];
+  window: number | null;
+  stride: number | null;
+  forward_passes: number;
+  scored_length: number;
+  /** What this method does and does not show; shown as the tooltip. */
+  claim: string;
+}
 export interface Result {
   id: string;
   length: number;
@@ -141,9 +154,20 @@ export interface Result {
   go_function: GoPrediction[];
   features: Record<string, unknown>;
   hydropathy: number[];
+  /** The default attribution track for the top label (see attribution_method). */
   attribution: number[];
-  /** Which engine produced the residue attribution (motif until Phase 15). */
+  /** Which engine produced the residue attribution: model since Phase 15. */
   attribution_source: EngineSource;
+  /** How the default track was computed; each method makes a different claim. */
+  attribution_method: AttributionMethod;
+  /** True when scores can be negative (occlusion): positive supports the label. */
+  attribution_signed: boolean;
+  /** The localization code the attribution explains. */
+  attribution_target: string;
+  /** Every track computed for the top label, keyed by method. */
+  attribution_tracks: Record<string, AttributionTrack>;
+  /** The CRF signal-peptide posterior per residue (method crf_marginal). */
+  signal_track: AttributionTrack;
   consistency_flags: Flag[];
   /** Swiss-Prot hits (source: homology). Empty when the index is unavailable. */
   evidence: Hit[];
