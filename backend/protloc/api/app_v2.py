@@ -14,19 +14,30 @@ Kill switch: ``PROTLOC_DEMO_ENABLED=0`` makes every ``/demo`` route return 503.
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
+import contextlib
 from contextlib import asynccontextmanager
 import os
 import time
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from protloc.config.serving import get_serving_settings
+from protloc.domain.errors import (
+    ERRORS,
+    MAX_REQUEST_CHARS,
+    MAX_SEQUENCE_LENGTH,
+    ApiError,
+    api_code_for_refusal,
+    error_object,
+)
 from protloc.inference import service, structures
 from protloc.inference.engine import EngineRefusal, load_engine
+from protloc.inference.fasta import parse_fasta_strict
 from protloc.inference.trust import trust_payload
 from protloc.jobs import queue as jobs
 
@@ -52,20 +63,59 @@ app.add_middleware(
 )
 
 
+def _error_response(error: ApiError) -> JSONResponse:
+    """The structured error body; provenance is added only when an engine is loaded."""
+    body = error.body()
+    with contextlib.suppress(Exception):  # no engine yet (startup) must not hide the error
+        body.update(service.provenance())
+    return JSONResponse(body, status_code=error.spec.status)
+
+
+@app.exception_handler(ApiError)
+async def api_error_handler(_request: Request, error: ApiError) -> JSONResponse:
+    """Every catalogued failure answers with its status and a stable code."""
+    return _error_response(error)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_handler(_request: Request, error: RequestValidationError) -> JSONResponse:
+    """Schema failures keep FastAPI's ``detail`` list and gain a stable code."""
+    items = error.errors()
+    kinds = {str(i.get("type")) for i in items}
+    last = [str(i.get("loc", ("",))[-1]) for i in items]
+    if "string_too_long" in kinds and "sequence" in last:
+        code = "sequence_too_long"
+    elif "string_too_long" in kinds:
+        code = "request_too_large"
+    else:
+        code = "invalid_input"
+    spec = ERRORS[code]
+    text = "; ".join(
+        f"{'.'.join(str(p) for p in i.get('loc', ()) if p != 'body')}: {i.get('msg')}"
+        for i in items
+    )
+    body: dict[str, Any] = {
+        "detail": [
+            {"loc": list(i.get("loc", ())), "msg": str(i.get("msg")), "type": str(i.get("type"))}
+            for i in items
+        ],
+        "error": error_object(spec, text),
+    }
+    return JSONResponse(body, status_code=spec.status)
+
+
 @app.middleware("http")
 async def kill_switch(request: Request, call_next: Any) -> Any:
     """Return 503 on every /demo route when the kill switch is set."""
     if not ENABLED and request.url.path.startswith("/demo"):
-        return JSONResponse(
-            {"detail": "Disabled (PROTLOC_DEMO_ENABLED=0)", **service.provenance()}, 503
-        )
+        return _error_response(ApiError("demo_disabled", "Disabled (PROTLOC_DEMO_ENABLED=0)"))
     return await call_next(request)
 
 
 class PredictIn(BaseModel):
     """One sequence."""
 
-    sequence: str = Field(min_length=1, max_length=20000)
+    sequence: str = Field(min_length=1, max_length=MAX_REQUEST_CHARS)
     organism_group: str = "eukaryote"
     id: str = "query"
 
@@ -89,7 +139,7 @@ class StructureOut(BaseModel):
 class BatchIn(BaseModel):
     """A FASTA text."""
 
-    fasta: str = Field(min_length=1, max_length=2_000_000)
+    fasta: str = Field(min_length=1, max_length=MAX_REQUEST_CHARS)
     organism_group: str = "eukaryote"
 
 
@@ -101,6 +151,29 @@ class ScanIn(BaseModel):
     target: str | None = None
     mutations: str = ""
     substitute: str = "A"
+
+
+def _failure(record_id: str, refusal: EngineRefusal) -> dict[str, Any]:
+    """One refused record of a batch, with its stable code."""
+    spec = ERRORS[api_code_for_refusal(refusal.code)]
+    return {
+        "id": record_id,
+        "error": str(refusal),
+        "code": spec.code,
+        "retryable": spec.retryable,
+    }
+
+
+def _degraded(results: list[dict[str, Any]]) -> dict[str, Any]:
+    """Flag a job whose evidence search was unavailable: the predictions are unchanged."""
+    reasons = sorted(
+        {
+            str(r["evidence_status"]["unavailable_reason"])
+            for r in results
+            if not r["evidence_status"]["available"]
+        }
+    )
+    return {"degraded": bool(reasons), "degraded_reasons": reasons}
 
 
 def _max_batch() -> int:
@@ -120,15 +193,25 @@ def _accepted(sub: dict[str, Any], count: int, ahead: int) -> JSONResponse:
 
 def _check_group(group: str) -> None:
     if group not in service.ORGANISM_GROUPS:
-        raise HTTPException(400, f"Unknown organism_group '{group}'")
+        raise ApiError("unknown_group", f"Unknown organism_group '{group}'")
+
+
+def _check_length(sequence: str) -> None:
+    """Refuse an over-long sequence before it is queued (whitespace is not counted)."""
+    length = len("".join(sequence.split()))
+    if length > MAX_SEQUENCE_LENGTH:
+        raise ApiError(
+            "sequence_too_long",
+            f"The sequence has {length} residues; the limit is {MAX_SEQUENCE_LENGTH}.",
+        )
 
 
 def _check_served(group: str) -> None:
     _check_group(group)
     if group not in service.engine().groups:
         covered = ", ".join(service.engine().groups)
-        raise HTTPException(
-            422,
+        raise ApiError(
+            "group_not_served",
             f"No trained head covers '{group}': the training corpus is eukaryotic "
             f"(served groups: {covered}).",
         )
@@ -136,8 +219,8 @@ def _check_served(group: str) -> None:
 
 def _check_cached(sequence: str) -> None:
     if not service.engine().has_states(sequence):
-        raise HTTPException(
-            422,
+        raise ApiError(
+            "not_cached",
             "This build scores only sequences whose ESM-2 states are cached "
             f"({service.engine().cached_sequences} of them, ADR-0016). Pick a gallery example.",
         )
@@ -152,6 +235,7 @@ def health() -> dict[str, Any]:
         "queue_depth": jobs.depth(),
         "job_retention_seconds": jobs.RETENTION_SECONDS,
         "evidence": service.engine().evidence_state,
+        "degraded": not service.engine().evidence_state["available"],
         **service.provenance(),
     }
 
@@ -183,6 +267,10 @@ def version() -> dict[str, Any]:
             "calibration_version"
         ],
         "max_batch": _max_batch(),
+        "max_sequence_length": MAX_SEQUENCE_LENGTH,
+        "error_codes": {
+            code: {"status": s.status, "retryable": s.retryable} for code, s in ERRORS.items()
+        },
         "evidence": engine.evidence_state,
         "rules": service.engine().rules,
         "limits": [
@@ -222,15 +310,15 @@ _STRUCTURE_NOTE = (
 def get_structure(sequence_sha256: str) -> dict[str, Any]:
     """The AlphaFold backbone of a cached sequence, served only if its bytes match the manifest."""
     if not structures.is_sha256(sequence_sha256):
-        raise HTTPException(400, "sequence_sha256 must be 64 lowercase hex characters")
+        raise ApiError("structure_bad_hash", "sequence_sha256 must be 64 lowercase hex characters")
     store = structures.store_for(get_serving_settings().DATA_ROOT / "structures")
     try:
         document = store.get(sequence_sha256)
     except structures.StructureError as exc:
-        raise HTTPException(500, f"Structure refused: {exc}") from exc
+        raise ApiError("structure_refused", f"Structure refused: {exc}") from exc
     if document is None:
-        raise HTTPException(
-            404,
+        raise ApiError(
+            "structure_not_found",
             "No structure for this sequence: AlphaFold DB has no model for it, or its sequence "
             "differs from the one scored here.",
         )
@@ -241,6 +329,7 @@ def get_structure(sequence_sha256: str) -> dict[str, Any]:
 def post_predict(body: PredictIn) -> JSONResponse:
     """Queue one sequence (a job of size one)."""
     _check_served(body.organism_group)
+    _check_length(body.sequence)
     _check_cached(body.sequence)
     ahead = jobs.pending_sequences()
 
@@ -252,6 +341,7 @@ def post_predict(body: PredictIn) -> JSONResponse:
             "results": [r],
             "summary": [service.summarize(r)],
             "landscape": service.landscape([r]),
+            **_degraded([r]),
         }
 
     return _accepted(jobs.submit("predict", 1, run), 1, ahead)
@@ -261,21 +351,23 @@ def post_predict(body: PredictIn) -> JSONResponse:
 def post_batch(body: BatchIn) -> JSONResponse:
     """Queue a FASTA of up to MAX_BATCH_SEQUENCES sequences (client-side chunking, ADR-0008)."""
     _check_served(body.organism_group)
-    try:
-        recs = service.parse_fasta(body.fasta, _max_batch())
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
+    recs = parse_fasta_strict(body.fasta, _max_batch(), MAX_SEQUENCE_LENGTH)
     ahead = jobs.pending_sequences()
 
     def run(progress: Any, cancelled: Any) -> dict[str, Any]:
         if cancelled():
-            return {"mode": "batch", "results": [], "summary": [], "landscape": {}, "failures": []}
+            return {
+                "mode": "batch",
+                "results": [],
+                "summary": [],
+                "landscape": {},
+                "failures": [],
+                **_degraded([]),
+            }
         outcome = service.predict_many(recs, body.organism_group)
         results = [o for o in outcome if not isinstance(o, EngineRefusal)]
         failures = [
-            {"id": recs[i][0], "error": str(o)}
-            for i, o in enumerate(outcome)
-            if isinstance(o, EngineRefusal)
+            _failure(recs[i][0], o) for i, o in enumerate(outcome) if isinstance(o, EngineRefusal)
         ]
         progress(len(recs))
         summary = sorted((service.summarize(r) for r in results), key=lambda s: -s["attention"])
@@ -285,6 +377,7 @@ def post_batch(body: BatchIn) -> JSONResponse:
             "summary": summary,
             "landscape": service.landscape(results),
             "failures": failures,
+            **_degraded(results),
         }
 
     return _accepted(jobs.submit("batch", len(recs), run), len(recs), ahead)
@@ -294,6 +387,7 @@ def post_batch(body: BatchIn) -> JSONResponse:
 def post_scan(body: ScanIn) -> JSONResponse:
     """Queue an in-silico scan. The scanner is the motif engine and says so."""
     _check_group(body.organism_group)
+    _check_length(body.sequence)
     ahead = jobs.pending_sequences()
 
     def run(progress: Any, cancelled: Any) -> dict[str, Any]:
@@ -311,11 +405,14 @@ def get_job(job_id: str) -> dict[str, Any]:
     """Status, timing and (when completed) the results."""
     j = jobs.get(job_id)
     if j is None:
-        raise HTTPException(404, "Unknown job_id")
+        raise ApiError("unknown_job", "Unknown job_id")
     if jobs.expired(j):
-        raise HTTPException(410, "Result expired")
+        raise ApiError("result_expired", "Result expired")
     body = {k: v for k, v in j.items() if k != "result"}
     body["age_seconds"] = round(time.time() - j["created_at"], 1)
+    if j["status"] == "failed":
+        spec = ERRORS[str(j.get("error_code") or "job_failed")]
+        body["error_info"] = error_object(spec, str(j["error"]))
     if j["status"] == "completed":
         body.update(j["result"])
     body.update(service.provenance())
@@ -327,5 +424,5 @@ def post_cancel(job_id: str) -> dict[str, Any]:
     """Cancel a queued or running job."""
     j = jobs.cancel(job_id)
     if j is None:
-        raise HTTPException(404, "Unknown job_id")
+        raise ApiError("unknown_job", "Unknown job_id")
     return {"job_id": job_id, "status": j["status"], **service.provenance()}

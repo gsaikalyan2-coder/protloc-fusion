@@ -357,10 +357,10 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 13  — Homology evidence (MMseqs2 index)             ENH   5.0 h   done 2026-10-04 (branch; 500-sequence subset queries, full Swiss-Prot database; you tag v0.13.0)
 [x] Phase 14  — Swap the engine: model behind the same API     MVP   6.0 h   done 2026-10-05 (branch; 500-sequence subset only, cache-only encoder; you tag v0.14.0)
 [x] Phase 15  — Attribution from the real model                ENH   4.0 h   done 2026-10-05 (branch; 500-sequence subset only; you tag v0.15.0)
-[ ] Phase 16  — Frontend upgrade & landing page                MVP   7.0 h   <-- NEXT
-[ ] Phase 17  — Limits, errors, degraded states                ENH   3.0 h
-[ ] Phase 18  — Nightingale visual rebuild                     ENH   5.0 h
-[ ] Phase 19  — Deploy backend + frontend                      MVP   5.0 h
+[x] Phase 16  — Frontend upgrade & landing page                MVP   7.0 h   done (PR #15, v0.16.0; console dock and Proteus restyle dropped by decision)
+[x] Phase 17  — Limits, errors, degraded states                ENH   3.0 h   done 2026-10-05 (branch; merged with 18; you tag v0.18.0)
+[x] Phase 18  — Nightingale visual rebuild                     ENH   5.0 h   done 2026-10-05 as the fallback: Nightingale deferred (ADR-0018)
+[ ] Phase 19  — Deploy backend + frontend                      MVP   5.0 h   <-- NEXT
 [ ] Phase 20  — Eval report, docs, v1.0.0 release              MVP   4.0 h
 ```
 
@@ -392,6 +392,8 @@ docs say so rather than promising durability the host cannot deliver.
 | 0014 | GO head: multi-label molecular function, evidence policy experimental + curated, term floor 20 (12 terms), open-world labels, three floors, subset-only numbers | Accepted 2026-10-04 | 12, 13, 14 |
 | 0015 | Homology evidence: local MMseqs2 index, GO transfer from hits, never feeds a score | Accepted 2026-10-04 | 13, 14 |
 | 0016 | Serving engine: numpy heads over cached ESM-2 states, served groups, one engine config, refuse to start | Accepted 2026-10-05 | 14, 15, 19 |
+| 0017 | Residue attribution from the trained heads, each served only after a frozen deletion test | Accepted 2026-10-05 | 15 |
+| 0018 | Nightingale deferred; the hand-built sequence viewer is polished instead | Accepted 2026-10-05 | 18 |
 
 ### Phase 0 close — 2026-09-28
 
@@ -545,6 +547,12 @@ The served per-residue track now comes from the trained localization head (ADR-0
 Mean localization deletion drop at k=5/10/20/40: occlusion 0.058/0.085/0.112/0.136, pooling attention 0.045/0.077/0.114/0.149, motif 0.022/0.047/0.074/0.098. Signal-peptide AUROC: CRF 0.9990, motif hydropathy 0.863, position-only prior 0.9936 (so much of the CRF signal is N-terminal position).
 Cost: 40-sequence batch 5.97 s to 11.40 s (0.149 to 0.285 s per sequence); single p95 2.59 s to 3.52 s (possibly noise, n=33). `MAX_BATCH_SEQUENCES` stays 20. Hashes: protocol `67b09db9f9720325703e1e8d40da4540b3f542a062dfa3e77cc9a8d6a4652750`, metrics `frozen_sha256` `2dfae0a6bb77782abc9a680034e6aacd512ea9a08e7a011e48a3b77d57f37e2e`. No new dependency.
 UNVERIFIED: biological meaning of any track, anything beyond 500 sequences, host timing, whether the single-job p95 shift is real. Detail: `docs/phases/15.md`.
+
+### Phase 17-18 close — 2026-10-05
+
+Merged phase (one branch, `v0.18.0`). **Phase 17:** `domain/errors.py` is a catalog of 20 stable codes (code, HTTP status, message, retryable); every failure path in `api/app_v2.py` raises one, and responses carry `error.code` beside the old `detail`; failed jobs carry `error_info`, batch `failures[]` carry `code`. `inference/fasta.py` parses FASTA strictly and reports the line of the first fault. Limits: 5,000 residues per sequence (`MAX_SEQUENCE_LENGTH`), 2,000,000 characters per request field, `MAX_BATCH_SEQUENCES` per batch; all reported in `/demo/version` with the code table. Evidence unavailable returns the prediction unchanged with `degraded` and `degraded_reasons` (and `/demo/health` `degraded`); a sequence outside the 500 cached is refused `not_cached` and never queued or guessed. Frontend: `problems.ts` maps by code with a status fallback, `ProblemNotice` draws "Try again" only when `retryable` and the screen can resubmit, `useJob().retry` resubmits the last request, Triage groups batch failures per code.
+**Phase 18:** Nightingale was **not** adopted (ADR-0018); `SequenceTrack` keeps its listbox, keyboard model, 3D cursor link and tokens, and gains blocks of ten with a residue ruler and a swatch legend. No dependency added. Scope: "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers"; no metric or timing was produced in this phase.
+Checks (maintainer run): ruff, strict mypy and pytest clean (5 skipped); frontend lint clean, 89 Vitest tests and the build pass. UNVERIFIED: the visual review in light and dark against the live backend, a real killed evidence process, `openapi.yaml` drift. Detail: `docs/phases/17-18.md`.
 
 ### Two things a cold session must know
 

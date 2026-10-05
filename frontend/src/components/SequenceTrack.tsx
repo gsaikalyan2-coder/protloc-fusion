@@ -9,7 +9,14 @@
  * Signal-peptide region is underlined, the cleavage site is a 2px achromatic rule
  * (DESIGN.md: a coordinate is not a category).
  */
-import { useEffect, useId, useState, type KeyboardEvent, type ReactElement } from "react";
+import {
+  useEffect,
+  useId,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type ReactElement,
+} from "react";
 import type { Result } from "../services/demoApi";
 import { locText } from "./ui";
 
@@ -111,6 +118,56 @@ export function describeResidue(
   return parts.join(", ");
 }
 
+/** Residues per block. Each block carries its first residue number above it, like a ruler. */
+export const BLOCK = 10;
+
+/** Block start indices (0-based) for a sequence of `length` residues. */
+export function blockStarts(length: number): number[] {
+  return Array.from({ length: Math.ceil(length / BLOCK) }, (_, k) => k * BLOCK);
+}
+
+/** One legend entry: a swatch drawn from tokens by app.css, and what it means. */
+interface LegendItem {
+  swatch:
+    | "support"
+    | "against"
+    | "shade"
+    | "hydrophobic"
+    | "hydrophilic"
+    | "aligned"
+    | "signal"
+    | "cleavage"
+    | "tm";
+  text: string;
+}
+
+/** The legend for a mode: only what the viewer can actually be showing. */
+export function legendItems(
+  mode: Mode,
+  track: Numeric | null,
+  cleavage: number | null,
+): LegendItem[] {
+  const items: LegendItem[] = [];
+  if (track?.signed) {
+    items.push({ swatch: "support", text: "supports the label" });
+    items.push({ swatch: "against", text: "argues against it (dotted top rule)" });
+  } else if (track) {
+    items.push({ swatch: "shade", text: `${track.method}: stronger shade, larger value` });
+  } else if (mode === "hydropathy") {
+    items.push({ swatch: "hydrophobic", text: "hydrophobic" });
+    items.push({ swatch: "hydrophilic", text: "hydrophilic" });
+  } else {
+    items.push({ swatch: "aligned", text: "inside an aligned block" });
+  }
+  items.push({ swatch: "signal", text: "signal-peptide region" });
+  items.push({
+    swatch: "cleavage",
+    text: cleavage !== null ? `cleavage site (after ${String(cleavage)})` : "cleavage site (none)",
+  });
+  items.push({ swatch: "tm", text: "transmembrane segment" });
+  return items;
+}
+
 /* Keys: Left/Right move one residue, Up/Down ten, PageUp/PageDown fifty, Home/End the ends. */
 const STEP: Record<string, number> = {
   ArrowRight: 1,
@@ -155,7 +212,7 @@ export function SequenceTrack({
   // Keep the cursor residue visible while the viewer has focus.
   useEffect(() => {
     const el = document.getElementById(rid(at));
-    if (el && el.parentElement === document.activeElement && "scrollIntoView" in el) {
+    if (el && el.closest('[role="listbox"]') === document.activeElement && "scrollIntoView" in el) {
       el.scrollIntoView({ block: "nearest" });
     }
   });
@@ -182,38 +239,52 @@ export function SequenceTrack({
         aria-activedescendant={last >= 0 ? rid(at) : undefined}
         onKeyDown={onKeyDown}
       >
-        {seq.split("").map((aa, i) => {
-          const inSp = sp && i >= sp[0] && i < sp[1];
-          const inTm = tms.some(([a, b]) => i >= a && i < b);
-          return (
-            <span
-              key={i}
-              id={rid(i)}
-              role="option"
-              aria-selected={i === at}
-              aria-label={describeResidue(result, mode, i, blocks)}
-              className={i === at ? "cursor" : undefined}
-              onClick={() => {
-                setCursor(i);
-              }}
-              style={{
-                background: shade(mode, result, i, blocks, track, scale),
-                borderBottom: inSp
-                  ? "2px solid var(--state-warn)"
-                  : inTm
-                    ? `2px solid ${locText("mem")}`
-                    : "2px solid transparent",
-                borderTop:
-                  track?.signed && (track.values[i] ?? 0) < 0
-                    ? "2px dotted var(--state-block)"
-                    : "2px solid transparent",
-                borderLeft: cs !== null && i === cs ? "2px solid var(--text-primary)" : undefined,
-              }}
-            >
-              {aa}
+        {blockStarts(seq.length).map((start) => (
+          <span key={start} className="seq-block" role="presentation">
+            <span className="seq-pos mono" aria-hidden="true">
+              {start + 1}
             </span>
-          );
-        })}
+            <span className="seq-res" role="presentation">
+              {seq
+                .slice(start, start + BLOCK)
+                .split("")
+                .map((aa, k) => {
+                  const i = start + k;
+                  const inSp = sp && i >= sp[0] && i < sp[1];
+                  const inTm = tms.some(([a, b]) => i >= a && i < b);
+                  return (
+                    <span
+                      key={i}
+                      id={rid(i)}
+                      role="option"
+                      aria-selected={i === at}
+                      aria-label={describeResidue(result, mode, i, blocks)}
+                      className={i === at ? "cursor" : undefined}
+                      onClick={() => {
+                        setCursor(i);
+                      }}
+                      style={{
+                        background: shade(mode, result, i, blocks, track, scale),
+                        borderBottom: inSp
+                          ? "2px solid var(--state-warn)"
+                          : inTm
+                            ? `2px solid ${locText("mem")}`
+                            : "2px solid transparent",
+                        borderTop:
+                          track?.signed && (track.values[i] ?? 0) < 0
+                            ? "2px dotted var(--state-block)"
+                            : "2px solid transparent",
+                        borderLeft:
+                          cs !== null && i === cs ? "2px solid var(--text-primary)" : undefined,
+                      }}
+                    >
+                      {aa}
+                    </span>
+                  );
+                })}
+            </span>
+          </span>
+        ))}
       </div>
       {last >= 0 && (
         <p className="mono" style={{ fontSize: "var(--text-xs)", margin: "var(--space-2) 0" }}>
@@ -225,16 +296,18 @@ export function SequenceTrack({
           Showing first {limit} of {result.length} residues.
         </p>
       )}
-      <div className="row" style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}>
-        <span>underline: signal region</span>
-        <span>vertical rule: cleavage site {cs !== null ? `(${cs})` : "(none)"}</span>
-        <span>shade: {track ? track.method : mode}</span>
-        {track?.signed && (
-          <span>
-            accent shade: supports the label · alert shade with dotted top rule: argues against
-          </span>
-        )}
-      </div>
+      <ul
+        className="seq-legend"
+        aria-label="Legend"
+        style={{ "--swatch": locText(result.top_location) } as CSSProperties}
+      >
+        {legendItems(mode, track, cs).map((item) => (
+          <li key={item.swatch}>
+            <span className={`seq-swatch sw-${item.swatch}`} aria-hidden="true" />
+            {item.text}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

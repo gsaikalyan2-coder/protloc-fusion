@@ -31,7 +31,7 @@ export default function Evidence() {
   const { examples } = useExamples();
   const [seq, setSeq] = useState("");
   const [group, setGroup] = useState("eukaryote");
-  const { run, job, done, error, accepted, busy } = useJob();
+  const { run, retry, job, done, error, accepted, busy } = useJob();
 
   useEffect(() => {
     const ex = examples[2] ?? examples[0];
@@ -88,7 +88,7 @@ export default function Evidence() {
           }}
           spellCheck={false}
         />
-        <JobState job={job} error={error} accepted={accepted} />
+        <JobState job={job} error={error} accepted={accepted} onRetry={retry} />
       </Card>
 
       {r && status && !status.available && (

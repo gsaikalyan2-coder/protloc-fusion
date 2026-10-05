@@ -10,7 +10,7 @@ import {
   type Provenance,
   type TaskSource,
 } from "../services/demoApi";
-import { describeError, type Problem } from "../services/problems";
+import { degradedProblem, describeError, type Problem } from "../services/problems";
 
 /* Compartment colour tokens are generated as --loc-<code>-fill / -ink (docs/DESIGN.md section 2).
    A code with no token (PCM, not served today) falls back to neutral instead of to nothing. */
@@ -129,14 +129,44 @@ export function ProvenanceBar({ p }: { p: Provenance | null }) {
   );
 }
 
-const BLOCKING: readonly string[] = ["unreachable", "server_error", "job_failed"];
+const BLOCKING: readonly string[] = ["unreachable", "server_error", "job_failed", "disabled"];
 
-/** A failure stated in words: what happened, why, and what to do. Never a stack trace. */
-export function ProblemNotice({ problem }: { problem: Problem }): ReactElement {
+/**
+ * A failure stated in words: what happened, why, and what to do. Never a stack trace. The retry
+ * button appears only when the server said a retry can help (`problem.retryable`) AND the
+ * screen can actually resubmit (`onRetry`); a button that cannot change the outcome is not drawn.
+ */
+export function ProblemNotice({
+  problem,
+  onRetry,
+}: {
+  problem: Problem;
+  onRetry?: (() => void) | undefined;
+}): ReactElement {
+  const blocking = BLOCKING.includes(problem.kind);
   return (
-    <div className={`flag ${BLOCKING.includes(problem.kind) ? "blocked" : "warning"}`} role="alert">
+    <div
+      className={`flag ${blocking ? "blocked" : "warning"}`}
+      role={problem.kind === "evidence_degraded" ? "status" : "alert"}
+      data-problem-kind={problem.kind}
+    >
       <strong>{problem.title}.</strong> {problem.message}
       <div style={{ fontSize: "var(--text-sm)", marginTop: "var(--space-1)" }}>{problem.hint}</div>
+      {problem.code && (
+        <div className="muted mono" style={{ fontSize: "var(--text-xs)" }}>
+          code: {problem.code}
+        </div>
+      )}
+      {problem.retryable && onRetry && (
+        <button
+          type="button"
+          className="btn"
+          style={{ marginTop: "var(--space-2)" }}
+          onClick={onRetry}
+        >
+          Try again
+        </button>
+      )}
     </div>
   );
 }
@@ -146,13 +176,19 @@ export function JobState({
   job,
   error,
   accepted,
+  onRetry,
 }: {
   job: JobBody | null;
   error: Problem | null;
   accepted?: Accepted | null;
+  onRetry?: (() => void) | undefined;
 }): ReactElement | null {
-  if (error) return <ProblemNotice problem={error} />;
-  if (job?.status === "completed") return null;
+  if (error) return <ProblemNotice problem={error} onRetry={onRetry} />;
+  if (job?.status === "completed") {
+    return job.degraded ? (
+      <ProblemNotice problem={degradedProblem(job.degraded_reasons ?? [])} />
+    ) : null;
+  }
   if (!job && !accepted) return null;
   const wait = accepted?.estimated_wait_seconds;
   const queued = (job?.status ?? "queued") === "queued";

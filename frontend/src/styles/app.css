@@ -297,7 +297,6 @@ tr.on td {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   line-height: 1.9;
-  word-break: break-all;
 }
 .seq span {
   padding: 1px 0;
@@ -424,4 +423,85 @@ ul.plain li {
   height: 10px;
   margin-right: var(--space-1);
   border-radius: 50%;
+}
+
+/* Phase 17-18: the sequence viewer is blocks of ten residues, each under its first residue
+   number, so any width wraps cleanly and a position can be read off without counting. */
+.seq {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3);
+  max-height: 22rem;
+  overflow-y: auto;
+  background: var(--surface-1);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+}
+.seq-block {
+  display: inline-flex;
+  flex-direction: column;
+}
+.seq .seq-pos {
+  padding: 0;
+  margin-bottom: var(--space-1);
+  color: var(--text-muted);
+  line-height: 1.3;
+  border-bottom: var(--border-width) solid var(--border);
+  user-select: none;
+}
+.seq .seq-res {
+  padding: 0;
+  white-space: nowrap;
+}
+
+.seq-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.seq-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.seq-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  box-sizing: border-box;
+  border-radius: var(--radius-sm);
+}
+.sw-support {
+  background: color-mix(in srgb, var(--accent) var(--shade-max), transparent);
+}
+.sw-against {
+  background: color-mix(in srgb, var(--state-block) var(--shade-max), transparent);
+  border-top: 2px dotted var(--state-block);
+}
+.sw-shade {
+  background: color-mix(in srgb, var(--swatch, var(--accent)) var(--shade-max), transparent);
+}
+.sw-hydrophobic {
+  background: color-mix(in srgb, var(--state-warn) var(--shade-max), transparent);
+}
+.sw-hydrophilic {
+  background: color-mix(in srgb, var(--accent) var(--shade-max), transparent);
+}
+.sw-aligned {
+  background: var(--accent-subtle);
+}
+.sw-signal {
+  border-bottom: 2px solid var(--state-warn);
+}
+.sw-cleavage {
+  border-left: 2px solid var(--text-primary);
+}
+.sw-tm {
+  border-bottom: 2px solid var(--loc-mem-ink);
 }
