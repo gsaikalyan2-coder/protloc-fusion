@@ -17,6 +17,8 @@ import time
 from typing import Any
 import uuid
 
+from protloc.domain.errors import api_code_for_refusal
+
 SECONDS_PER_HOUR = 3600
 RETENTION_SECONDS = SECONDS_PER_HOUR  # replaced by configure(); the Phase 1 default
 RATE_WINDOW = 50  # finished jobs the wait estimate averages over
@@ -67,6 +69,7 @@ def submit(
             "updated_at": now,
             "result": None,
             "error": None,
+            "error_code": None,
             "_fn": fn,
         }
         pos = sum(1 for j in _jobs.values() if j["status"] in ("queued", "running"))
@@ -128,6 +131,7 @@ def _worker() -> None:
         except Exception as exc:  # surfaced to the client, never swallowed
             with _lock:
                 j["status"], j["error"] = "failed", str(exc)
+                j["error_code"] = api_code_for_refusal(str(getattr(exc, "code", "")))
         with _lock:
             j["finished_at"] = j["updated_at"] = time.time()
             if j["status"] == "completed" and j["total"] > 0:

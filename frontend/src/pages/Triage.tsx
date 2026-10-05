@@ -8,12 +8,14 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { batch, useJob } from "../services/demoApi";
+import { failureProblems } from "../services/problems";
 import {
   Card,
   Chip,
   ExamplePicker,
   GroupSelect,
   JobState,
+  ProblemNotice,
   ProvenanceBar,
   useExamples,
 } from "../components/ui";
@@ -22,7 +24,7 @@ export default function Triage({ onOpen }: { onOpen: (seq: string, group: string
   const { examples } = useExamples();
   const [group, setGroup] = useState("eukaryote");
   const [fasta, setFasta] = useState("");
-  const { run, job, done, error, accepted, busy } = useJob();
+  const { run, retry, job, done, error, accepted, busy } = useJob();
 
   // Seed the textarea from the live /demo/examples payload, then run once.
   useEffect(() => {
@@ -91,13 +93,10 @@ export default function Triage({ onOpen }: { onOpen: (seq: string, group: string
           }}
           spellCheck={false}
         />
-        <JobState job={job} error={error} accepted={accepted} />
-        {done?.failures?.length ? (
-          <p className="err">
-            {done.failures.length} sequence(s) rejected:{" "}
-            {done.failures.map((f) => `${f.id} (${f.error})`).join("; ")}
-          </p>
-        ) : null}
+        <JobState job={job} error={error} accepted={accepted} onRetry={retry} />
+        {failureProblems(done?.failures ?? []).map((p) => (
+          <ProblemNotice key={p.code ?? p.title} problem={p} />
+        ))}
       </Card>
 
       {done && (

@@ -28,7 +28,7 @@ export default function Scanner({ seed }: { seed: { sequence: string; group: str
   const [target, setTarget] = useState<string>("");
   const [muts, setMuts] = useState("");
   const [sub, setSub] = useState("A");
-  const { run, job, done, error, accepted, busy } = useJob();
+  const { run, retry, job, done, error, accepted, busy } = useJob();
 
   useEffect(() => {
     if (seed) {
@@ -127,7 +127,7 @@ export default function Scanner({ seed }: { seed: { sequence: string; group: str
             {busy ? "Scanning…" : "Run scan"}
           </button>
         </div>
-        <JobState job={job} error={error} accepted={accepted} />
+        <JobState job={job} error={error} accepted={accepted} onRetry={retry} />
       </Card>
 
       {s && (

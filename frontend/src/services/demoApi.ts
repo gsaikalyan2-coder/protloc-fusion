@@ -1,7 +1,14 @@
 /* Single place that talks to the demo backend. Every screen goes through here. */
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ConfidenceBand, EngineSource, ThresholdPolicy } from "@/types/api";
-import { DemoApiError, jobProblem, problemOf, type Problem } from "./problems";
+import {
+  DemoApiError,
+  jobProblem,
+  problemOf,
+  type ApiErrorInfo,
+  type BatchFailure,
+  type Problem,
+} from "./problems";
 
 export interface Provenance {
   model_version: string;
@@ -253,8 +260,22 @@ export type JobBody = {
   summary?: Summary[];
   landscape?: Landscape;
   scan?: Scan;
-  failures?: { id: string; error: string }[];
+  failures?: BatchFailure[];
+  /** Set on a failed job: the stable code and whether a retry can help. */
+  error_info?: ApiErrorInfo;
+  /** True when the evidence search was unavailable; the predictions are unchanged. */
+  degraded?: boolean;
+  degraded_reasons?: string[];
 } & Provenance;
+
+/** The structured `error` member of a response body, or null when there is none. */
+function errorInfo(body: unknown): ApiErrorInfo | null {
+  if (typeof body !== "object" || body === null) return null;
+  const e = (body as { error?: unknown }).error;
+  if (typeof e !== "object" || e === null) return null;
+  const { code } = e as { code?: unknown };
+  return typeof code === "string" ? (e as ApiErrorInfo) : null;
+}
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
@@ -267,8 +288,9 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
     throw new DemoApiError(0, e instanceof Error ? e.message : String(e));
   }
   const body = await res.json().catch(() => ({}));
-  if (!res.ok && res.status !== 202)
-    throw new DemoApiError(res.status, body?.detail ?? res.statusText);
+  if (!res.ok && res.status !== 202) {
+    throw new DemoApiError(res.status, body?.detail ?? res.statusText, errorInfo(body));
+  }
   return body as T;
 }
 
@@ -306,6 +328,7 @@ export function useJob() {
   const [accepted, setAccepted] = useState<Accepted | null>(null);
   const [busy, setBusy] = useState(false);
   const timer = useRef<number | null>(null);
+  const last = useRef<{ path: string; body: unknown } | null>(null);
 
   const stop = () => {
     if (timer.current) {
@@ -317,6 +340,7 @@ export function useJob() {
 
   const run = useCallback(async (path: string, body: unknown) => {
     stop();
+    last.current = { path, body };
     setError(null);
     setBusy(true);
     setJob(null);
@@ -346,8 +370,14 @@ export function useJob() {
     }
   }, []);
 
+  /** Submit the last request again; the same function a retry button calls. */
+  const retry = useCallback(() => {
+    const req = last.current;
+    if (req) void run(req.path, req.body);
+  }, [run]);
+
   const done = job?.status === "completed" ? job : null;
-  return { run, job, done, error, accepted, busy };
+  return { run, retry, job, done, error, accepted, busy };
 }
 
 export const predict = (sequence: string, organism_group: string, id = "query") =>

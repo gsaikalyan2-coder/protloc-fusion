@@ -47,7 +47,7 @@ export default function Inspector({
   const [group, setGroup] = useState(seed?.group ?? "eukaryote");
   const [mode, setMode] = useState<Mode>("attribution");
   const [cursor, setCursor] = useState(0);
-  const { run, job, done, error, accepted, busy } = useJob();
+  const { run, retry, job, done, error, accepted, busy } = useJob();
 
   useEffect(() => {
     if (seed) {
@@ -108,7 +108,7 @@ export default function Inspector({
           }}
           spellCheck={false}
         />
-        <JobState job={job} error={error} accepted={accepted} />
+        <JobState job={job} error={error} accepted={accepted} onRetry={retry} />
       </Card>
 
       {r && (
