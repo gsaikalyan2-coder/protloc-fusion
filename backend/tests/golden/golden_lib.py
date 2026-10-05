@@ -30,7 +30,7 @@ from pathlib import Path
 import platform
 from typing import Any
 
-from protloc.inference import service
+from protloc.inference import motif as service
 
 GOLDEN_PATH = Path(__file__).resolve().parent / "golden_set.json"
 GOLDEN_FORMAT = 1

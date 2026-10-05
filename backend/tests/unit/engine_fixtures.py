@@ -21,7 +21,7 @@ from __future__ import annotations
 from typing import Any
 
 from protloc.data import reference_demo
-from protloc.inference import service
+from protloc.inference import motif as service
 
 _GROUP = {
     "eukaryote": "eukarya",

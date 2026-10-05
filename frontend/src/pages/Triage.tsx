@@ -12,7 +12,7 @@ import {
   Card,
   Chip,
   ExamplePicker,
-  GROUPS,
+  GroupSelect,
   JobState,
   ProvenanceBar,
   useExamples,
@@ -55,19 +55,14 @@ export default function Triage({ onOpen }: { onOpen: (seq: string, group: string
           </p>
         </div>
         <div className="row">
-          <select
+          <GroupSelect
             value={group}
-            onChange={(e) => {
-              setGroup(e.target.value);
+            onChange={(g) => {
+              setGroup(g);
               setFasta("");
             }}
-          >
-            {GROUPS.map(([v, l]) => (
-              <option key={v} value={v}>
-                {l}
-              </option>
-            ))}
-          </select>
+            servedOnly
+          />
           <ExamplePicker
             examples={examples}
             value=""

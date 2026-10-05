@@ -1,0 +1,69 @@
+{
+  "_comment": "Phase 14 serving engine (ADR-0016). Data, not code: protloc.inference.engine reads this file and repeats none of it. tests/unit/test_engine_config.py fails if it disagrees with configs/training/*.yaml or backend/rules/baseline_class_map.yaml. Paths are relative to DATA_ROOT, EMBED_CACHE or EVIDENCE_ROOT as named.",
+  "bundles": {
+    "localization": "0.10.0",
+    "signal_peptide": "0.11.0",
+    "go_function": "0.12.0",
+    "evidence_homology": "0.13.0"
+  },
+  "weights": {
+    "localization": "head/final_weights.npz",
+    "signal_peptide": "crf/final_weights.npz",
+    "go_function": "go/final_weights.npz"
+  },
+  "manifests": {
+    "localization": "manifests/calibration_metrics.json",
+    "signal_peptide": "manifests/crf_metrics.json",
+    "go_function": "manifests/go_metrics.json",
+    "evidence_homology": "manifests/homology_metrics.json"
+  },
+  "encoder": {
+    "mode": "cache_only",
+    "residue_cache": "0e528d4a46831b05_subset500_residues",
+    "dimension": 640
+  },
+  "network": {
+    "layer_norm_eps": 1e-05
+  },
+  "localization": {
+    "codes": {
+      "cell_membrane": "MEM",
+      "cytoplasm": "CYT",
+      "endoplasmic_reticulum": "ER",
+      "extracellular": "EXT",
+      "golgi_apparatus": "GOL",
+      "lysosome_vacuole": "LYS",
+      "mitochondrion": "MIT",
+      "nucleus": "NUC",
+      "peroxisome": "PER",
+      "plastid": "PLA"
+    }
+  },
+  "crf": {
+    "tags": ["O", "S"],
+    "outside": "O",
+    "signal": "S",
+    "forbidden_transitions": [["O", "S"]],
+    "forbidden_score": -10000.0
+  },
+  "organism_groups_with_trained_heads": ["eukaryote", "plant"],
+  "ontology": {
+    "file": "raw/go-basic.obo",
+    "sha256": "b08d45b268b8c24ccb2513dbbbc7d4df9f6521c099b413f79eb31e06e0fa3bcc"
+  },
+  "go_annotation_source_sha256": "d493478d38630651490adfe91c7869d1a6ac8ab759effdc3847ce84e295d41a8",
+  "evidence": {
+    "executable": "bin/mmseqs-18-8cc5c/mmseqs/bin/mmseqs.exe",
+    "hit_terms": "hit_terms.tsv",
+    "hit_terms_meta": "hit_terms.json",
+    "work_directory": "serving_tmp",
+    "threads": 2,
+    "verbosity": 1,
+    "per_query_timeout_seconds": 0.25,
+    "hit_terms_shown": 8,
+    "swissprot_release": "2026_03"
+  },
+  "gallery": {
+    "file": "gallery/gallery.json"
+  }
+}

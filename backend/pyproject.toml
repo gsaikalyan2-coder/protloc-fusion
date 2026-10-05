@@ -68,6 +68,12 @@ head = [
   "numpy==2.4.6",
   "pyyaml==6.0.3",
 ]
+# The served engine (Phase 14, ADR-0016). Inference is plain numpy: torch is a training
+# dependency and the serving path never imports it, so Dockerfile.serve installs `.[serve]`
+# and nothing heavier. The exact version equals the one the parity test was run against.
+serve = [
+  "numpy==2.4.6",
+]
 # Data versioning. Kept apart from `data` because CI never needs it and it pulls
 # in a large dependency tree.
 dvc = [
@@ -98,6 +104,18 @@ disallow_any_explicit = false
 no_implicit_reexport = true
 show_error_codes = true
 pretty = true
+
+# Legacy motif engine and its synthetic reference set (Phase 0 promotion, kept for the Scanner,
+# the golden baseline and the Phase 3 tests; Phase 14 serves none of their model outputs).
+# They were never type-annotated and the golden set pins their behaviour byte for byte, so they
+# are excluded from the type gate instead of edited. Every new serving module is strict.
+[[tool.mypy.overrides]]
+module = [
+  "protloc.inference.motif",
+  "protloc.features.classical",
+  "protloc.data.reference_demo",
+]
+ignore_errors = true
 
 # ── pytest ───────────────────────────────────────────────────────────────────
 [tool.pytest.ini_options]

@@ -8,10 +8,15 @@ export interface Provenance {
   rules_version: string;
   experiment_id: string;
   predictor: string;
+  /** Every registry bundle behind this response, with the hash the loader verified. */
+  bundles?: Record<string, { version: string; sha256: string }>;
+  /** What the numbers on screen are measured on (the subset, not a benchmark). */
+  scope_label?: string;
 }
 export interface LocRow {
   code: string;
   name: string;
+  class_name: string;
   probability: number;
   raw: number;
   predicted: boolean;
@@ -21,29 +26,87 @@ export interface LocRow {
   threshold: number;
   /** Whether a fitted calibrator was applied. */
   calibrated: boolean;
+  calibration_method: string;
   confidence_band: ConfidenceBand;
 }
 export interface TaskSource {
   source: EngineSource;
   calibrated: boolean;
+  /** The registry bundle that produced the task; null for a motif-engine task. */
+  bundle_version: string | null;
+  bundle_sha256: string | null;
+  calibration_version: string | null;
 }
 export interface Flag {
   rule_id: string;
   severity: "blocked" | "warning" | "uncertain" | "note";
   message: string;
+  /** Which engine fed each input of the rule. */
+  basis?: Record<string, EngineSource>;
 }
+export interface GoTermRef {
+  go_id: string;
+  name: string;
+  aspect: string;
+}
+/** One Swiss-Prot hit from the local MMseqs2 index (source: homology). */
 export interface Hit {
   accession: string;
-  family: string;
-  organism_group: string;
-  location: string;
-  location_name: string;
-  evidence_code: string;
   identity: number;
-  kmer_jaccard: number;
-  coverage: number;
-  same_group: boolean;
-  aligned_blocks: [number, number][];
+  evalue: number;
+  bits: number;
+  query_coverage: number;
+  target_coverage: number;
+  alignment_length: number;
+  exact_match: boolean;
+  go_term_count: number;
+  go_terms: GoTermRef[];
+  database: string;
+  source: "homology";
+}
+/** A GO term the trained head scored (source: model) - never carries an accession. */
+export interface GoPrediction {
+  go_id: string;
+  name: string;
+  aspect: string;
+  probability: number;
+  raw: number;
+  predicted: boolean;
+  threshold: number;
+  source: "model";
+  calibrated: boolean;
+}
+/** A GO term carried by homologous hits (source: homology) - always names its source hit. */
+export interface GoTransfer {
+  go_id: string;
+  name: string | null;
+  aspect: string | null;
+  score: number;
+  source: "homology";
+  source_accession: string;
+  identity: number;
+  evalue: number;
+  database: string;
+  in_model_vocabulary: boolean;
+}
+export interface EvidenceStatus {
+  available: boolean;
+  unavailable_reason: string | null;
+  swissprot_release: string;
+  bundle_version: string;
+  bundle_sha256: string;
+  source: "homology";
+}
+export interface EvidenceAgreement {
+  top_hit_accession: string;
+  identity: number;
+  exact_match: boolean;
+  voting_hits: number;
+  basis: string;
+  shared: string[];
+  model_only: string[];
+  homology_only: string[];
+  agrees: boolean;
 }
 export interface Result {
   id: string;
@@ -59,8 +122,9 @@ export interface Result {
   calibration_version: string | null;
   threshold_policy: ThresholdPolicy;
   task_sources: Record<string, TaskSource>;
-  tau: number;
-  temperature: number;
+  /** null since Phase 14: per-label thresholds replaced the single tau. */
+  tau: number | null;
+  temperature: number | null;
   membrane_type: Record<string, number>;
   sorting_signal: {
     type: string;
@@ -68,14 +132,25 @@ export interface Result {
     region: [number, number] | null;
     cleavage_site: number | null;
     candidates: Record<string, number>;
+    threshold?: number;
+    source?: EngineSource;
+    calibrated?: boolean;
+    untrained?: string[];
   };
-  go_terms: { go_id: string; term: string; span: [number, number] }[];
+  /** The trained GO head's terms (source: model). */
+  go_function: GoPrediction[];
   features: Record<string, unknown>;
   hydropathy: number[];
   attribution: number[];
+  /** Which engine produced the residue attribution (motif until Phase 15). */
+  attribution_source: EngineSource;
   consistency_flags: Flag[];
+  /** Swiss-Prot hits (source: homology). Empty when the index is unavailable. */
   evidence: Hit[];
-  evidence_agreement: { top_hit_location: string; agrees: boolean; identity: number } | null;
+  /** GO terms transferred from those hits (source: homology). Never merged with go_function. */
+  evidence_go: GoTransfer[];
+  evidence_status: EvidenceStatus;
+  evidence_agreement: EvidenceAgreement | null;
   provenance: Provenance;
 }
 export interface Summary {
@@ -134,7 +209,9 @@ export interface Scan {
       | "consistency_flags"
     >;
   };
-  tau: number;
+  tau: number | null;
+  /** The scanner runs the motif engine, not the trained heads. */
+  scanner_source: EngineSource;
   provenance: Provenance;
 }
 export type JobBody = {
@@ -142,6 +219,10 @@ export type JobBody = {
   status: "queued" | "running" | "completed" | "failed" | "cancelled";
   total: number;
   completed_count: number;
+  /** Seconds since the epoch: queue wait is started_at - created_at, compute is finished_at - started_at. */
+  created_at: number;
+  started_at: number | null;
+  finished_at: number | null;
   error: string | null;
   results?: Result[];
   summary?: Summary[];
@@ -170,23 +251,17 @@ export const getExamples = () =>
       organism_group: string;
       sequence: string;
       note: string;
+      in_training_set?: boolean;
+      length?: number;
     }[];
   }>("/demo/examples");
 export const getTrust = () => call<Record<string, any>>("/demo/trust");
-export const getReference = () =>
-  call<{
-    count: number;
-    entries: Omit<
-      Hit,
-      "identity" | "kmer_jaccard" | "coverage" | "same_group" | "aligned_blocks" | "location_name"
-    >[];
-  }>("/demo/reference");
-
 interface Accepted {
   job_id: string;
   result_url: string;
   queue_position: number;
-  estimated_wait_seconds: number;
+  /** Measured from finished jobs; null until one job has run. */
+  estimated_wait_seconds: number | null;
 }
 const post = (p: string, b: unknown) =>
   call<Accepted>(p, { method: "POST", body: JSON.stringify(b) });

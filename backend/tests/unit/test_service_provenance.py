@@ -9,7 +9,7 @@ from engine_fixtures import demo_results
 import pytest
 
 from protloc.domain.types import ConfidenceBand, ThresholdPolicy
-from protloc.inference import service
+from protloc.inference import motif as service
 
 RESULTS = demo_results()
 ABSTAINING = {"nuclear_factor", "outer_membrane"}

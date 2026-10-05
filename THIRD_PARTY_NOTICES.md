@@ -20,6 +20,7 @@ pinned in `docs/THIRD_PARTY.md`. Re-verify at any re-pin and again before submis
 | netcal (`efs-opensource/calibration-framework`) | Calibration | Apache-2.0 | Keep the licence and NOTICE if redistributed |
 | PEFT (`huggingface/peft`) | LoRA adaptation | Apache-2.0 | As above |
 | Biopython | Swiss-Prot flat-file parsing (`Bio.SwissProt`) | Biopython License Agreement (some files BSD-3-Clause) | Keep per-file headers |
+| NumPy (`numpy/numpy`), `numpy==2.4.6` in the `serve` extra | Forward passes of the three trained heads in the serving process (Phase 14, ADR-0016) | BSD-3-Clause, with bundled 0BSD, MIT, Zlib and CC0-1.0 components (licence file read from the 2.5.3 wheel on 2026-10-05; the 2.4.6 file was not read) | Keep the copyright notice and disclaimer; ships in the serving image |
 
 Python and npm dependencies are pinned in `backend/pyproject.toml` and
 `frontend/package-lock.json`; each carries its own licence, all permissive at the time

@@ -1,0 +1,171 @@
+{
+  "batch_sweep": [
+    {
+      "compute_s": {
+        "max": 2.752,
+        "mean": 2.54,
+        "median": 2.47,
+        "min": 2.398,
+        "n": 3,
+        "p95": 2.752
+      },
+      "compute_s_per_sequence_median": 2.47,
+      "evidence_degraded": 0,
+      "repeats": 3,
+      "sequences": 1
+    },
+    {
+      "compute_s": {
+        "max": 2.717,
+        "mean": 2.645,
+        "median": 2.654,
+        "min": 2.564,
+        "n": 3,
+        "p95": 2.717
+      },
+      "compute_s_per_sequence_median": 1.327,
+      "evidence_degraded": 0,
+      "repeats": 3,
+      "sequences": 2
+    },
+    {
+      "compute_s": {
+        "max": 3.27,
+        "mean": 3.214,
+        "median": 3.229,
+        "min": 3.143,
+        "n": 3,
+        "p95": 3.27
+      },
+      "compute_s_per_sequence_median": 0.646,
+      "evidence_degraded": 0,
+      "repeats": 3,
+      "sequences": 5
+    },
+    {
+      "compute_s": {
+        "max": 3.562,
+        "mean": 3.464,
+        "median": 3.43,
+        "min": 3.399,
+        "n": 3,
+        "p95": 3.562
+      },
+      "compute_s_per_sequence_median": 0.343,
+      "evidence_degraded": 0,
+      "repeats": 3,
+      "sequences": 10
+    },
+    {
+      "compute_s": {
+        "max": 4.445,
+        "mean": 4.375,
+        "median": 4.409,
+        "min": 4.272,
+        "n": 3,
+        "p95": 4.445
+      },
+      "compute_s_per_sequence_median": 0.22,
+      "evidence_degraded": 0,
+      "repeats": 3,
+      "sequences": 20
+    },
+    {
+      "compute_s": {
+        "max": 6.025,
+        "mean": 5.983,
+        "median": 5.97,
+        "min": 5.954,
+        "n": 3,
+        "p95": 6.025
+      },
+      "compute_s_per_sequence_median": 0.149,
+      "evidence_degraded": 0,
+      "repeats": 3,
+      "sequences": 40
+    }
+  ],
+  "burst": {
+    "compute": {
+      "max": 2.596,
+      "mean": 2.117,
+      "median": 2.048,
+      "min": 1.842,
+      "n": 10,
+      "p95": 2.596
+    },
+    "jobs_completed": 10,
+    "jobs_submitted": 10,
+    "queue_wait": {
+      "max": 19.092,
+      "mean": 9.754,
+      "median": 9.93,
+      "min": 0.0,
+      "n": 10,
+      "p95": 19.092
+    },
+    "time_to_result": {
+      "max": 21.131,
+      "mean": 11.871,
+      "median": 12.055,
+      "min": 2.305,
+      "n": 10,
+      "p95": 21.131
+    }
+  },
+  "cold_first_request": {
+    "compute": 2.844,
+    "evidence_degraded": 0,
+    "queue_wait": 0.0,
+    "status": "completed",
+    "time_to_result": 2.844
+  },
+  "eukaryote_examples": 10,
+  "evidence_state": {
+    "available": true,
+    "reason": null,
+    "swissprot_release": "2026_03"
+  },
+  "examples": 11,
+  "machine": {
+    "cpu_count": 12,
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+    "python": "3.11.9"
+  },
+  "measured_utc": "2026-10-05T04:51:06Z",
+  "model_version": "localization-0.10.0+signal_peptide-0.11.0+go_function-0.12.0+evidence_homology-0.13.0",
+  "model_version_expected": "localization-0.10.0+signal_peptide-0.11.0+go_function-0.12.0+evidence_homology-0.13.0",
+  "scope": "subset (500), not comparable to DeepLoc or to the Phase 8 full-corpus numbers",
+  "sequential_singles": {
+    "compute": {
+      "max": 2.808,
+      "mean": 2.18,
+      "median": 2.17,
+      "min": 1.805,
+      "n": 33,
+      "p95": 2.587
+    },
+    "failed_or_degraded": 0,
+    "jobs": 33,
+    "queue_wait": {
+      "max": 0.003,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0.0,
+      "n": 33,
+      "p95": 0.002
+    },
+    "time_to_result": {
+      "max": 2.808,
+      "mean": 2.181,
+      "median": 2.17,
+      "min": 1.805,
+      "n": 33,
+      "p95": 2.587
+    }
+  },
+  "served_max_batch_sequences_when_measured": "20",
+  "startup_seconds": 5.188,
+  "sweep_cap": 64
+}

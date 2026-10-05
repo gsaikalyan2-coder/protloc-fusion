@@ -88,8 +88,6 @@ EXPLICIT_ALLOWLIST: dict[str, frozenset[str]] = {
 # named edge from one named file, so no other file gains any latitude.
 TEMPORARY_EXEMPT_EDGES: frozenset[tuple[str, str]] = frozenset(
     {
-        ("api/app_v2.py", "data"),
-        ("api/app_v2.py", "features"),
         ("api/app_v2.py", "jobs"),
     }
 )
