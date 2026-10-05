@@ -356,8 +356,8 @@ criteria, hours and git commands in `PROJECT_PLAN.md` §4; per-phase detail in
 [x] Phase 12  — GO head                                       ENH   4.0 h   done 2026-10-04 (branch; 500-sequence subset only; you tag v0.12.0)
 [x] Phase 13  — Homology evidence (MMseqs2 index)             ENH   5.0 h   done 2026-10-04 (branch; 500-sequence subset queries, full Swiss-Prot database; you tag v0.13.0)
 [x] Phase 14  — Swap the engine: model behind the same API     MVP   6.0 h   done 2026-10-05 (branch; 500-sequence subset only, cache-only encoder; you tag v0.14.0)
-[ ] Phase 15  — Attribution from the real model                ENH   4.0 h   <-- NEXT
-[ ] Phase 16  — Frontend upgrade & landing page                MVP   7.0 h
+[x] Phase 15  — Attribution from the real model                ENH   4.0 h   done 2026-10-05 (branch; 500-sequence subset only; you tag v0.15.0)
+[ ] Phase 16  — Frontend upgrade & landing page                MVP   7.0 h   <-- NEXT
 [ ] Phase 17  — Limits, errors, degraded states                ENH   3.0 h
 [ ] Phase 18  — Nightingale visual rebuild                     ENH   5.0 h
 [ ] Phase 19  — Deploy backend + frontend                      MVP   5.0 h
@@ -539,14 +539,21 @@ Serving is numpy (`numpy==2.4.6`, `serve` extra) with a parity test against the 
 Golden set: `golden_set_motif.json` is a byte copy of `golden_set.json` (Phase 4 record, prefix `424e61c2e450`) and guards the motif module; the served engine refuses all 67 golden inputs (48 not cached, 17 unsupported group, 1 invalid, 1 unknown group). On the 408 cached real sequences the served top location equals the motif engine's for 54.2% of 397 comparable (11 outside the motif engine's 30-3000 range). Membrane type, the scanner, the residue attribution and the hydropathy track are still `source: "motif"`; consistency rule R06 is inactive (Phase 13 hits carry no location); `rules_version` is still "demo-0.1.0". `data/reference_demo.py` was **not** deleted (Gate E). The UI banner shows the model version instead of "synthetic".
 UNVERIFIED: any claim beyond 500 sequences, gallery sequences are in-sample, Docker, GitHub Actions, host timing, the search-executable tamper test, seed variance. Detail: `docs/phases/14.md`.
 
+### Phase 15 close — 2026-10-05
+
+The served per-residue track now comes from the trained localization head (ADR-0017, API 1.3.0): `attribution_source: "model"`, default method `occlusion` (signed `p_full - p_removed` for the predicted class; window 5, stride 1, at most 64 forward passes; the head is re-run, the frozen encoder is not). Also returned: `pooling_attention` (class-agnostic, unsigned) and the CRF signal posterior as `signal_track`. Each method was proven by a frozen-protocol deletion test (402 sequences, 313 clusters, cluster bootstrap) before being served; all lower bounds of drop minus random are positive. GO attribution passes but is not served.
+Mean localization deletion drop at k=5/10/20/40: occlusion 0.058/0.085/0.112/0.136, pooling attention 0.045/0.077/0.114/0.149, motif 0.022/0.047/0.074/0.098. Signal-peptide AUROC: CRF 0.9990, motif hydropathy 0.863, position-only prior 0.9936 (so much of the CRF signal is N-terminal position).
+Cost: 40-sequence batch 5.97 s to 11.40 s (0.149 to 0.285 s per sequence); single p95 2.59 s to 3.52 s (possibly noise, n=33). `MAX_BATCH_SEQUENCES` stays 20. Hashes: protocol `67b09db9f9720325703e1e8d40da4540b3f542a062dfa3e77cc9a8d6a4652750`, metrics `frozen_sha256` `2dfae0a6bb77782abc9a680034e6aacd512ea9a08e7a011e48a3b77d57f37e2e`. No new dependency.
+UNVERIFIED: biological meaning of any track, anything beyond 500 sequences, host timing, whether the single-job p95 shift is real. Detail: `docs/phases/15.md`.
+
 ### Two things a cold session must know
 
 1. **The served path is trained models for 500 sequences, and a motif engine for the rest of the screen.**
    Localization, signal peptide, cleavage site and GO function come from the frozen registry
    bundles (numpy, ADR-0016) but only for the 500 sequences in the residue cache; anything else
-   is refused with a reason, not guessed. Membrane type, the in-silico scanner, the residue
-   attribution and the hydropathy track are still the Phase 0 motif engine (`source: "motif"`)
-   until Phase 15 and later, and the scanner still uses a synthetic-fit tau. The banner shows
+   is refused with a reason, not guessed. The residue attribution is model-derived since Phase 15
+   (ADR-0017). Membrane type, the in-silico scanner and the hydropathy track are still the
+   Phase 0 motif engine (`source: "motif"`), and the scanner still uses a synthetic-fit tau. The banner shows
    the model version.
 2. **`docs/api/openapi.yaml` is generated.** Edit
    `backend/protloc/domain/contracts.py` and the route decorators, then run

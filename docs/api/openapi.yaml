@@ -12,6 +12,21 @@
 
 components:
   schemas:
+    AttributionMethod:
+      description: 'How a per-residue attribution track was computed (Phase 15, ADR-0017).
+
+
+        Each method makes a different claim, so the wire carries the method beside the source
+        and
+
+        the claim is in :data:`ATTRIBUTION_CLAIMS`, the one place it is written.'
+      enum:
+      - pooling_attention
+      - occlusion
+      - crf_marginal
+      - motif
+      title: AttributionMethod
+      type: string
     BatchSubmission:
       properties:
         file:
@@ -1050,9 +1065,21 @@ components:
           title: Residue
           type: string
         score:
-          description: Signed attribution. Positive supports the predicted label, negative
-            argues against it. Comparable within one task and sequence only — never across
-            tasks, and never as a probability.
+          description: 'Per-residue weight. What it means depends on the task''s attribution
+            method; each method''s claim is: [pooling_attention] Where the head''s pooled
+            vector looked, as a share of the total (sums to 1). The same for every label:
+            it shows what the head attended to, not why a given label won. [occlusion] How
+            much this label''s raw score fell when a window of residues was removed from the
+            head''s pooling input (signed: positive supports the label, negative argues against
+            it). Computed on the head''s input only: the frozen encoder is not re-run, so
+            context already encoded in neighbouring residues remains. Not causal importance,
+            not a binding site. [crf_marginal] Probability, from the CRF forward-backward
+            marginals, that the residue is part of the N-terminal signal peptide (0 to 1).
+            Only the residues up to the CRF''s length cap are scored; later residues read
+            0.0 because the model did not look at them. [motif] A heuristic weight painted
+            from detected motifs (hydrophobic region, nuclear localization signal, transmembrane
+            segments). Not computed by a trained model. Comparable within one task and sequence
+            only — never across tasks, and never as a probability.'
           title: Score
           type: number
       required:
@@ -1191,12 +1218,25 @@ components:
       additionalProperties: false
       description: Per-residue attribution for one task.
       properties:
+        method:
+          anyOf:
+          - $ref: '#/components/schemas/AttributionMethod'
+          - type: 'null'
+          description: How the weights were computed; the claim each method makes is in the
+            description of ResidueAttribution.score. Absent in a payload from before Phase
+            15.
         residues:
           description: One entry per residue, in sequence order.
           items:
             $ref: '#/components/schemas/ResidueAttribution'
           title: Residues
           type: array
+        source:
+          anyOf:
+          - $ref: '#/components/schemas/EngineSource'
+          - type: 'null'
+          description: model when a trained head produced the weights, motif otherwise. Absent
+            in a payload from before Phase 15.
         task:
           $ref: '#/components/schemas/TaskName'
           description: The head being explained.
@@ -1468,7 +1508,7 @@ info:
     name: Apache-2.0
   summary: Seven protein annotations from one shared representation.
   title: ProtLoc Fusion
-  version: 1.2.0
+  version: 1.3.0
 openapi: 3.1.0
 paths:
   /batch:
