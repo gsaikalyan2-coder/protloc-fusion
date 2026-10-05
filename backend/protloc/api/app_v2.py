@@ -1,30 +1,49 @@
-"""ProtLoc Fusion — PRESENTATION DEMO API (standalone).
+"""ProtLoc Fusion — the live app (``/demo/*`` routes the frontend uses).
 
-Run:  uvicorn app.main:app --port 8010       (from demo/backend)
-Kill switch: PROTLOC_DEMO_ENABLED=0 makes every /demo route return 503.
-Nothing in backend/protloc imports this file, and this file imports nothing
-from backend/protloc. See demo/OVERRIDE.md.
+Run (from ``backend/``):  ``uvicorn protloc.api.app_v2:app --port 8010``
+
+The routes keep the names and the 202-then-poll shape the five screens already speak; since
+Phase 14 the engine behind them is the trained one. Startup loads the model registry through
+:func:`protloc.inference.engine.load_engine` and refuses to start, listing every problem, if a
+bundle, weight file, manifest, cache, ontology, hit-term table or index byte is not the one the
+bundles record. Routers parse, validate and delegate; no scoring happens here.
+
+Kill switch: ``PROTLOC_DEMO_ENABLED=0`` makes every ``/demo`` route return 503.
 """
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 import os
 import time
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from protloc.data import reference_demo as data
-from protloc.features.classical import LOC_NAMES, ORGANISM_GROUPS
+from protloc.config.serving import get_serving_settings
 from protloc.inference import service
+from protloc.inference.engine import EngineRefusal, load_engine
+from protloc.inference.trust import trust_payload
 from protloc.jobs import queue as jobs
 
 ENABLED = os.getenv("PROTLOC_DEMO_ENABLED", "1") != "0"
-MAX_BATCH = int(os.getenv("DEMO_MAX_BATCH", "200"))
 
-app = FastAPI(title="ProtLoc Fusion - presentation demo", version=service.MODEL_VERSION)
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    """Load and verify the model before the first request; a failure stops the process."""
+    settings = get_serving_settings()
+    service.configure(load_engine(settings))
+    jobs.configure(settings.JOB_RETENTION_HOURS)
+    yield
+    service.configure(None)
+
+
+app = FastAPI(title="ProtLoc Fusion", version="1.2.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=os.getenv("DEMO_CORS", "http://localhost:5174,http://127.0.0.1:5174").split(","),
@@ -34,26 +53,33 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def kill_switch(request: Request, call_next):
+async def kill_switch(request: Request, call_next: Any) -> Any:
+    """Return 503 on every /demo route when the kill switch is set."""
     if not ENABLED and request.url.path.startswith("/demo"):
         return JSONResponse(
-            {"detail": "Demo disabled (PROTLOC_DEMO_ENABLED=0)", **service.provenance()}, 503
+            {"detail": "Disabled (PROTLOC_DEMO_ENABLED=0)", **service.provenance()}, 503
         )
     return await call_next(request)
 
 
 class PredictIn(BaseModel):
+    """One sequence."""
+
     sequence: str = Field(min_length=1, max_length=20000)
     organism_group: str = "eukaryote"
     id: str = "query"
 
 
 class BatchIn(BaseModel):
+    """A FASTA text."""
+
     fasta: str = Field(min_length=1, max_length=2_000_000)
     organism_group: str = "eukaryote"
 
 
 class ScanIn(BaseModel):
+    """An in-silico scan (motif engine)."""
+
     sequence: str = Field(min_length=1, max_length=5000)
     organism_group: str = "eukaryote"
     target: str | None = None
@@ -61,76 +87,122 @@ class ScanIn(BaseModel):
     substitute: str = "A"
 
 
-def _accepted(sub: dict, count: int) -> JSONResponse:
+def _max_batch() -> int:
+    return get_serving_settings().MAX_BATCH_SEQUENCES
+
+
+def _accepted(sub: dict[str, Any], count: int, ahead: int) -> JSONResponse:
     body = {
         **sub,
         "result_url": f"/demo/jobs/{sub['job_id']}",
         "sequence_count": count,
-        "estimated_wait_seconds": max(1, round(0.03 * count * sub["queue_position"])),
+        "estimated_wait_seconds": jobs.estimated_wait_seconds(ahead, count),
         **service.provenance(),
     }
     return JSONResponse(body, status_code=202)
 
 
-def _check_group(g: str) -> None:
-    if g not in ORGANISM_GROUPS:
-        raise HTTPException(400, f"Unknown organism_group '{g}'")
+def _check_group(group: str) -> None:
+    if group not in service.ORGANISM_GROUPS:
+        raise HTTPException(400, f"Unknown organism_group '{group}'")
+
+
+def _check_served(group: str) -> None:
+    _check_group(group)
+    if group not in service.engine().groups:
+        covered = ", ".join(service.engine().groups)
+        raise HTTPException(
+            422,
+            f"No trained head covers '{group}': the training corpus is eukaryotic "
+            f"(served groups: {covered}).",
+        )
+
+
+def _check_cached(sequence: str) -> None:
+    if not service.engine().has_states(sequence):
+        raise HTTPException(
+            422,
+            "This build scores only sequences whose ESM-2 states are cached "
+            f"({service.engine().cached_sequences} of them, ADR-0016). Pick a gallery example.",
+        )
 
 
 @app.get("/demo/health")
-def health() -> dict:
+def health() -> dict[str, Any]:
+    """Liveness, queue depth and the evidence state."""
     return {
         "status": "ok",
         "enabled": ENABLED,
         "queue_depth": jobs.depth(),
         "job_retention_seconds": jobs.RETENTION_SECONDS,
+        "evidence": service.engine().evidence_state,
         **service.provenance(),
     }
 
 
+def _banner(provenance: dict[str, Any]) -> str:
+    return (
+        f"Model {provenance['model_version']} · trained heads on frozen ESM-2 150M · "
+        f"{provenance['scope_label']}"
+    )
+
+
 @app.get("/demo/version")
-def version() -> dict:
+def version() -> dict[str, Any]:
+    """Model identity, the groups served, limits and the banner text."""
+    engine = service.engine()
+    p = service.provenance()
     return {
-        **service.provenance(),
+        **p,
+        "banner": _banner(p),
         "organism_groups": {
-            k: {"label": v["label"], "locations": v["locs"]} for k, v in ORGANISM_GROUPS.items()
+            k: {"label": v["label"], "locations": v["locs"], "served": k in engine.groups}
+            for k, v in service.ORGANISM_GROUPS.items()
         },
-        "location_names": LOC_NAMES,
-        "tau": service.TRUST["tau"],
-        "temperature": service.TRUST["temperature"],
-        "threshold_policy": service.THRESHOLD_POLICY,
-        "calibration_version": service.CALIBRATION_VERSION,
-        "max_batch": MAX_BATCH,
-        "rules": service.RULES["rules"],
-        "disclaimer": "Demo predictor: interpretable motif engine, not the trained ProtLoc Fusion model. "
-        "Reference and benchmark sequences are synthetic.",
+        "location_names": service.LOC_NAMES,
+        "tau": None,
+        "temperature": None,
+        "threshold_policy": "per_label_mcc",
+        "calibration_version": engine.manifests["localization"]["frozen"]["bundle"][
+            "calibration_version"
+        ],
+        "max_batch": _max_batch(),
+        "evidence": engine.evidence_state,
+        "rules": service.engine().rules,
+        "limits": [
+            f"Only the {engine.cached_sequences} sequences whose ESM-2 states are cached can be "
+            "scored; the gallery lists examples (ADR-0016).",
+            "Numbers are from a 500-sequence subset, not comparable to DeepLoc or to the "
+            "Phase 8 full-corpus numbers.",
+            "Membrane type, the scanner and the residue attribution are motif-engine outputs "
+            "and say so.",
+        ],
     }
 
 
 @app.get("/demo/examples")
-def examples() -> dict:
-    return {"examples": data.EXAMPLES, "provenance": service.provenance()}
-
-
-@app.get("/demo/reference")
-def reference() -> dict:
-    return {
-        "count": len(data.REFERENCE),
-        "entries": [{k: v for k, v in r.items() if k != "sequence"} for r in data.REFERENCE],
-        "provenance": service.provenance(),
-    }
+def examples() -> dict[str, Any]:
+    """Gallery sequences: real Swiss-Prot entries whose states are cached."""
+    return {"examples": service.engine().gallery, "provenance": service.provenance()}
 
 
 @app.get("/demo/trust")
-def trust() -> dict:
-    return {**service.TRUST, "provenance": service.provenance()}
+def trust() -> dict[str, Any]:
+    """The frozen calibration of the localization head, read from its manifest."""
+    engine = service.engine()
+    return trust_payload(
+        engine.manifests["localization"], engine.localization_codes, service.provenance()
+    )
 
 
 @app.post("/demo/predict")
-def post_predict(body: PredictIn):
-    _check_group(body.organism_group)
+def post_predict(body: PredictIn) -> JSONResponse:
+    """Queue one sequence (a job of size one)."""
+    _check_served(body.organism_group)
+    _check_cached(body.sequence)
+    ahead = jobs.pending_sequences()
 
-    def run(progress, cancelled):
+    def run(progress: Any, cancelled: Any) -> dict[str, Any]:
         r = service.predict(body.sequence, body.organism_group, body.id)
         progress(1)
         return {
@@ -140,27 +212,30 @@ def post_predict(body: PredictIn):
             "landscape": service.landscape([r]),
         }
 
-    return _accepted(jobs.submit("predict", 1, run), 1)
+    return _accepted(jobs.submit("predict", 1, run), 1, ahead)
 
 
 @app.post("/demo/batch")
-def post_batch(body: BatchIn):
-    _check_group(body.organism_group)
+def post_batch(body: BatchIn) -> JSONResponse:
+    """Queue a FASTA of up to MAX_BATCH_SEQUENCES sequences (client-side chunking, ADR-0008)."""
+    _check_served(body.organism_group)
     try:
-        recs = service.parse_fasta(body.fasta, MAX_BATCH)
+        recs = service.parse_fasta(body.fasta, _max_batch())
     except ValueError as exc:
-        raise HTTPException(400, str(exc))
+        raise HTTPException(400, str(exc)) from exc
+    ahead = jobs.pending_sequences()
 
-    def run(progress, cancelled):
-        results, failures = [], []
-        for i, (sid, seq) in enumerate(recs, start=1):
-            if cancelled():
-                break
-            try:
-                results.append(service.predict(seq, body.organism_group, sid))
-            except ValueError as exc:
-                failures.append({"id": sid, "error": str(exc)})
-            progress(i)
+    def run(progress: Any, cancelled: Any) -> dict[str, Any]:
+        if cancelled():
+            return {"mode": "batch", "results": [], "summary": [], "landscape": {}, "failures": []}
+        outcome = service.predict_many(recs, body.organism_group)
+        results = [o for o in outcome if not isinstance(o, EngineRefusal)]
+        failures = [
+            {"id": recs[i][0], "error": str(o)}
+            for i, o in enumerate(outcome)
+            if isinstance(o, EngineRefusal)
+        ]
+        progress(len(recs))
         summary = sorted((service.summarize(r) for r in results), key=lambda s: -s["attention"])
         return {
             "mode": "batch",
@@ -170,25 +245,28 @@ def post_batch(body: BatchIn):
             "failures": failures,
         }
 
-    return _accepted(jobs.submit("batch", len(recs), run), len(recs))
+    return _accepted(jobs.submit("batch", len(recs), run), len(recs), ahead)
 
 
 @app.post("/demo/scan")
-def post_scan(body: ScanIn):
+def post_scan(body: ScanIn) -> JSONResponse:
+    """Queue an in-silico scan. The scanner is the motif engine and says so."""
     _check_group(body.organism_group)
+    ahead = jobs.pending_sequences()
 
-    def run(progress, cancelled):
+    def run(progress: Any, cancelled: Any) -> dict[str, Any]:
         out = service.scan(
             body.sequence, body.organism_group, body.target, body.mutations, body.substitute
         )
         progress(1)
         return {"mode": "scan", "scan": out}
 
-    return _accepted(jobs.submit("scan", 1, run), 1)
+    return _accepted(jobs.submit("scan", 1, run), 1, ahead)
 
 
 @app.get("/demo/jobs/{job_id}")
-def get_job(job_id: str):
+def get_job(job_id: str) -> dict[str, Any]:
+    """Status, timing and (when completed) the results."""
     j = jobs.get(job_id)
     if j is None:
         raise HTTPException(404, "Unknown job_id")
@@ -203,7 +281,8 @@ def get_job(job_id: str):
 
 
 @app.post("/demo/jobs/{job_id}/cancel")
-def post_cancel(job_id: str):
+def post_cancel(job_id: str) -> dict[str, Any]:
+    """Cancel a queued or running job."""
     j = jobs.cancel(job_id)
     if j is None:
         raise HTTPException(404, "Unknown job_id")

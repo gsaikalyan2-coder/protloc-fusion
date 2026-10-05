@@ -1,10 +1,10 @@
 /*
  * SCREEN 2 — Evidence-linked Inspector
- * One sequence, all seven outputs on one surface, each traceable to residues:
- * calibrated multi-label localization with the tau marker, membrane type as a chip
- * modifier, sorting signal + cleavage coordinate, GO motif hits, per-residue
- * attribution, consistency flags, and the homology verdict. POST /demo/predict,
- * then poll — same async contract as the batch path (ADR-0001).
+ * One sequence, the annotation outputs on one surface: calibrated multi-label localization
+ * with each label's own threshold marker (Phase 10), membrane type as a chip modifier, the
+ * signal peptide and its cleavage coordinate (Phase 11 CRF), GO function (Phase 12 head),
+ * per-residue explanation, consistency flags, and the homology verdict. Every card says which
+ * engine produced it: model or motif. POST /demo/predict, then poll (ADR-0001).
  */
 import { useEffect, useState } from "react";
 import { predict, useJob } from "../services/demoApi";
@@ -15,7 +15,7 @@ import {
   ConfidenceRow,
   ExamplePicker,
   Flags,
-  GROUPS,
+  GroupSelect,
   JobState,
   ProvenanceBadge,
   ProvenanceBar,
@@ -58,22 +58,11 @@ export default function Inspector({
         <div>
           <h1>Inspector</h1>
           <p className="sub">
-            Seven annotations for one sequence, each anchored to the residues that produced it.
+            Annotations for one sequence, each labelled with the engine that produced it.
           </p>
         </div>
         <div className="row">
-          <select
-            value={group}
-            onChange={(e) => {
-              setGroup(e.target.value);
-            }}
-          >
-            {GROUPS.map(([v, l]) => (
-              <option key={v} value={v}>
-                {l}
-              </option>
-            ))}
-          </select>
+          <GroupSelect value={group} onChange={setGroup} servedOnly />
           <ExamplePicker
             examples={examples}
             value=""
@@ -112,7 +101,7 @@ export default function Inspector({
                 <span className="row" style={{ gap: 6 }}>
                   <ProvenanceBadge src={r.task_sources.localization} />
                   <span className="mono muted" style={{ fontSize: "var(--text-xs)" }}>
-                    T={r.temperature} · τ={r.tau} · {r.threshold_policy}
+                    {r.threshold_policy} · calibrator {r.calibration_version ?? "none"}
                   </span>
                 </span>
               }
@@ -122,8 +111,8 @@ export default function Inspector({
               ))}
               {r.no_confident_call && (
                 <div className="flag uncertain">
-                  <strong>No confident call.</strong> No compartment clears its threshold (τ ={" "}
-                  {r.tau}). The highest score, {r.top_location} at{" "}
+                  <strong>No confident call.</strong> No compartment clears its own threshold. The
+                  highest score, {r.top_location} at{" "}
                   {r.localization.find((l) => l.code === r.top_location)?.probability.toFixed(2)},
                   is shown for transparency and is not asserted.
                 </div>
@@ -168,22 +157,27 @@ export default function Inspector({
                 </p>
               </Card>
               <Card
-                title="GO function (motif-derived)"
+                title="GO function (molecular function)"
                 aside={<ProvenanceBadge src={r.task_sources.go_function} />}
               >
-                {r.go_terms.length === 0 && (
+                {r.go_function.filter((g) => g.predicted).length === 0 && (
                   <p className="muted" style={{ fontSize: "var(--text-sm)" }}>
-                    No scoring motif matched.
+                    No term reaches its threshold.
                   </p>
                 )}
-                {r.go_terms.map((g) => (
-                  <p key={g.go_id} style={{ fontSize: "var(--text-sm)", margin: "0 0 4px" }}>
-                    <span className="mono">{g.go_id}</span> {g.term}{" "}
-                    <span className="muted mono">
-                      [{g.span[0] + 1}–{g.span[1]}]
-                    </span>
-                  </p>
-                ))}
+                {r.go_function
+                  .filter((g) => g.predicted)
+                  .map((g) => (
+                    <p key={g.go_id} style={{ fontSize: "var(--text-sm)", margin: "0 0 4px" }}>
+                      <span className="mono">{g.go_id}</span> {g.name}{" "}
+                      <span className="muted mono">p={g.probability.toFixed(2)}</span>
+                    </p>
+                  ))}
+                <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+                  Predicted by the trained head, calibrated, propagated to ancestors; threshold{" "}
+                  {r.go_function[0]?.threshold.toFixed(2)}. Terms carried by homologs are on the
+                  Evidence Ledger, not here.
+                </p>
               </Card>
             </div>
           </div>
@@ -192,6 +186,12 @@ export default function Inspector({
             title="Per-residue explanation"
             aside={
               <div className="row">
+                <span
+                  className={`badge ${r.attribution_source}`}
+                  title="Which engine produced the per-residue weights. A trained-model attribution arrives with Phase 15."
+                >
+                  attribution · {r.attribution_source}
+                </span>
                 <button
                   className="btn"
                   onClick={() => {
@@ -228,13 +228,13 @@ export default function Inspector({
             <Flags flags={r.consistency_flags} />
             {r.evidence_agreement && (
               <p style={{ fontSize: "var(--text-sm)" }}>
-                Closest reference hit is annotated{" "}
-                <Chip code={r.evidence_agreement.top_hit_location} /> at{" "}
+                Closest Swiss-Prot hit{" "}
+                <span className="mono">{r.evidence_agreement.top_hit_accession}</span> at{" "}
                 <span className="mono">{(r.evidence_agreement.identity * 100).toFixed(1)}%</span>{" "}
-                identity —{" "}
+                identity — its GO terms{" "}
                 {r.evidence_agreement.agrees
-                  ? "agrees with the model."
-                  : "disagrees with the model."}
+                  ? "agree with the model's."
+                  : "differ from the model's (see the Evidence Ledger)."}
               </p>
             )}
           </Card>

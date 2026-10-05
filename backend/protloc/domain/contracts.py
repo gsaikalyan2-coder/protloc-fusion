@@ -51,7 +51,7 @@ from protloc.domain.types import (
 #: a narrowed type. Adding an optional field does not change it. It lives here
 #: rather than in ``api/`` because it versions the contract, and the contract is
 #: what this module is.
-API_VERSION = "1.1.0"
+API_VERSION = "1.2.0"
 
 # Every model forbids unknown fields. A response a client cannot fully account for
 # is a response whose shape the OpenAPI document does not actually describe, and
@@ -293,6 +293,17 @@ class TaskPrediction(BaseModel):
             "styles it."
         ),
     )
+    bundle_version: str | None = Field(
+        default=None,
+        description=(
+            "SemVer of the registry bundle that produced this task. null for a field "
+            "no bundle produced (a motif-engine task)."
+        ),
+    )
+    bundle_sha256: str | None = Field(
+        default=None,
+        description="SHA-256 of that bundle (the loader refuses a mismatch). null with it.",
+    )
 
     @model_validator(mode="before")
     @classmethod
@@ -389,10 +400,18 @@ class HomologyHit(BaseModel):
 
 
 class GoAnnotation(BaseModel):
-    """One GO term from the local UniProt-GOA snapshot (ADR-0003)."""
+    """One GO term transferred from a homolog (ADR-0003, ADR-0015). ``source`` is ``homology``.
+
+    A term the trained GO head predicts is a :class:`ModelGoAnnotation`; the two never share a
+    field, so a reader can always tell a prediction from a transfer.
+    """
 
     model_config = _STRICT
 
+    source: Literal["homology"] = Field(
+        default="homology",
+        description="Always homology: the term is carried by a database hit, not predicted.",
+    )
     go_id: str = Field(description="GO identifier, e.g. GO:0005739.")
     name: str = Field(description="The term's label.")
     aspect: Literal["cellular_component", "molecular_function", "biological_process"] = Field(
@@ -401,10 +420,43 @@ class GoAnnotation(BaseModel):
             "structure, not a biological choice this project made."
         ),
     )
-    evidence_code: str = Field(description="GO evidence code, e.g. IDA, ISS.")
+    evidence_code: str | None = Field(
+        default=None,
+        description=(
+            "GO evidence code of the source annotation, e.g. IDA. null when the hit-term "
+            "table does not carry one (the Phase 13 table does not)."
+        ),
+    )
     source_accession: str = Field(
         description="The homolog the annotation was transferred from.",
     )
+
+
+class ModelGoAnnotation(BaseModel):
+    """One GO term the trained GO head scored (Phase 12). ``source`` is ``model``.
+
+    It has no ``source_accession`` because nothing was transferred. The probability is the
+    isotonic-calibrated, ancestor-propagated score; ``threshold`` is the head's single global
+    threshold read from the bundle.
+    """
+
+    model_config = _STRICT
+
+    source: Literal["model"] = Field(
+        default="model",
+        description="Always model: the term is predicted from the sequence by the GO head.",
+    )
+    go_id: str = Field(description="GO identifier, e.g. GO:0003677.")
+    name: str = Field(description="The term's label.")
+    aspect: Literal["cellular_component", "molecular_function", "biological_process"] = Field(
+        description="The GO aspect (the GO head covers molecular_function).",
+    )
+    probability: float = Field(
+        ge=0.0, le=1.0, description="Calibrated, propagated probability of the term."
+    )
+    predicted: bool = Field(description="Whether the probability reaches the threshold.")
+    threshold: float = Field(description="The decision threshold applied, from the bundle.")
+    calibrated: bool = Field(description="Whether a fitted calibrator was applied.")
 
 
 class Evidence(BaseModel):
@@ -485,6 +537,13 @@ class SequenceResult(BaseModel):
         description="Per-residue explanation, per task.",
     )
     evidence: Evidence = Field(description="Independent database evidence.")
+    go_terms: list[ModelGoAnnotation] = Field(
+        default_factory=list,
+        description=(
+            "GO molecular-function terms the trained head scored, source model. Homology-"
+            "transferred terms are in evidence.go_annotations, never here."
+        ),
+    )
     error: str | None = Field(
         default=None,
         description=(
@@ -746,6 +805,7 @@ __all__ = [
     "JobAccepted",
     "JobProgress",
     "JobResource",
+    "ModelGoAnnotation",
     "PredictRequest",
     "ReproducibilityEnvelope",
     "ResidueAttribution",

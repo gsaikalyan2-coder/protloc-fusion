@@ -38,6 +38,7 @@ COMPONENT_MODELS = frozenset(
         "Evidence",
         "ExampleSequence",
         "GoAnnotation",
+        "ModelGoAnnotation",
         "HomologyHit",
         "JobProgress",
         "PredictRequest",
@@ -229,6 +230,9 @@ def test_no_model_hardcodes_a_biological_vocabulary():
     """
     allowed = {
         ("GoAnnotation", "aspect"),
+        ("GoAnnotation", "source"),
+        ("ModelGoAnnotation", "aspect"),
+        ("ModelGoAnnotation", "source"),
         ("HealthResponse", "status"),
         ("HealthzResponse", "status"),
         ("HealthzResponse", "registry_state"),

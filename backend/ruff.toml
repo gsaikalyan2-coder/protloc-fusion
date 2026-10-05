@@ -45,20 +45,19 @@ ignore = [
 "tests/**" = ["S101", "D100", "D103", "PLR2004", "ANN201"]
 
 # TEMPORARY. The five-screen MVP was promoted into the package on 2026-09-28 as
-# demo-grade code (motif engine, in-memory queue, synthetic reference set). Each
-# file below is replaced by a model-backed module in a later phase, at which point
-# its entry is deleted. The exemptions are scoped to the codes that fire today and
+# demo-grade code (motif engine, synthetic reference set). Phase 14 replaced the app, the
+# service facade and the queue with checked code, so their entries are gone; the motif engine
+# (inference/motif.py, the old service) stays for the Scanner and the golden baseline, and
+# its entry goes when it is rewritten or removed. The exemptions are scoped to the codes that fire today and
 # to these files only; new code is held to the full rule set.
-"protloc/api/app_v2.py" = ["ANN001", "ANN201", "ANN202", "B904", "D101", "D103", "E501"]
 "protloc/data/reference_demo.py" = ["D103", "PLR0911", "PLR0912", "PLR2004", "S311"]
 "protloc/features/classical.py" = [
   "D101", "D103", "E501", "E741", "N806", "PLR0912", "PLR0915", "PLR2004",
 ]
-"protloc/inference/service.py" = [
+"protloc/inference/motif.py" = [
   "ANN001", "D103", "D205", "D415", "E741", "N803", "N806", "PLR0913", "PLR0917",
   "PLR2004", "PLW2901", "RUF001",
 ]
-"protloc/jobs/queue.py" = ["ANN001", "D103", "D205"]
 
 [lint.isort]
 known-first-party = ["protloc"]

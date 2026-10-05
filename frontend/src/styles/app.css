@@ -256,6 +256,10 @@ tr.on td {
   color: var(--accent);
   background: var(--accent-subtle);
 }
+.badge.homology {
+  color: var(--state-note);
+  background: var(--state-note-bg);
+}
 
 .flag {
   border-left: var(--border-width-emph) solid var(--state-note);

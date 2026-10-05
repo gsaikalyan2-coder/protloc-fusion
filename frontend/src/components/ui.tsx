@@ -2,6 +2,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import {
   getExamples,
+  getVersion,
   type Flag,
   type JobBody,
   type LocRow,
@@ -49,7 +50,7 @@ export function ProvenanceBadge({ src }: { src: TaskSource | undefined }) {
       title={
         src.source === "motif"
           ? "Produced by the interpretable motif engine, not a trained model."
-          : "Produced by a trained model."
+          : `Produced by registry bundle ${src.bundle_version ?? "?"} (sha256 ${(src.bundle_sha256 ?? "").slice(0, 12)}…).`
       }
     >
       {src.source} · {src.calibrated ? "calibrated" : "uncalibrated"}
@@ -161,6 +162,7 @@ export interface Example {
   organism_group: string;
   sequence: string;
   note: string;
+  in_training_set?: boolean;
 }
 
 /** Examples come from GET /demo/examples — the pickers are never hardcoded. */
@@ -212,3 +214,53 @@ export const GROUPS: [string, string][] = [
   ["gram_neg", "Gram-negative bacteria"],
   ["gram_pos", "Gram-positive bacteria"],
 ];
+
+/** Which organism groups a trained head covers, from GET /demo/version. Null until loaded. */
+export function useServedGroups(): Set<string> | null {
+  const [served, setServed] = useState<Set<string> | null>(null);
+  useEffect(() => {
+    getVersion()
+      .then((v) => {
+        const groups = (v.organism_groups ?? {}) as Record<string, { served?: boolean }>;
+        setServed(new Set(Object.keys(groups).filter((k) => groups[k]?.served)));
+      })
+      .catch(() => {
+        setServed(null);
+      });
+  }, []);
+  return served;
+}
+
+/**
+ * The organism-group picker. With `servedOnly` a group no trained head covers is shown but
+ * disabled and says why (the training corpus is eukaryotic); the Scanner runs the motif
+ * engine, which covers all four, so it does not pass `servedOnly`.
+ */
+export function GroupSelect({
+  value,
+  onChange,
+  servedOnly = false,
+}: {
+  value: string;
+  onChange: (group: string) => void;
+  servedOnly?: boolean;
+}) {
+  const served = useServedGroups();
+  return (
+    <select
+      value={value}
+      onChange={(e) => {
+        onChange(e.target.value);
+      }}
+    >
+      {GROUPS.map(([v, l]) => {
+        const blocked = servedOnly && served !== null && !served.has(v);
+        return (
+          <option key={v} value={v} disabled={blocked}>
+            {blocked ? `${l} (no trained head)` : l}
+          </option>
+        );
+      })}
+    </select>
+  );
+}

@@ -14,7 +14,7 @@ import {
   Card,
   Chip,
   ExamplePicker,
-  GROUPS,
+  GroupSelect,
   JobState,
   ProvenanceBar,
   locText,
@@ -55,22 +55,13 @@ export default function Scanner({ seed }: { seed: { sequence: string; group: str
           <h1>Mutation Scanner</h1>
           <p className="sub">
             Counterfactuals, not just predictions: which residues hold this localization up, and
-            what breaks it.
+            what breaks it. The scanner runs the interpretable motif engine (source: motif), not the
+            trained heads, because it needs hundreds of re-scorings of sequences that have no cached
+            ESM-2 states.
           </p>
         </div>
         <div className="row">
-          <select
-            value={group}
-            onChange={(e) => {
-              setGroup(e.target.value);
-            }}
-          >
-            {GROUPS.map(([v, l]) => (
-              <option key={v} value={v}>
-                {l}
-              </option>
-            ))}
-          </select>
+          <GroupSelect value={group} onChange={setGroup} />
           <ExamplePicker
             examples={examples}
             value=""

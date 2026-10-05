@@ -483,7 +483,10 @@ export interface components {
     };
     /**
      * GoAnnotation
-     * @description One GO term from the local UniProt-GOA snapshot (ADR-0003).
+     * @description One GO term transferred from a homolog (ADR-0003, ADR-0015). ``source`` is ``homology``.
+     *
+     *     A term the trained GO head predicts is a :class:`ModelGoAnnotation`; the two never share a
+     *     field, so a reader can always tell a prediction from a transfer.
      */
     GoAnnotation: {
       /**
@@ -494,9 +497,9 @@ export interface components {
       aspect: "cellular_component" | "molecular_function" | "biological_process";
       /**
        * Evidence Code
-       * @description GO evidence code, e.g. IDA, ISS.
+       * @description GO evidence code of the source annotation, e.g. IDA. null when the hit-term table does not carry one (the Phase 13 table does not).
        */
-      evidence_code: string;
+      evidence_code?: string | null;
       /**
        * Go Id
        * @description GO identifier, e.g. GO:0005739.
@@ -507,6 +510,13 @@ export interface components {
        * @description The term's label.
        */
       name: string;
+      /**
+       * Source
+       * @description Always homology: the term is carried by a database hit, not predicted.
+       * @default homology
+       * @constant
+       */
+      source: "homology";
       /**
        * Source Accession
        * @description The homolog the annotation was transferred from.
@@ -829,6 +839,59 @@ export interface components {
      */
     JobStatus: "queued" | "running" | "completed" | "failed" | "cancelled";
     /**
+     * ModelGoAnnotation
+     * @description One GO term the trained GO head scored (Phase 12). ``source`` is ``model``.
+     *
+     *     It has no ``source_accession`` because nothing was transferred. The probability is the
+     *     isotonic-calibrated, ancestor-propagated score; ``threshold`` is the head's single global
+     *     threshold read from the bundle.
+     */
+    ModelGoAnnotation: {
+      /**
+       * Aspect
+       * @description The GO aspect (the GO head covers molecular_function).
+       * @enum {string}
+       */
+      aspect: "cellular_component" | "molecular_function" | "biological_process";
+      /**
+       * Calibrated
+       * @description Whether a fitted calibrator was applied.
+       */
+      calibrated: boolean;
+      /**
+       * Go Id
+       * @description GO identifier, e.g. GO:0003677.
+       */
+      go_id: string;
+      /**
+       * Name
+       * @description The term's label.
+       */
+      name: string;
+      /**
+       * Predicted
+       * @description Whether the probability reaches the threshold.
+       */
+      predicted: boolean;
+      /**
+       * Probability
+       * @description Calibrated, propagated probability of the term.
+       */
+      probability: number;
+      /**
+       * Source
+       * @description Always model: the term is predicted from the sequence by the GO head.
+       * @default model
+       * @constant
+       */
+      source: "model";
+      /**
+       * Threshold
+       * @description The decision threshold applied, from the bundle.
+       */
+      threshold: number;
+    };
+    /**
      * OrganismGroup
      * @description The organism group a user selects alongside the sequence.
      *
@@ -950,6 +1013,11 @@ export interface components {
       /** @description Independent database evidence. */
       evidence: components["schemas"]["Evidence"];
       /**
+       * Go Terms
+       * @description GO molecular-function terms the trained head scored, source model. Homology-transferred terms are in evidence.go_annotations, never here.
+       */
+      go_terms?: components["schemas"]["ModelGoAnnotation"][];
+      /**
        * Index
        * @description 0-based position in the submitted job. 0 for a single sequence.
        */
@@ -1057,6 +1125,16 @@ export interface components {
        * @description The tau this head was scored against, read from calibrator metadata at prediction time. Reported so a user can reproduce the decision; it has no default because there is no default tau.
        */
       abstention_threshold: number;
+      /**
+       * Bundle Sha256
+       * @description SHA-256 of that bundle (the loader refuses a mismatch). null with it.
+       */
+      bundle_sha256?: string | null;
+      /**
+       * Bundle Version
+       * @description SemVer of the registry bundle that produced this task. null for a field no bundle produced (a motif-engine task).
+       */
+      bundle_version?: string | null;
       /**
        * Calibrated
        * @description Whether a fitted calibrator was applied. A raw score or a sigmoid is not calibrated and is not displayed as if it were.

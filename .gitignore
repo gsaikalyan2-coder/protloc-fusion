@@ -94,3 +94,8 @@ data/calibration/
 data/crf/
 
 data/go/
+
+# Phase 14 served-example gallery (built from the corpus by scripts/build_gallery.py; never committed)
+data/gallery/
+# Phase 14 served-vs-motif comparison output (scripts/golden_vs_served.py --write)
+data/serving/
