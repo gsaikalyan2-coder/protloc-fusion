@@ -35,6 +35,13 @@ not its own, so it polled a finished job forever (seen on Windows: two completed
 20+ minutes). Each run now carries a generation; a stale run starts no poller and a poller clears
 its own interval. Test: `frontend/src/services/useJob.test.ts` (3 cases; 2 failed before the fix).
 
+**F13. The frontend dependency gate failed on `main` since Phase 16.** `a9ae234` added four
+test-only dev dependencies (`@testing-library/dom`, `@testing-library/react`, `jsdom`, `vitest`)
+without allowlisting them in `scripts/check_frontend_deps.py`, so CI's dependency job exited 1 on
+every push since PR #15. They are now on the dev allowlist with their reasons. None ships to the
+browser or renders product UI, so the React-only rule holds and no ADR is needed (the allowlist is
+the decision record, as for `openapi-typescript`).
+
 ## 3. Found, not changed
 
 F2 `/demo/health` reports evidence `available` when the binary exists but cannot run (startup checks
