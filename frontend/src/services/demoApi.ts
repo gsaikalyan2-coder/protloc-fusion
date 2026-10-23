@@ -1,6 +1,7 @@
 /* Single place that talks to the demo backend. Every screen goes through here. */
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ConfidenceBand, EngineSource, ThresholdPolicy } from "@/types/api";
+import { recordJob } from "./history";
 import {
   DemoApiError,
   jobProblem,
@@ -422,6 +423,7 @@ export function useJob() {
       const acc = await post(path, body);
       if (generation.current !== mine) return;
       setAccepted(acc);
+      recordJob(path, body, acc.job_id);
       const id = window.setInterval(async () => {
         if (generation.current !== mine) {
           window.clearInterval(id);
@@ -470,6 +472,9 @@ export function useJob() {
   const done = job?.status === "completed" ? job : null;
   return { run, retry, job, done, error, accepted, busy };
 }
+
+/** One job's current state (GET /demo/jobs/{id}); 410 when expired, 404 when unknown. */
+export const getJob = (jobId: string) => call<JobBody>(`/demo/jobs/${encodeURIComponent(jobId)}`);
 
 export const predict = (sequence: string, organism_group: string, id = "query") =>
   ["/demo/predict", { sequence, organism_group, id }] as const;
