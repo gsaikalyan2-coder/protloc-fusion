@@ -98,6 +98,30 @@ def test_a_missing_binary_is_a_reason_not_a_crash(tmp_path: Path) -> None:
         search(plan, {"a": "MKT"})
 
 
+def test_a_binary_that_cannot_start_is_a_reason_not_a_crash(tmp_path: Path) -> None:
+    """A binary for another platform (a Windows .exe on Linux) used to fail the whole job."""
+    exe = tmp_path / "mmseqs.exe"
+    exe.write_bytes(b"MZ\x90\x00 not an ELF binary")
+    (tmp_path / "sh.exe").write_bytes(b"")  # the Windows shell check passes; the start fails
+    exe.chmod(exe.stat().st_mode | stat.S_IEXEC)
+    plan = SearchPlan(exe, tmp_path / "db", tmp_path / "w", _SETTINGS, 1, 1, 5.0, 0.0)
+    with pytest.raises(EvidenceUnavailable, match="could not be started"):
+        search(plan, {"a": "MKT"})
+    assert list((tmp_path / "w").iterdir()) == []
+
+
+@posix_only
+def test_an_unusable_work_directory_is_a_reason_not_a_crash(tmp_path: Path) -> None:
+    plan = _plan(tmp_path)
+    blocker = tmp_path / "file-not-dir"
+    blocker.write_text("x")
+    blocked = SearchPlan(
+        plan.executable, plan.database, blocker / "work", plan.settings, 1, 1, 5.0, 0.0
+    )
+    with pytest.raises(EvidenceUnavailable, match="work directory is unusable"):
+        search(blocked, {"a": "MKTAYIAKQR"})
+
+
 def test_no_queries_is_no_search(tmp_path: Path) -> None:
     assert search(_plan(tmp_path), {}) == {}
 
