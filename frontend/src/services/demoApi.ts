@@ -308,6 +308,65 @@ export const getExamples = () =>
     }[];
   }>("/demo/examples");
 export const getTrust = () => call<Record<string, any>>("/demo/trust");
+
+/** One cached sequence the engine can score (GET /demo/catalog); the listing omits the sequence. */
+export interface CatalogEntry {
+  id: string;
+  entry_name: string;
+  name: string;
+  organism: string | null;
+  organism_group: string;
+  length: number;
+  partition: number;
+  /** Partitions 1-4: the heads were fitted on it. Partition 5: held-out test. */
+  in_training_set: boolean;
+  sequence_sha256: string;
+  database_labels: {
+    localization: string[];
+    signal_peptide: string[];
+    signal_peptide_cleavage_site: number | null;
+  };
+}
+export interface CatalogDetail extends CatalogEntry {
+  sequence: string;
+  note: string;
+}
+export interface CatalogPage {
+  total: number;
+  offset: number;
+  limit: number;
+  entries: CatalogEntry[];
+  catalog: {
+    available: boolean;
+    reason: string | null;
+    entries: number;
+    dropped_not_cached: number;
+  };
+  locations: string[];
+}
+export interface CatalogFilter {
+  q?: string | undefined;
+  location?: string | undefined;
+  group?: string | undefined;
+  partition?: number | undefined;
+  limit?: number | undefined;
+  offset?: number | undefined;
+}
+export function catalogPath(f: CatalogFilter): string {
+  const p = new URLSearchParams();
+  if (f.q?.trim()) p.set("q", f.q.trim());
+  if (f.location) p.set("location", f.location);
+  if (f.group) p.set("group", f.group);
+  if (f.partition !== undefined) p.set("partition", String(f.partition));
+  if (f.limit !== undefined) p.set("limit", String(f.limit));
+  if (f.offset) p.set("offset", String(f.offset));
+  const qs = p.toString();
+  return qs ? `/demo/catalog?${qs}` : "/demo/catalog";
+}
+export const getCatalog = (f: CatalogFilter = {}) => call<CatalogPage>(catalogPath(f));
+/** Look one cached sequence up by accession or entry name; a miss is `accession_not_cached`. */
+export const getCatalogEntry = (key: string) =>
+  call<CatalogDetail>(`/demo/catalog/${encodeURIComponent(key.trim())}`);
 export interface Accepted {
   job_id: string;
   result_url: string;
@@ -329,9 +388,15 @@ export function useJob() {
   const [busy, setBusy] = useState(false);
   const timer = useRef<number | null>(null);
   const last = useRef<{ path: string; body: unknown } | null>(null);
+  /* Each run (and the unmount) bumps the generation. A run whose generation is no longer the
+     current one is stale: it must not start a poller, and a poller it started stops itself.
+     Without this, a run superseded while its POST was in flight, or one whose screen unmounted,
+     left an interval nobody held a handle to, polling a finished job forever. */
+  const generation = useRef(0);
 
-  const stop = () => {
-    if (timer.current) {
+  const stop = (): void => {
+    generation.current += 1;
+    if (timer.current !== null) {
       window.clearInterval(timer.current);
       timer.current = null;
     }
@@ -340,6 +405,7 @@ export function useJob() {
 
   const run = useCallback(async (path: string, body: unknown) => {
     stop();
+    const mine = generation.current;
     last.current = { path, body };
     setError(null);
     setBusy(true);
@@ -347,24 +413,42 @@ export function useJob() {
     setAccepted(null);
     try {
       const acc = await post(path, body);
+      if (generation.current !== mine) return;
       setAccepted(acc);
-      timer.current = window.setInterval(async () => {
+      const id = window.setInterval(async () => {
+        if (generation.current !== mine) {
+          window.clearInterval(id);
+          return;
+        }
+        const finish = (): void => {
+          window.clearInterval(id);
+          if (timer.current === id) timer.current = null;
+          setBusy(false);
+        };
         try {
           const b = await call<JobBody>(acc.result_url);
+          if (generation.current !== mine) {
+            window.clearInterval(id);
+            return;
+          }
           setJob(b);
           if (b.status === "completed" || b.status === "failed" || b.status === "cancelled") {
-            stop();
-            setBusy(false);
+            finish();
             const problem = jobProblem(b);
             if (problem) setError(problem);
           }
         } catch (e) {
-          stop();
-          setBusy(false);
+          if (generation.current !== mine) {
+            window.clearInterval(id);
+            return;
+          }
+          finish();
           setError(problemOf(e));
         }
       }, 350);
+      timer.current = id;
     } catch (e) {
+      if (generation.current !== mine) return;
       setBusy(false);
       setError(problemOf(e));
     }

@@ -20,7 +20,7 @@ import os
 import time
 from typing import Any
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -35,8 +35,8 @@ from protloc.domain.errors import (
     api_code_for_refusal,
     error_object,
 )
-from protloc.inference import service, structures
-from protloc.inference.engine import EngineRefusal, load_engine
+from protloc.inference import catalog, service, structures
+from protloc.inference.engine import CONFIG_FILE, EngineRefusal, load_engine
 from protloc.inference.fasta import parse_fasta_strict
 from protloc.inference.trust import trust_payload
 from protloc.jobs import queue as jobs
@@ -49,9 +49,13 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     """Load and verify the model before the first request; a failure stops the process."""
     settings = get_serving_settings()
     service.configure(load_engine(settings))
+    catalog.configure(
+        catalog.load_for(settings.DATA_ROOT, CONFIG_FILE, service.engine().has_states)
+    )
     jobs.configure(settings.JOB_RETENTION_HOURS)
     yield
     service.configure(None)
+    catalog.configure(catalog.unavailable("the service has stopped"))
 
 
 app = FastAPI(title="ProtLoc Fusion", version="1.3.0", lifespan=lifespan)
@@ -289,6 +293,46 @@ def version() -> dict[str, Any]:
 def examples() -> dict[str, Any]:
     """Gallery sequences: real Swiss-Prot entries whose states are cached."""
     return {"examples": service.engine().gallery, "provenance": service.provenance()}
+
+
+@app.get("/demo/catalog")
+def list_catalog(  # noqa: PLR0913, PLR0917 - one query parameter per filter the screen offers
+    q: str = Query("", max_length=100),
+    location: str | None = Query(None, max_length=64),
+    group: str | None = Query(None, max_length=64),
+    partition: int | None = Query(None, ge=1, le=5),
+    limit: int = Query(25, ge=1, le=catalog.MAX_PAGE),
+    offset: int = Query(0, ge=0),
+) -> dict[str, Any]:
+    """Every cached sequence the engine can score, filtered and paged (no sequences)."""
+    if group is not None:
+        _check_group(group)
+    current = catalog.current()
+    page = current.search(
+        q, location=location, group=group, partition=partition, limit=limit, offset=offset
+    )
+    return {
+        **page,
+        "catalog": current.state(),
+        "locations": current.locations(),
+        "provenance": service.provenance(),
+    }
+
+
+@app.get("/demo/catalog/{key}")
+def get_catalog_entry(key: str) -> dict[str, Any]:
+    """One cached sequence, with its sequence, by accession or entry name."""
+    current = catalog.current()
+    if not current.available:
+        raise ApiError("catalog_unavailable", f"The catalog is not loaded: {current.reason}")
+    entry = current.lookup(key[:64])
+    if entry is None:
+        raise ApiError(
+            "accession_not_cached",
+            f"No cached sequence has the accession or entry name '{key[:64]}'. This build scores "
+            f"only the {service.engine().cached_sequences} cached sequences (ADR-0016).",
+        )
+    return {**entry, "provenance": service.provenance()}
 
 
 @app.get("/demo/trust")

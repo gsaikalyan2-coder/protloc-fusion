@@ -47,6 +47,10 @@ _SPECS: Final[tuple[ErrorSpec, ...]] = (
     ErrorSpec(
         "invalid_sequence", 422, "The sequence holds characters the model cannot use.", False
     ),
+    ErrorSpec(
+        "accession_not_cached", 404, "No cached sequence has that accession or entry name.", False
+    ),
+    ErrorSpec("catalog_unavailable", 503, "The cached-sequence catalog is not loaded.", False),
     ErrorSpec("unknown_job", 404, "The server does not know this job.", False),
     ErrorSpec("result_expired", 410, "This result has expired.", False),
     ErrorSpec("structure_bad_hash", 400, "The structure key is not a SHA-256 digest.", False),
