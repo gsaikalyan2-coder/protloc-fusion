@@ -131,6 +131,8 @@ export interface AttributionTrack {
 }
 export interface Result {
   id: string;
+  /** "hit" when this result was served from the server's result cache (feature 3). */
+  result_cache?: "hit" | "miss";
   length: number;
   sequence: string;
   sequence_sha256: string;
@@ -308,6 +310,11 @@ export const getExamples = () =>
     }[];
   }>("/demo/examples");
 export const getTrust = () => call<Record<string, any>>("/demo/trust");
+/** Formats GET /demo/jobs/{id}/results builds on the server for a whole job. */
+export type JobExportFormat = "json" | "csv" | "fasta";
+/** The server-side download URL of a whole finished job. */
+export const jobResultsUrl = (jobId: string, format: JobExportFormat): string =>
+  `/demo/jobs/${encodeURIComponent(jobId)}/results?format=${format}`;
 
 /** One cached sequence the engine can score (GET /demo/catalog); the listing omits the sequence. */
 export interface CatalogEntry {

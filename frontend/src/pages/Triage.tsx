@@ -7,6 +7,7 @@
  * not "what is protein 57". Also renders the dual-targeting co-occurrence matrix.
  */
 import { useEffect, useMemo, useState } from "react";
+import { ServerDownloads } from "../components/ServerDownloads";
 import { batch, useJob } from "../services/demoApi";
 import { failureProblems } from "../services/problems";
 import {
@@ -125,6 +126,7 @@ export default function Triage({ onOpen }: { onOpen: (seq: string, group: string
               </span>
             }
           >
+            <ServerDownloads jobId={done.job_id} />
             <table>
               <thead>
                 <tr>

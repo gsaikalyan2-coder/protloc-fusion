@@ -2,6 +2,7 @@
 import type { ReactElement } from "react";
 import { buildExport, saveFile, type ExportFormat } from "../services/download";
 import type { Result } from "../services/demoApi";
+import { ServerDownloads } from "./ServerDownloads";
 import { Card } from "./ui";
 
 const FORMATS: [ExportFormat, string, string][] = [
@@ -39,6 +40,7 @@ export function DownloadButtons({
         expires. Each states its model version, the engine and method behind every track, and its
         scope.
       </p>
+      {jobId !== "unknown" && <ServerDownloads jobId={jobId} />}
     </Card>
   );
 }
