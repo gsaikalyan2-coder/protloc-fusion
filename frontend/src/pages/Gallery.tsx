@@ -2,9 +2,10 @@
  * Gallery — the cached example sequences from GET /demo/examples. Only these (and the rest of
  * the 500-sequence residue cache) can be scored. Each card states that the result is in-sample,
  * because the heads were fitted on these sequences. "Open result" runs the prediction and
- * shows it in the Inspector.
+ * shows it in the Inspector. Below the cards, CatalogBrowser lists every cached sequence.
  */
 import type { ReactElement } from "react";
+import { CatalogBrowser } from "../components/CatalogBrowser";
 import { Card, useExamples } from "../components/ui";
 
 export default function Gallery({
@@ -70,6 +71,10 @@ export default function Gallery({
             </Card>
           );
         })}
+      </div>
+
+      <div style={{ marginTop: "var(--space-5)" }}>
+        <CatalogBrowser onOpen={onOpen} />
       </div>
     </div>
   );

@@ -79,13 +79,16 @@ def _run(command: Sequence[str], env: Mapping[str, str], log: Path, deadline: fl
             if sys.platform == "win32"
             else {"start_new_session": True}
         )
-        process = subprocess.Popen(  # noqa: S603 - argv built from pinned paths, never from input
-            list(command),
-            env=dict(env),
-            stdout=sink,
-            stderr=subprocess.STDOUT,
-            **extra,  # type: ignore[call-overload]
-        )
+        try:
+            process = subprocess.Popen(  # noqa: S603 - argv built from pinned paths, never input
+                list(command),
+                env=dict(env),
+                stdout=sink,
+                stderr=subprocess.STDOUT,
+                **extra,  # type: ignore[call-overload]
+            )
+        except OSError as error:  # wrong platform, no execute bit, blocked by the host
+            raise EvidenceUnavailable(f"the search binary could not be started: {error}") from error
         try:
             code = process.wait(timeout=remaining)
         except subprocess.TimeoutExpired as error:
@@ -107,19 +110,25 @@ def search(plan: SearchPlan, queries: Mapping[str, str]) -> dict[str, list[Hit]]
         raise EvidenceUnavailable("the search binary has no shell beside it (sh.exe)")
     deadline = time.monotonic() + timeout_for(plan, len(queries))
     env = homology.engine_env(plan.executable)
-    plan.work_directory.mkdir(parents=True, exist_ok=True)
-    work = Path(tempfile.mkdtemp(prefix="search_", dir=plan.work_directory))
+    try:
+        plan.work_directory.mkdir(parents=True, exist_ok=True)
+        work = Path(tempfile.mkdtemp(prefix="search_", dir=plan.work_directory))
+    except OSError as error:
+        raise EvidenceUnavailable(f"the search work directory is unusable: {error}") from error
     try:
         fasta = work / "queries.fasta"
         names = {f"q{i}": key for i, key in enumerate(queries)}
-        fasta.write_text(
-            "".join(f">{alias}\n{queries[key]}\n" for alias, key in names.items()),
-            encoding="ascii",
-            newline="\n",
-        )
         query_db, result, tmp = work / "q", work / "res", work / "tmp"
         out = work / "hits.tsv"
-        tmp.mkdir()
+        try:
+            fasta.write_text(
+                "".join(f">{alias}\n{queries[key]}\n" for alias, key in names.items()),
+                encoding="ascii",
+                newline="\n",
+            )
+            tmp.mkdir()
+        except OSError as error:
+            raise EvidenceUnavailable(f"the search work directory is unusable: {error}") from error
         steps = (
             homology.createdb_command(plan.executable, fasta, query_db, plan.verbosity),
             homology.search_command(

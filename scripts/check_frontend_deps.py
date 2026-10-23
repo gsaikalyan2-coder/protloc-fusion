@@ -44,6 +44,14 @@ ALLOWED_DEPENDENCIES: dict[str, str] = {
 # Build and check tooling. None of it ships to the browser.
 ALLOWED_DEV_DEPENDENCIES: dict[str, str] = {
     "@eslint/js": "ESLint's own recommended rule set",
+    "@testing-library/dom": (
+        "peer of @testing-library/react: DOM queries for the Vitest suite. Test-only; "
+        "it is never bundled and renders no UI in the product (Phase 16)."
+    ),
+    "@testing-library/react": (
+        "renders components inside the Vitest suite so tests assert what a user "
+        "sees. Test-only; never bundled (Phase 16)."
+    ),
     "@types/node": "types for vite.config.ts, which runs in Node",
     "@types/react": "React type definitions",
     "@types/react-dom": "React DOM type definitions",
@@ -52,6 +60,10 @@ ALLOWED_DEV_DEPENDENCIES: dict[str, str] = {
     "eslint-plugin-react-hooks": "rules of hooks",
     "eslint-plugin-react-refresh": "fast-refresh correctness in development",
     "globals": "environment globals for the ESLint config",
+    "jsdom": (
+        "the simulated browser DOM Vitest runs component tests in. Test-only; "
+        "never bundled (Phase 16)."
+    ),
     "openapi-typescript": (
         "generates src/types/api.generated.ts from docs/api/openapi.yaml. A "
         "build-time code generator: it emits type declarations, ships nothing "
@@ -63,6 +75,10 @@ ALLOWED_DEV_DEPENDENCIES: dict[str, str] = {
     "typescript": "the compiler and the strict type gate",
     "typescript-eslint": "type-aware linting",
     "vite": "the bundler and dev server",
+    "vitest": (
+        "the test runner behind `npm run test` (Phase 16). Runs in Node on the Vite "
+        "pipeline; ships nothing to the browser."
+    ),
 }
 
 

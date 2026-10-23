@@ -123,6 +123,16 @@ export const CODE_TEXT: Readonly<Record<string, CodeText>> = {
     title: "The structure key is not valid",
     hint: "Run the prediction again to get a fresh key.",
   },
+  accession_not_cached: {
+    kind: "not_cached",
+    title: "No cached sequence has that accession",
+    hint: "Search the list below by accession, entry name or organism; only cached sequences can be scored.",
+  },
+  catalog_unavailable: {
+    kind: "server_error",
+    title: "The sequence catalog is not loaded",
+    hint: "Run python scripts/build_catalog.py --write, then restart the backend. The gallery still works.",
+  },
   structure_not_found: {
     kind: "no_structure",
     title: "No structure for this sequence",
