@@ -1,5 +1,5 @@
 /*
- * App shell: sidebar nav + the five screens. No router dependency — a union type
+ * App shell: sidebar nav + the screens. No router dependency — a union type
  * and useState, because this is five screens and a router is a decision
  * (CLAUDE.md: "a dependency that renders UI is a decision, and decisions become ADRs").
  * The banner states the model version and what its numbers are measured on, from the
@@ -7,6 +7,7 @@
  */
 import { useEffect, useState } from "react";
 import { getVersion } from "./services/demoApi";
+import Compare from "./pages/Compare";
 import Evidence from "./pages/Evidence";
 import Gallery from "./pages/Gallery";
 import Home from "./pages/Home";
@@ -20,7 +21,8 @@ import "./styles/app.css";
 type Theme = "system" | "light" | "dark";
 const NEXT_THEME: Record<Theme, Theme> = { system: "light", light: "dark", dark: "system" };
 
-type Screen = "home" | "gallery" | "triage" | "inspector" | "evidence" | "scanner" | "trust";
+type Screen =
+  "home" | "gallery" | "triage" | "inspector" | "compare" | "evidence" | "scanner" | "trust";
 interface Seed {
   sequence: string;
   group: string;
@@ -32,6 +34,7 @@ const NAV: [Screen, string, string][] = [
   ["gallery", "Gallery", "cached examples, in-sample"],
   ["triage", "Triage Board", "which proteins need a human"],
   ["inspector", "Inspector", "seven outputs, one sequence"],
+  ["compare", "Compare", "two sequences side by side"],
   ["evidence", "Evidence Ledger", "model vs. homology"],
   ["scanner", "Mutation Scanner", "counterfactuals"],
   ["trust", "Trust Console", "calibration + abstention"],
@@ -133,6 +136,15 @@ export default function App() {
             onStart={() => {
               setScreen("gallery");
             }}
+            onOpenRecent={(e) => {
+              setSeed({
+                sequence: e.sequence,
+                group: e.group,
+                id: e.id,
+                autorun: e.kind === "predict",
+              });
+              setScreen(e.kind === "scan" ? "scanner" : "inspector");
+            }}
           />
         )}
         {screen === "gallery" && (
@@ -145,6 +157,7 @@ export default function App() {
         )}
         {screen === "triage" && <Triage onOpen={openIn("inspector")} />}
         {screen === "inspector" && <Inspector seed={seed} onScan={openIn("scanner")} />}
+        {screen === "compare" && <Compare />}
         {screen === "evidence" && <Evidence />}
         {screen === "scanner" && <Scanner seed={seed} />}
         {screen === "trust" && <Trust />}
