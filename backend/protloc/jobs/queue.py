@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from collections import deque
 from collections.abc import Callable
+import logging
 import queue
 import threading
 import time
@@ -18,6 +19,7 @@ from typing import Any
 import uuid
 
 from protloc.domain.errors import api_code_for_refusal
+from protloc.utils.observability import JOBS_LOG, METRICS, current_request_id
 
 SECONDS_PER_HOUR = 3600
 RETENTION_SECONDS = SECONDS_PER_HOUR  # replaced by configure(); the Phase 1 default
@@ -70,10 +72,15 @@ def submit(
             "result": None,
             "error": None,
             "error_code": None,
+            "request_id": current_request_id(),
             "_fn": fn,
         }
         pos = sum(1 for j in _jobs.values() if j["status"] in ("queued", "running"))
     _q.put(jid)
+    JOBS_LOG.info(
+        "job queued",
+        extra={"fields": {"job_id": jid, "kind": kind, "total": total, "queue_position": pos}},
+    )
     return {"job_id": jid, "status": "queued", "queue_position": pos}
 
 
@@ -136,6 +143,32 @@ def _worker() -> None:
             j["finished_at"] = j["updated_at"] = time.time()
             if j["status"] == "completed" and j["total"] > 0:
                 _rates.append((j["finished_at"] - j["started_at"]) / j["total"])
+            finished = {k: v for k, v in j.items() if not k.startswith("_") and k != "result"}
+            result = j["result"]
+        _record_finish(finished, result)
+
+
+def _record_finish(j: dict[str, Any], result: Any) -> None:
+    """Count the finished job and write its one log line (no sequence, no result body)."""
+    wait = j["started_at"] - j["created_at"] if j["started_at"] else None
+    run = j["finished_at"] - j["started_at"] if j["started_at"] else None
+    degraded = isinstance(result, dict) and bool(result.get("degraded"))
+    METRICS.record_job(
+        str(j["kind"]), str(j["status"]), wait_seconds=wait, run_seconds=run, degraded=degraded
+    )
+    fields = {
+        "job_id": j["job_id"],
+        "kind": j["kind"],
+        "status": j["status"],
+        "total": j["total"],
+        "wait_ms": None if wait is None else round(wait * 1000, 1),
+        "run_ms": None if run is None else round(run * 1000, 1),
+        "degraded": degraded,
+        "error_code": j["error_code"],
+        "request_id": j["request_id"],
+    }
+    level = logging.WARNING if j["status"] == "failed" else logging.INFO
+    JOBS_LOG.log(level, "job finished", extra={"fields": fields})
 
 
 threading.Thread(target=_worker, daemon=True, name="job-worker").start()

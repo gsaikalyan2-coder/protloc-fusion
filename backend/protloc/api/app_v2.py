@@ -16,6 +16,7 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 import contextlib
 from contextlib import asynccontextmanager
+import logging
 import os
 import time
 from typing import Any
@@ -40,6 +41,15 @@ from protloc.inference.engine import CONFIG_FILE, EngineRefusal, load_engine
 from protloc.inference.fasta import parse_fasta_strict
 from protloc.inference.trust import trust_payload
 from protloc.jobs import queue as jobs
+from protloc.utils.observability import (
+    ACCESS_LOG,
+    METRICS,
+    REQUEST_ID_HEADER,
+    UNMATCHED,
+    configure_logging,
+    new_request_id,
+    request_id_var,
+)
 
 ENABLED = os.getenv("PROTLOC_DEMO_ENABLED", "1") != "0"
 
@@ -48,6 +58,8 @@ ENABLED = os.getenv("PROTLOC_DEMO_ENABLED", "1") != "0"
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     """Load and verify the model before the first request; a failure stops the process."""
     settings = get_serving_settings()
+    configure_logging(settings.LOG_LEVEL)
+    METRICS.reset()
     service.configure(load_engine(settings))
     catalog.configure(
         catalog.load_for(settings.DATA_ROOT, CONFIG_FILE, service.engine().has_states)
@@ -114,6 +126,60 @@ async def kill_switch(request: Request, call_next: Any) -> Any:
     if not ENABLED and request.url.path.startswith("/demo"):
         return _error_response(ApiError("demo_disabled", "Disabled (PROTLOC_DEMO_ENABLED=0)"))
     return await call_next(request)
+
+
+_POLL_ROUTE = "/demo/jobs/{job_id}"
+
+
+def _route_of(request: Request) -> str:
+    """The matched route template (``/demo/jobs/{job_id}``), never the raw path with its ids."""
+    route = request.scope.get("route")
+    return str(getattr(route, "path", None) or UNMATCHED)
+
+
+@app.middleware("http")
+async def observe(request: Request, call_next: Any) -> Any:
+    """Give every request an id, time it, count it and write one JSON access line.
+
+    Registered after the kill switch, so it is the outermost middleware and also sees the 503
+    the kill switch returns. Job polls that answer 200 log at DEBUG: a page polling every
+    350 ms would otherwise drown every other line.
+    """
+    request_id = new_request_id(request.headers.get(REQUEST_ID_HEADER))
+    token = request_id_var.set(request_id)
+    started = time.perf_counter()
+    status = 500
+    try:
+        response = await call_next(request)
+    except Exception:
+        ACCESS_LOG.exception(
+            "unhandled error",
+            extra={"fields": {"method": request.method, "route": _route_of(request)}},
+        )
+        raise
+    else:
+        status = response.status_code
+        response.headers[REQUEST_ID_HEADER] = request_id
+        return response
+    finally:
+        elapsed = time.perf_counter() - started
+        route = _route_of(request)
+        METRICS.record_request(request.method, route, status, elapsed)
+        quiet = request.method == "GET" and route == _POLL_ROUTE and status == 200  # noqa: PLR2004
+        ACCESS_LOG.log(
+            logging.DEBUG if quiet else logging.INFO,
+            "request",
+            extra={
+                "fields": {
+                    "method": request.method,
+                    "route": route,
+                    "status": status,
+                    "duration_ms": round(elapsed * 1000, 1),
+                    "job_id": request.path_params.get("job_id"),
+                }
+            },
+        )
+        request_id_var.reset(token)
 
 
 class PredictIn(BaseModel):
@@ -333,6 +399,22 @@ def get_catalog_entry(key: str) -> dict[str, Any]:
             f"only the {service.engine().cached_sequences} cached sequences (ADR-0016).",
         )
     return {**entry, "provenance": service.provenance()}
+
+
+@app.get("/demo/metrics")
+def metrics() -> dict[str, Any]:
+    """Request and job counters, recent latency percentiles and the queue, for this process.
+
+    In-memory and per-process like the queue (ADR-0008): a restart starts every counter at
+    zero. Latency percentiles are over the most recent requests per route, not all time.
+    """
+    return {
+        **METRICS.snapshot(),
+        "queue": {"depth": jobs.depth(), "pending_sequences": jobs.pending_sequences()},
+        "evidence": service.engine().evidence_state,
+        "catalog": catalog.current().state(),
+        **service.provenance(),
+    }
 
 
 @app.get("/demo/trust")

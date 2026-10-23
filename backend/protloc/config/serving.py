@@ -48,6 +48,14 @@ class ServingSettings(BaseSettings):
     SWISSPROT_DB_PATH: Path = Field(description="Directory of the MMseqs2 Swiss-Prot index.")
     EVIDENCE_TIMEOUT_SECONDS: int = Field(ge=1, description="Wall-clock budget of one search.")
     EVIDENCE_TOP_K: int = Field(ge=1, description="Hits shown per sequence.")
+    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
+        default="INFO",
+        description=(
+            "Level of the JSON logs (protloc.access, protloc.jobs). The one field with a "
+            "default: it changes what is logged, never which model is served. Job polls "
+            "(GET /demo/jobs/{job_id} answering 200) log at DEBUG."
+        ),
+    )
 
 
 class ServingSettingsError(RuntimeError):
