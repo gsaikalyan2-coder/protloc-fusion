@@ -542,3 +542,61 @@ export function useStructure(sha256: string): StructureState {
   }, [sha256]);
   return state;
 }
+
+/** One cached sequence on the protein-space map (GET /demo/space). */
+export interface SpacePoint {
+  sha256: string;
+  /** Accessions that share this sequence; the first opens it. */
+  ids: string[];
+  entry_name: string;
+  organism: string | null;
+  organism_group: string;
+  length: number;
+  partition: number;
+  in_training_set: boolean;
+  /** Swiss-Prot locations as compartment codes (database annotation, not the model's call). */
+  locations: string[];
+  /** PCA coordinates, scaled so the largest magnitude is 1. */
+  xyz: [number, number, number];
+  /** [index into points, cosine similarity] of the nearest cached sequences, best first. */
+  neighbours: [number, number][];
+}
+
+export interface SpaceDoc {
+  method: string;
+  components: number;
+  explained_variance_ratio: number[];
+  neighbour_metric: string;
+  embedding: { checkpoint: string; revision: string; pooling: string; cache_key: string };
+  scope_label: string;
+  note: string;
+  points: SpacePoint[];
+}
+
+export type SpaceState =
+  | { status: "loading" }
+  | { status: "ready"; data: SpaceDoc }
+  | { status: "error"; problem: Problem };
+
+let spaceRequest: Promise<SpaceDoc> | null = null;
+
+/** The protein-space map, fetched once per page load and shared by every screen that draws it. */
+export function useSpace(): SpaceState {
+  const [state, setState] = useState<SpaceState>({ status: "loading" });
+  useEffect(() => {
+    let live = true;
+    spaceRequest ??= call<SpaceDoc>("/demo/space");
+    spaceRequest
+      .then((data) => {
+        if (live) setState({ status: "ready", data });
+      })
+      .catch((e: unknown) => {
+        spaceRequest = null;
+        if (live) setState({ status: "error", problem: problemOf(e) });
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
+  return state;
+}

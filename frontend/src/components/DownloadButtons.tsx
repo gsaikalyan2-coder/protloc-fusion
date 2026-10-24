@@ -24,7 +24,7 @@ export function DownloadButtons({
         {FORMATS.map(([format, label, what]) => (
           <button
             key={format}
-            className="btn"
+            className="btn sm"
             title={what}
             aria-label={`Download ${label}: ${what}`}
             onClick={() => {
@@ -35,7 +35,7 @@ export function DownloadButtons({
           </button>
         ))}
       </div>
-      <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+      <p className="note">
         Files are built in your browser from this result, so they still work after the result
         expires. Each states its model version, the engine and method behind every track, and its
         scope.

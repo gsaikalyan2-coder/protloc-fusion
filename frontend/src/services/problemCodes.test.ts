@@ -63,13 +63,13 @@ describe("evidence service down", () => {
 });
 
 describe("cold cache", () => {
-  it("not_cached says the sequence is not served and points at the Gallery", () => {
+  it("not_cached says the sequence is not served and points at the Catalog", () => {
     const p = toProblem(422, "This build scores only sequences whose ESM-2 states are cached.", {
       code: "not_cached",
       retryable: false,
     });
     expect(p.kind).toBe("not_cached");
-    expect(p.hint).toContain("Gallery");
+    expect(p.hint).toContain("Catalog");
     expect(p.hint).toContain("rather than guessed");
     expect(p.retryable).toBe(false);
   });

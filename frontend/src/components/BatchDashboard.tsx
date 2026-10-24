@@ -70,7 +70,7 @@ export function BatchDashboard({
     <Card
       title="Batch dashboard"
       aside={
-        <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
+        <span className="note">
           {n} scored{s.refused ? ` · ${String(s.refused)} refused` : ""}
           {s.cacheHits ? ` · ${String(s.cacheHits)} from cache` : ""}
           {s.liveEncoded ? ` · ${String(s.liveEncoded)} encoded live` : ""}
@@ -99,7 +99,7 @@ export function BatchDashboard({
         total={n}
         empty="No GO term cleared its threshold."
       />
-      <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+      <p className="note">
         Counts of model outputs over this batch only. Probabilities are calibrated per label on the
         500-sequence subset; a distribution here is not a prevalence estimate.
       </p>

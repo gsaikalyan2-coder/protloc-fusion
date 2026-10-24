@@ -9,7 +9,15 @@ import { useState, type FormEvent, type ReactElement } from "react";
 import { getCatalogEntry, predict, useJob, type Result } from "../services/demoApi";
 import { compareResults } from "../services/compare";
 import { describeError } from "../services/problems";
-import { Card, ExamplePicker, GroupSelect, JobState, useExamples } from "../components/ui";
+import { Columns2 } from "lucide-react";
+import {
+  Card,
+  EmptyState,
+  ExamplePicker,
+  GroupSelect,
+  JobState,
+  useExamples,
+} from "../components/ui";
 
 interface Choice {
   id: string;
@@ -53,7 +61,7 @@ function Side({
 
   return (
     <Card title={title}>
-      <form className="row" onSubmit={load} style={{ flexWrap: "wrap" }}>
+      <form className="row tight" onSubmit={load}>
         <input
           aria-label={`${title}: accession or entry name`}
           className="mono"
@@ -83,9 +91,9 @@ function Side({
         </p>
       )}
       {choice ? (
-        <div className="row" style={{ marginTop: "var(--space-3)" }}>
-          <span className="mono">{choice.id}</span>
-          <span className="muted">{choice.sequence.length} residues</span>
+        <div className="chosen">
+          <span className="mono chosen-id">{choice.id}</span>
+          <span className="note">{choice.sequence.length} residues</span>
           <GroupSelect
             value={choice.group}
             onChange={(g) => {
@@ -95,7 +103,7 @@ function Side({
           />
         </div>
       ) : (
-        <p className="sub">No sequence chosen.</p>
+        <p className="chosen empty-line note">No sequence chosen.</p>
       )}
     </Card>
   );
@@ -117,63 +125,67 @@ function Results({ a, b }: { a: Result; b: Result }): ReactElement {
         <p className="flag warning">Both sides are the same sequence; only the group differs.</p>
       )}
       <Card title="Side by side">
-        <table>
-          <thead>
-            <tr>
-              <th />
-              <th>{a.id}</th>
-              <th>{b.id}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {c.summary.map((r) => (
-              <tr key={r.label} className={r.differs ? "differs" : undefined}>
-                <td>{r.label}</td>
-                <td>{r.a}</td>
-                <td>{r.b}</td>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th />
+                <th>{a.id}</th>
+                <th>{b.id}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {c.summary.map((r) => (
+                <tr key={r.label} className={r.differs ? "differs" : undefined}>
+                  <td>{r.label}</td>
+                  <td>{r.a}</td>
+                  <td>{r.b}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Card>
       <Card title="Location probabilities (calibrated)">
-        <table>
-          <thead>
-            <tr>
-              <th>label</th>
-              <th>{a.id}</th>
-              <th>{b.id}</th>
-              <th>difference (B − A)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {c.locations.map((l) => (
-              <tr key={l.code}>
-                <td>
-                  {l.name} <span className="muted mono">{l.code}</span>
-                </td>
-                <td className="num">
-                  {fmt(l.a)}
-                  {l.aPredicted ? " ✓" : ""}
-                </td>
-                <td className="num">
-                  {fmt(l.b)}
-                  {l.bPredicted ? " ✓" : ""}
-                </td>
-                <td className="num">
-                  <Delta value={l.delta} />
-                </td>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>label</th>
+                <th className="num">{a.id}</th>
+                <th className="num">{b.id}</th>
+                <th className="num">difference (B − A)</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+            </thead>
+            <tbody>
+              {c.locations.map((l) => (
+                <tr key={l.code}>
+                  <td>
+                    {l.name} <span className="muted mono">{l.code}</span>
+                  </td>
+                  <td className="num">
+                    {fmt(l.a)}
+                    {l.aPredicted ? " ✓" : ""}
+                  </td>
+                  <td className="num">
+                    {fmt(l.b)}
+                    {l.bPredicted ? " ✓" : ""}
+                  </td>
+                  <td className="num">
+                    <Delta value={l.delta} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="note mt-3">
           ✓ marks a label above its own threshold. A difference is between two model outputs, not a
           measured difference between the proteins.
         </p>
       </Card>
       <Card title="GO molecular function (predicted terms)">
-        <div className="grid two">
+        <div className="go-compare">
           {(
             [
               ["Both", c.go.shared],
@@ -182,9 +194,9 @@ function Results({ a, b }: { a: Result; b: Result }): ReactElement {
             ] as const
           ).map(([label, terms]) => (
             <div key={label}>
-              <strong>{label}</strong>
+              <div className="overline">{label}</div>
               {terms.length === 0 ? (
-                <p className="sub">none</p>
+                <p className="note">none</p>
               ) : (
                 <ul className="plain">
                   {terms.map((t) => (
@@ -218,7 +230,7 @@ export default function Compare(): ReactElement {
   };
 
   return (
-    <div>
+    <>
       <div className="head">
         <div>
           <h1>Compare</h1>
@@ -235,11 +247,19 @@ export default function Compare(): ReactElement {
         <Side title="Sequence A" choice={left} onChoose={setLeft} />
         <Side title="Sequence B" choice={right} onChoose={setRight} />
       </div>
-      <div className="grid two">
+      <div className="grid two job-pair">
         <JobState job={jobA.job} error={jobA.error} accepted={jobA.accepted} onRetry={jobA.retry} />
         <JobState job={jobB.job} error={jobB.error} accepted={jobB.accepted} onRetry={jobB.retry} />
       </div>
       {a && b && <Results a={a} b={b} />}
-    </div>
+      {!a && !b && !busy && (
+        <Card>
+          <EmptyState icon={Columns2} title="Choose two sequences">
+            Load each side by accession or from the examples, then press Compare. Both run as
+            ordinary jobs; a repeat is answered from the result cache.
+          </EmptyState>
+        </Card>
+      )}
+    </>
   );
 }

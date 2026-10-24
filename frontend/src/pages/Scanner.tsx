@@ -8,15 +8,18 @@
  *      by the delta it causes in the target compartment's probability
  *   3. Variant diff — a user's mutation list (e.g. K83A,L20P) run as wild-type vs variant
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { scanReq, useJob } from "../services/demoApi";
+import { Dna } from "lucide-react";
 import {
   Card,
   Chip,
-  ExamplePicker,
-  GroupSelect,
+  EmptyState,
   JobState,
   ProvenanceBar,
+  Select,
+  SequenceForm,
+  Skeleton,
   locText,
   useExamples,
 } from "../components/ui";
@@ -52,7 +55,7 @@ export default function Scanner({ seed }: { seed: { sequence: string; group: str
     <>
       <div className="head">
         <div>
-          <h1>Mutation Scanner</h1>
+          <h1>Mutation scanner</h1>
           <p className="sub">
             Counterfactuals, not just predictions: which residues hold this localization up, and
             what breaks it. The scanner runs the interpretable motif engine (source: motif), not the
@@ -60,109 +63,118 @@ export default function Scanner({ seed }: { seed: { sequence: string; group: str
             ESM-2 states.
           </p>
         </div>
-        <div className="row">
-          <GroupSelect value={group} onChange={setGroup} />
-          <ExamplePicker
-            examples={examples}
-            value=""
-            onPick={(e) => {
-              setSeq(e.sequence);
-              setGroup(e.organism_group);
-              setTarget("");
-            }}
-          />
-        </div>
       </div>
 
-      <Card title="Input">
-        <textarea
-          value={seq}
+      <SequenceForm
+        id="scanner-input"
+        label="Input"
+        value={seq}
+        onChange={setSeq}
+        group={group}
+        onGroup={setGroup}
+        allGroups
+        examples={examples}
+        onPick={(e) => {
+          setSeq(e.sequence);
+          setGroup(e.organism_group);
+          setTarget("");
+        }}
+        action="Run scan"
+        busyAction="Scanning…"
+        busy={busy}
+        onSubmit={() => void run(...scanReq(seq, group, target || null, muts, sub))}
+        compact={s !== null}
+      >
+        <Select
+          aria-label="Target compartment"
+          value={target}
           onChange={(e) => {
-            setSeq(e.target.value);
+            setTarget(e.target.value);
           }}
-          spellCheck={false}
+        >
+          <option value="">Target: top call</option>
+          {codes.map((c) => (
+            <option key={c} value={c}>
+              Target: {c}
+            </option>
+          ))}
+        </Select>
+        <input
+          aria-label="Substitute every position to"
+          title="Substitute every position to this residue"
+          className="mono input-xs"
+          value={sub}
+          maxLength={1}
+          onChange={(e) => {
+            setSub(e.target.value.toUpperCase());
+          }}
         />
-        <div className="row" style={{ marginTop: "var(--space-3)" }}>
-          <label className="muted" style={{ fontSize: "var(--text-sm)" }}>
-            target
-            <select
-              value={target}
-              onChange={(e) => {
-                setTarget(e.target.value);
-              }}
-              style={{ marginLeft: 8 }}
-            >
-              <option value="">(top call)</option>
-              {(codes.length ? codes : []).map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="muted" style={{ fontSize: "var(--text-sm)" }}>
-            substitute to
-            <input
-              value={sub}
-              maxLength={1}
-              onChange={(e) => {
-                setSub(e.target.value.toUpperCase());
-              }}
-              style={{ width: 52, marginLeft: 8 }}
-            />
-          </label>
-          <input
-            placeholder="variant, e.g. K83A,L20P"
-            value={muts}
-            onChange={(e) => {
-              setMuts(e.target.value);
-            }}
-            style={{ minWidth: 220 }}
-          />
-          <button
-            className="btn primary"
-            onClick={() => run(...scanReq(seq, group, target || null, muts, sub))}
-            disabled={busy || !seq.trim()}
-          >
-            {busy ? "Scanning…" : "Run scan"}
-          </button>
-        </div>
-        <JobState job={job} error={error} accepted={accepted} onRetry={retry} />
-      </Card>
+        <input
+          aria-label="Variant to diff"
+          className="mono"
+          placeholder="variant, e.g. K83A,L20P"
+          value={muts}
+          onChange={(e) => {
+            setMuts(e.target.value);
+          }}
+        />
+      </SequenceForm>
+      <JobState job={job} error={error} accepted={accepted} onRetry={retry} />
+      {busy && !s && (
+        <Card>
+          <Skeleton lines={5} label="Running the scan" />
+        </Card>
+      )}
+
+      {!busy && !s && !error && (
+        <Card>
+          <EmptyState icon={Dna} title="No scan yet">
+            Run a scan to see the truncation series, a substitution scan of every position and, if
+            you enter one, the variant diff.
+          </EmptyState>
+        </Card>
+      )}
 
       {s && (
         <>
           <Card title={`N-terminal truncation series — target ${s.target} (${s.target_name})`}>
-            <table>
-              <thead>
-                <tr>
-                  <th>removed</th>
-                  {codes.map((c) => (
-                    <th key={c}>{c}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {s.truncation.map((t) => (
-                  <tr key={t.removed}>
-                    <td className="mono">{t.removed}</td>
+            <div className="table-wrap">
+              <table className="hm">
+                <thead>
+                  <tr>
+                    <th>removed</th>
                     {codes.map((c) => (
-                      <td
-                        key={c}
-                        className="mono"
-                        title={`${c} ${(t[c] ?? 0).toFixed(3)}`}
-                        style={{
-                          background: `color-mix(in srgb, ${locText(c)} ${Math.round((t[c] ?? 0) * 60)}%, transparent)`,
-                        }}
-                      >
-                        {(t[c] ?? 0).toFixed(2)}
-                      </td>
+                      <th key={c} className="center">
+                        {c}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+                </thead>
+                <tbody>
+                  {s.truncation.map((t) => (
+                    <tr key={t.removed}>
+                      <td className="mono">{t.removed}</td>
+                      {codes.map((c) => (
+                        <td
+                          key={c}
+                          className="heat-loc"
+                          title={`${c} ${(t[c] ?? 0).toFixed(3)}`}
+                          style={
+                            {
+                              "--heat": `${String(Math.round((t[c] ?? 0) * 60))}%`,
+                              "--heat-ink": locText(c),
+                            } as CSSProperties
+                          }
+                        >
+                          {(t[c] ?? 0).toFixed(2)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="note mt-3">
               Each row re-runs the full predictor on a shorter sequence. A cliff between two rows
               locates the functional signal.
             </p>
@@ -171,12 +183,12 @@ export default function Scanner({ seed }: { seed: { sequence: string; group: str
           <Card
             title={`Substitution scan — every position → ${s.substitute}`}
             aside={
-              <span className="muted mono" style={{ fontSize: "var(--text-xs)" }}>
+              <span className="note mono">
                 baseline {s.target} = {(s.baseline[s.target] ?? 0).toFixed(2)}
               </span>
             }
           >
-            <p className="seq">
+            <p className="seq scan-seq">
               {s.sequence.split("").map((aa, i) => {
                 const d = s.position_deltas[i] ?? 0;
                 const mag = Math.round((Math.abs(d) / maxAbs) * 75);
@@ -184,47 +196,47 @@ export default function Scanner({ seed }: { seed: { sequence: string; group: str
                   <span
                     key={i}
                     title={`${aa}${i + 1}${s.substitute}: Δ${d.toFixed(3)}`}
-                    style={{
-                      background:
-                        d < 0
-                          ? `color-mix(in srgb, var(--state-block) ${mag}%, transparent)`
-                          : d > 0
-                            ? `color-mix(in srgb, var(--accent) ${mag}%, transparent)`
-                            : "transparent",
-                    }}
+                    data-dir={d < 0 ? "down" : d > 0 ? "up" : undefined}
+                    style={{ "--mag": `${String(mag)}%` } as CSSProperties}
                   >
                     {aa}
                   </span>
                 );
               })}
             </p>
-            <div className="row" style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}>
-              <span>red: mutation lowers {s.target}</span>
-              <span>green: raises it</span>
-              <span>hover for Δ</span>
-            </div>
-            <table style={{ marginTop: "var(--space-3)" }}>
-              <thead>
-                <tr>
-                  <th>rank</th>
-                  <th>mutation</th>
-                  <th>Δ probability</th>
-                </tr>
-              </thead>
-              <tbody>
-                {s.most_sensitive.map((m, i) => (
-                  <tr key={m.position}>
-                    <td className="mono">{i + 1}</td>
-                    <td className="mono">
-                      {m.residue}
-                      {m.position}
-                      {s.substitute}
-                    </td>
-                    <td className="mono">{m.delta.toFixed(3)}</td>
+            <ul className="seq-legend">
+              <li>
+                <span className="seq-swatch sw-against" /> mutation lowers {s.target}
+              </li>
+              <li>
+                <span className="seq-swatch sw-support" /> raises it
+              </li>
+              <li>hover a residue for Δ</li>
+            </ul>
+            <div className="table-wrap mt-3">
+              <table>
+                <thead>
+                  <tr>
+                    <th>rank</th>
+                    <th>mutation</th>
+                    <th className="num">Δ probability</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {s.most_sensitive.map((m, i) => (
+                    <tr key={m.position}>
+                      <td className="mono">{i + 1}</td>
+                      <td className="mono">
+                        {m.residue}
+                        {m.position}
+                        {s.substitute}
+                      </td>
+                      <td className="num">{m.delta.toFixed(3)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </Card>
 
           {s.variant && (
@@ -234,46 +246,40 @@ export default function Scanner({ seed }: { seed: { sequence: string; group: str
                   ? `Relocalized: ${s.variant.wild_type.top_location} → ${s.variant.variant.top_location}`
                   : `No change of top call (${s.variant.wild_type.top_location}).`}
               </div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>compartment</th>
-                    <th>wild type</th>
-                    <th>variant</th>
-                    <th>Δ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {s.variant.wild_type.localization.map((w) => {
-                    const v = s.variant!.variant.localization.find((x) => x.code === w.code)!;
-                    const d = v.probability - w.probability;
-                    return (
-                      <tr key={w.code}>
-                        <td>
-                          <Chip code={w.code} name={w.name} /> {w.name}
-                        </td>
-                        <td className="mono">{w.probability.toFixed(2)}</td>
-                        <td className="mono">{v.probability.toFixed(2)}</td>
-                        <td
-                          className="mono"
-                          style={{
-                            color:
-                              d < -0.01
-                                ? "var(--state-block)"
-                                : d > 0.01
-                                  ? "var(--accent)"
-                                  : undefined,
-                          }}
-                        >
-                          {d >= 0 ? "+" : ""}
-                          {d.toFixed(2)}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-              <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>compartment</th>
+                      <th>wild type</th>
+                      <th>variant</th>
+                      <th>Δ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {s.variant.wild_type.localization.map((w) => {
+                      const v = s.variant!.variant.localization.find((x) => x.code === w.code)!;
+                      const d = v.probability - w.probability;
+                      return (
+                        <tr key={w.code}>
+                          <td>
+                            <Chip code={w.code} name={w.name} /> {w.name}
+                          </td>
+                          <td className="mono">{w.probability.toFixed(2)}</td>
+                          <td className="mono">{v.probability.toFixed(2)}</td>
+                          <td
+                            className={`num ${d < -0.01 ? "delta-down" : d > 0.01 ? "delta-up" : ""}`}
+                          >
+                            {d >= 0 ? "+" : ""}
+                            {d.toFixed(2)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <p className="note mt-3">
                 signal: {s.variant.wild_type.sorting_signal.type} →{" "}
                 {s.variant.variant.sorting_signal.type}
                 {" · "}flags: {s.variant.wild_type.consistency_flags.length} →{" "}

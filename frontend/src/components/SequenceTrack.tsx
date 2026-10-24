@@ -287,12 +287,10 @@ export function SequenceTrack({
         ))}
       </div>
       {last >= 0 && (
-        <p className="mono" style={{ fontSize: "var(--text-xs)", margin: "var(--space-2) 0" }}>
-          {describeResidue(result, mode, at, blocks)}
-        </p>
+        <p className="note mono residue-readout">{describeResidue(result, mode, at, blocks)}</p>
       )}
       {result.length > limit && (
-        <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+        <p className="note">
           Showing first {limit} of {result.length} residues.
         </p>
       )}

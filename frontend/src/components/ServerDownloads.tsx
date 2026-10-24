@@ -22,13 +22,11 @@ export function ServerDownloads({
 }): ReactElement {
   return (
     <div className="row" role="group" aria-label="Download the whole job from the server">
-      <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
-        Whole job, from the server:
-      </span>
+      <span className="note">Whole job, from the server:</span>
       {FORMATS.filter(([f]) => formats.includes(f)).map(([format, label, what]) => (
         <a
           key={format}
-          className="btn"
+          className="btn sm"
           href={jobResultsUrl(jobId, format)}
           download
           title={what}

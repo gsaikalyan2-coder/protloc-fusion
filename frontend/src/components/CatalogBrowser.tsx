@@ -13,7 +13,8 @@ import {
   type CatalogPage,
 } from "../services/demoApi";
 import { describeError } from "../services/problems";
-import { Card } from "./ui";
+import { Search, SearchX } from "lucide-react";
+import { Card, EmptyState, Select, Skeleton } from "./ui";
 
 export const PAGE_SIZE = 25;
 const SEARCH_DELAY_MS = 250;
@@ -105,155 +106,176 @@ export function CatalogBrowser({ onOpen }: { onOpen: (e: OpenRequest) => void })
     <Card
       title="All cached sequences"
       aside={
-        <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
+        <span className="note">
           {page ? `${String(page.catalog.entries)} scorable` : "loading…"}
         </span>
       }
     >
-      <form className="row" onSubmit={submitLookup} aria-label="Look up by accession">
-        <label htmlFor="catalog-lookup">Accession or entry name</label>
-        <input
-          id="catalog-lookup"
-          className="mono"
-          placeholder="P12345 or ABC1_HUMAN"
-          value={lookup}
-          maxLength={64}
-          onChange={(ev) => {
-            setLookup(ev.target.value);
-            setLookupError(null);
-          }}
-        />
-        <button className="btn primary" type="submit" disabled={opening !== null}>
-          Open result
-        </button>
-      </form>
+      <div className="toolbar">
+        <div className="toolbar-filters">
+          <span className="input-icon">
+            <Search size={14} aria-hidden="true" />
+            <input
+              aria-label="Search accession, entry name or organism"
+              placeholder="Search accession, entry name, organism"
+              value={query}
+              maxLength={100}
+              onChange={(ev) => {
+                setQuery(ev.target.value);
+                setOffset(0);
+              }}
+            />
+          </span>
+          <Select
+            aria-label="Database location"
+            value={location}
+            onChange={(ev) => {
+              setLocation(ev.target.value);
+              setOffset(0);
+            }}
+          >
+            <option value="">Any database location</option>
+            {(page?.locations ?? []).map((l) => (
+              <option key={l} value={l}>
+                {pretty(l)}
+              </option>
+            ))}
+          </Select>
+          <Select
+            aria-label="Partition"
+            value={partition}
+            onChange={(ev) => {
+              setPartition(ev.target.value);
+              setOffset(0);
+            }}
+          >
+            <option value="">Any partition</option>
+            {[1, 2, 3, 4].map((n) => (
+              <option key={n} value={String(n)}>
+                Partition {n} (training)
+              </option>
+            ))}
+            <option value="5">Partition 5 (held-out test)</option>
+          </Select>
+        </div>
+
+        <form className="row tight" onSubmit={submitLookup} aria-label="Look up by accession">
+          <label htmlFor="catalog-lookup" className="sr-only">
+            Accession or entry name
+          </label>
+          <input
+            id="catalog-lookup"
+            className="mono"
+            placeholder="P12345 or ABC1_HUMAN"
+            value={lookup}
+            maxLength={64}
+            onChange={(ev) => {
+              setLookup(ev.target.value);
+              setLookupError(null);
+            }}
+          />
+          <button className="btn primary" type="submit" disabled={opening !== null}>
+            Open result
+          </button>
+        </form>
+      </div>
+
       {lookupError && (
         <p className="flag blocked" role="alert">
           {lookupError}
         </p>
       )}
-
-      <div className="row" style={{ marginTop: "var(--space-3)", flexWrap: "wrap" }}>
-        <input
-          aria-label="Search accession, entry name or organism"
-          placeholder="Search accession, entry name, organism"
-          value={query}
-          maxLength={100}
-          onChange={(ev) => {
-            setQuery(ev.target.value);
-            setOffset(0);
-          }}
-        />
-        <select
-          aria-label="Database location"
-          value={location}
-          onChange={(ev) => {
-            setLocation(ev.target.value);
-            setOffset(0);
-          }}
-        >
-          <option value="">Any database location</option>
-          {(page?.locations ?? []).map((l) => (
-            <option key={l} value={l}>
-              {pretty(l)}
-            </option>
-          ))}
-        </select>
-        <select
-          aria-label="Partition"
-          value={partition}
-          onChange={(ev) => {
-            setPartition(ev.target.value);
-            setOffset(0);
-          }}
-        >
-          <option value="">Any partition</option>
-          {[1, 2, 3, 4].map((n) => (
-            <option key={n} value={String(n)}>
-              Partition {n} (training)
-            </option>
-          ))}
-          <option value="5">Partition 5 (held-out test)</option>
-        </select>
-      </div>
-
       {error && <p className="flag blocked">Could not load the catalog: {error}</p>}
       {unavailable && <p className="flag warning">The catalog is not loaded: {unavailable}</p>}
+      {!page && !error && <Skeleton lines={6} label="Loading the catalog" />}
 
       {page && !unavailable && (
         <>
-          <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
-            {total === 0
-              ? "No cached sequence matches."
-              : `${String(offset + 1)}–${String(Math.min(offset + PAGE_SIZE, total))} of ${String(total)}`}
-          </p>
-          {page.entries.length > 0 && (
-            <table>
-              <thead>
-                <tr>
-                  <th>accession</th>
-                  <th>entry</th>
-                  <th>organism</th>
-                  <th>len</th>
-                  <th>database location</th>
-                  <th>split</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {page.entries.map((e) => (
-                  <tr key={e.id}>
-                    <td className="mono">{e.id}</td>
-                    <td className="mono">{e.entry_name}</td>
-                    <td>{e.organism ?? "—"}</td>
-                    <td className="num">{e.length}</td>
-                    <td>
-                      {e.database_labels.localization.length > 0
-                        ? e.database_labels.localization.map(pretty).join(", ")
-                        : "—"}
-                    </td>
-                    <td>
-                      <SplitBadge entry={e} /> <span className="muted">p{e.partition}</span>
-                    </td>
-                    <td>
-                      <button
-                        className="btn"
-                        disabled={opening !== null}
-                        aria-label={`Open result for ${e.id}`}
-                        onClick={() => {
-                          open(e.id, setError);
-                        }}
-                      >
-                        {opening === e.id ? "Opening…" : "Open"}
-                      </button>
-                    </td>
+          {page.entries.length > 0 ? (
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>accession</th>
+                    <th>entry</th>
+                    <th>organism</th>
+                    <th className="num">len</th>
+                    <th>database location</th>
+                    <th>split</th>
+                    <th>
+                      <span className="sr-only">Action</span>
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          {total > PAGE_SIZE && (
-            <div className="row" style={{ marginTop: "var(--space-3)" }}>
-              <button
-                className="btn"
-                disabled={offset === 0}
-                onClick={() => {
-                  setOffset(Math.max(0, offset - PAGE_SIZE));
-                }}
-              >
-                Previous
-              </button>
-              <button
-                className="btn"
-                disabled={offset + PAGE_SIZE >= total}
-                onClick={() => {
-                  setOffset(offset + PAGE_SIZE);
-                }}
-              >
-                Next
-              </button>
+                </thead>
+                <tbody>
+                  {page.entries.map((e) => (
+                    <tr key={e.id}>
+                      <td className="mono">{e.id}</td>
+                      <td className="mono">{e.entry_name}</td>
+                      <td className="cell-clip">{e.organism ?? "—"}</td>
+                      <td className="num">{e.length}</td>
+                      <td>
+                        {e.database_labels.localization.length > 0
+                          ? e.database_labels.localization.map(pretty).join(", ")
+                          : "—"}
+                      </td>
+                      <td>
+                        <span className="row tight">
+                          <SplitBadge entry={e} />
+                          <span className="note">p{e.partition}</span>
+                        </span>
+                      </td>
+                      <td className="cell-action">
+                        <button
+                          className="btn sm"
+                          disabled={opening !== null}
+                          aria-label={`Open result for ${e.id}`}
+                          onClick={() => {
+                            open(e.id, setError);
+                          }}
+                        >
+                          {opening === e.id ? "Opening…" : "Open"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
+          ) : (
+            <EmptyState icon={SearchX} title="No cached sequence matches">
+              Clear a filter, or search by organism instead of accession.
+            </EmptyState>
           )}
+          <div className="pager">
+            <span className="note">
+              {total === 0
+                ? "No cached sequence matches."
+                : `${String(offset + 1)}–${String(Math.min(offset + PAGE_SIZE, total))} of ${String(total)}`}
+            </span>
+            {total > PAGE_SIZE && (
+              <span className="row tight">
+                <button
+                  className="btn sm"
+                  disabled={offset === 0}
+                  onClick={() => {
+                    setOffset(Math.max(0, offset - PAGE_SIZE));
+                  }}
+                >
+                  Previous
+                </button>
+                <button
+                  className="btn sm"
+                  disabled={offset + PAGE_SIZE >= total}
+                  onClick={() => {
+                    setOffset(offset + PAGE_SIZE);
+                  }}
+                >
+                  Next
+                </button>
+              </span>
+            )}
+          </div>
         </>
       )}
     </Card>
