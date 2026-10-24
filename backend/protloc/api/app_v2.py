@@ -344,9 +344,16 @@ def version() -> dict[str, Any]:
         },
         "evidence": engine.evidence_state,
         "rules": service.engine().rules,
+        "encoder": engine.provenance.get("encoder"),
         "limits": [
-            f"Only the {engine.cached_sequences} sequences whose ESM-2 states are cached can be "
-            "scored; the gallery lists examples (ADR-0016).",
+            (
+                f"Sequences outside the {engine.cached_sequences} cached ones are encoded live by "
+                "frozen ESM-2 (ADR-0019) and marked outside the evaluated subset: no reported "
+                "number was measured on sequences like them."
+                if engine.live_encoder is not None
+                else f"Only the {engine.cached_sequences} sequences whose ESM-2 states are cached "
+                "can be scored; the gallery lists examples (ADR-0016)."
+            ),
             "Numbers are from a 500-sequence subset, not comparable to DeepLoc or to the "
             "Phase 8 full-corpus numbers.",
             "Membrane type and the scanner are motif-engine outputs and say so. The residue "
@@ -413,6 +420,7 @@ def metrics() -> dict[str, Any]:
         **METRICS.snapshot(),
         "queue": {"depth": jobs.depth(), "pending_sequences": jobs.pending_sequences()},
         "result_cache": service.cache_stats(),
+        "live_encoder": service.engine().live_encoder,
         "evidence": service.engine().evidence_state,
         "catalog": catalog.current().state(),
         **service.provenance(),

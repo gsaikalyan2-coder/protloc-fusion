@@ -53,6 +53,8 @@ CSV_COLUMNS: Final[tuple[str, ...]] = (
     "top_hit",
     "top_hit_identity",
     "result_cache",
+    "encoder",
+    "outside_evaluated_subset",
     "sequence_sha256",
 )
 
@@ -124,6 +126,8 @@ def _row(r: dict[str, Any]) -> dict[str, Any]:
         "top_hit": top.get("accession", ""),
         "top_hit_identity": top.get("identity", ""),
         "result_cache": r.get("result_cache", ""),
+        "encoder": r.get("encoder", ""),
+        "outside_evaluated_subset": r.get("outside_evaluated_subset", ""),
         "sequence_sha256": r.get("sequence_sha256"),
     }
 
@@ -172,6 +176,7 @@ def build(
     out.write(
         "# Probabilities are calibrated; locations and GO terms list predicted labels only.\n"
     )
+    out.write("# encoder=live rows lie outside the 500-sequence evaluated subset (ADR-0019).\n")
     writer = csv.DictWriter(out, fieldnames=CSV_COLUMNS, lineterminator="\n")
     writer.writeheader()
     for r in results:

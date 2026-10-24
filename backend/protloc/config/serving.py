@@ -11,7 +11,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, ValidationError
+from pydantic import Field, ValidationError, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -57,6 +57,29 @@ class ServingSettings(BaseSettings):
             "default because it changes speed, never which model is served."
         ),
     )
+    ENCODER_MODE: Literal["cache_only", "live"] = Field(
+        default="cache_only",
+        description=(
+            "ADR-0019. 'cache_only' (default) scores only the cached sequences with numpy alone. "
+            "'live' also runs frozen ESM-2 for any other sequence; it needs the `live` extra "
+            "(torch, transformers) and the pinned weights fetched by scripts/fetch_esm.py."
+        ),
+    )
+    ESM_CACHE_DIR: Path | None = Field(
+        default=None,
+        description=(
+            "Hugging Face hub cache holding the pinned ESM-2 weights (live mode). Empty uses the "
+            "default hub cache. The server never downloads: it loads with local files only."
+        ),
+    )
+    ESM_DEVICE: str = Field(default="cpu", description="Torch device for the live encoder.")
+
+    @field_validator("ESM_CACHE_DIR", mode="before")
+    @classmethod
+    def _blank_is_unset(cls, value: object) -> object:
+        """``ESM_CACHE_DIR=`` (blank, as in .env.example) means "not set", never the cwd."""
+        return None if isinstance(value, str) and not value.strip() else value
+
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         default="INFO",
         description=(

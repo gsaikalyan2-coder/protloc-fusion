@@ -269,6 +269,7 @@ class _Stub:
         "reason": None,
         "swissprot_release": "x",
     }
+    live_encoder: ClassVar[dict[str, Any] | None] = None
 
     def has_states(self, _sequence: str) -> bool:
         return False

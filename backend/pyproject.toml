@@ -74,6 +74,16 @@ head = [
 serve = [
   "numpy==2.4.6",
 ]
+# The opt-in live encoder (ADR-0019): frozen ESM-2 at serve time, for sequences outside the
+# residue cache. The same pins the cache was built with (data/manifests/embedding_manifest.json:
+# torch 2.14.1+cpu, transformers 5.18.0). Installed only where ENCODER_MODE=live is used; the
+# default serving path stays numpy-only. For a CPU-only torch on Linux, add
+# --extra-index-url https://download.pytorch.org/whl/cpu.
+live = [
+  "numpy==2.4.6",
+  "torch==2.14.1",
+  "transformers==5.18.0",
+]
 # Data versioning. Kept apart from `data` because CI never needs it and it pulls
 # in a large dependency tree.
 dvc = [
