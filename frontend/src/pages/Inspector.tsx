@@ -120,6 +120,14 @@ export default function Inspector({
               result is not evidence of accuracy.
             </div>
           )}
+          {r.outside_evaluated_subset === true && (
+            <div className="flag uncertain" role="status">
+              <strong>Encoded live, outside the evaluated subset.</strong> This sequence is not one
+              of the 500 cached sequences, so frozen ESM-2 ran at request time (ADR-0019). The heads
+              and calibrators are the same, but every reported metric was measured on the cached
+              subset: treat the probabilities as indicative.
+            </div>
+          )}
           <SourceSummary result={r} />
           {!r.evidence_status.available && (
             <div className="flag uncertain" role="status">

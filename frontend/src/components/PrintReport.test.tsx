@@ -40,6 +40,12 @@ describe("PrintReport", () => {
     expect(screen.getByText("Not searched.")).toBeTruthy();
   });
 
+  it("warns when the sequence was encoded live", () => {
+    const r = makeResult({ encoder: "live", outside_evaluated_subset: true });
+    render(<PrintReport result={r} jobId="j" inSample={false} printedAt={PRINTED} />);
+    expect(screen.getByText(/Encoded live \(ADR-0019\)/)).toBeTruthy();
+  });
+
   it("lays the sequence out in numbered blocks of ten", () => {
     const lines = sequenceLines("A".repeat(65));
     expect(lines).toHaveLength(2);

@@ -134,6 +134,10 @@ export interface Result {
   id: string;
   /** "hit" when this result was served from the server's result cache (feature 3). */
   result_cache?: "hit" | "miss";
+  /** ADR-0019: "live" when ESM-2 ran at request time because the sequence is not cached. */
+  encoder?: "cache" | "live";
+  /** True for a live-encoded sequence: no reported number was measured on sequences like it. */
+  outside_evaluated_subset?: boolean;
   length: number;
   sequence: string;
   sequence_sha256: string;

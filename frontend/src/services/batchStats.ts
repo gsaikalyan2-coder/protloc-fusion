@@ -24,6 +24,8 @@ export interface BatchStats {
   goTerms: Bar[];
   evidence: Bar[];
   cacheHits: number;
+  /** Records encoded live, outside the evaluated subset (ADR-0019). */
+  liveEncoded: number;
 }
 
 export const CONFIDENCE_BINS: readonly [number, number, string][] = [
@@ -58,6 +60,7 @@ export function batchStats(results: readonly Result[], refused = 0, goLimit = 8)
   const confidence = CONFIDENCE_BINS.map(([, , label]) => ({ key: label, label, count: 0 }));
   let noConfidentCall = 0;
   let cacheHits = 0;
+  let liveEncoded = 0;
 
   for (const r of results) {
     if (r.no_confident_call) noConfidentCall += 1;
@@ -74,6 +77,7 @@ export function batchStats(results: readonly Result[], refused = 0, goLimit = 8)
       bump(evidence, "disagrees", "homolog disagrees");
     else bump(evidence, "hit", "homolog found");
     if (r.result_cache === "hit") cacheHits += 1;
+    if (r.outside_evaluated_subset === true) liveEncoded += 1;
   }
 
   return {
@@ -86,5 +90,6 @@ export function batchStats(results: readonly Result[], refused = 0, goLimit = 8)
     goTerms: sorted(go).slice(0, goLimit),
     evidence: sorted(evidence),
     cacheHits,
+    liveEncoded,
   };
 }
