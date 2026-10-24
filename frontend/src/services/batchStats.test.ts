@@ -72,6 +72,8 @@ describe("batchStats", () => {
       unavailable: 1,
     });
     expect(s.cacheHits).toBe(1);
+    expect(s.liveEncoded).toBe(0);
+    expect(batchStats([makeResult({ outside_evaluated_subset: true })]).liveEncoded).toBe(1);
   });
 
   it("caps the GO list and handles an empty batch", () => {

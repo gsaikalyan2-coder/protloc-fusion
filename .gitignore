@@ -99,6 +99,8 @@ data/go/
 data/gallery/
 # Phase 14 served-vs-motif comparison output (scripts/golden_vs_served.py --write)
 data/serving/
+# ESM-2 weights for the live encoder (ADR-0019), fetched by scripts/fetch_esm.py; ~600 MB, never in git.
+data/esm2/
 
 # Phase 16: AlphaFold backbones are fetched, derived bytes; the manifest stays as the pointer.
 data/structures/*.json

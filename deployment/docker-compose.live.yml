@@ -1,0 +1,60 @@
+# The live stack: the trained engine (api) and the web app (web), each in its own
+# container. docker-compose.yml (the Phase 1 contract app) is left as it is.
+#
+#     docker compose -f deployment/docker-compose.live.yml up --build
+#     -> http://localhost:8080   (the app)
+#     -> http://localhost:8010   (the API directly, for scripts)
+#
+# Needs a local data/ and registry/ (gitignored model data). They are mounted
+# read-only; only the evidence search's scratch directory is writable.
+#
+# Evidence search inside the container: the registry pins the Windows MMseqs2
+# binary by hash, and a Linux container cannot run it, so homology evidence is
+# reported as `degraded` here while every model output is served normally. Run the
+# API natively on Windows for live evidence.
+
+name: protloc-fusion-live
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.live
+    image: protloc-fusion-live-api:local
+    env_file:
+      - ../.env
+    environment:
+      # Absolute paths inside the container; everything else comes from .env.
+      MODEL_REGISTRY: /app/registry
+      DATA_ROOT: /app/data
+      EMBED_CACHE: /app/data/embeddings
+      EVIDENCE_ROOT: /app/data/evidence
+      SWISSPROT_DB_PATH: /app/data/evidence/swissprot_mmseqs
+      API_PORT: "8010"
+      # This image has no torch: it always runs cache-only, whatever .env says for a native
+      # run. docker-compose.encoder.yml switches live mode on together with the torch image.
+      # ESM_CACHE_DIR in .env is a host path; inside the container it must not be used.
+      ENCODER_MODE: cache_only
+      ESM_CACHE_DIR: ""
+    volumes:
+      - ../data:/app/data:ro
+      - ../registry:/app/registry:ro
+      - evidence_tmp:/app/data/evidence/serving_tmp
+    ports:
+      - "8010:8010"
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.web
+    image: protloc-fusion-live-web:local
+    ports:
+      - "8080:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  evidence_tmp:

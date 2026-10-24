@@ -54,6 +54,13 @@ from protloc.inference.attribution import (
     occlusion_track,
     rounded,
 )
+from protloc.inference.live_encoder import (
+    Factory,
+    LiveEncoder,
+    LiveEncoderError,
+    load_live_encoder,
+    torch_factory,
+)
 from protloc.inference.motif import RULES, confidence_band
 from protloc.models.attention_head import AttentionHeadNet, ModelError
 from protloc.models.crf_tagger import CrfTaggerNet, TagSpec
@@ -198,8 +205,15 @@ class Engine:
         return self._p.gallery
 
     def has_states(self, sequence: str) -> bool:
-        """Whether this normalized sequence is one the cache can score."""
+        """Whether this sequence can be scored: cached, or any sequence in live mode (ADR-0019)."""
+        if self._p.live is not None:
+            return bool(normalize_sequence(sequence))
         return sequence_sha256(normalize_sequence(sequence)) in self._p.store.lengths
+
+    @property
+    def live_encoder(self) -> dict[str, Any] | None:
+        """The live encoder's identity and counters, or ``None`` in cache-only mode."""
+        return None if self._p.live is None else self._p.live.describe()
 
     # -- the pipeline ----------------------------------------------------------------
     def predict_many(
@@ -253,14 +267,22 @@ class Engine:
             raise EngineRefusal("invalid_sequence", str(error)) from error
         sequence = normalize_sequence(raw)  # the corpus form the cache is keyed by
         sha = sequence_sha256(sequence)
-        if sha not in self._p.store.lengths:
+        cached = sha in self._p.store.lengths
+        if not cached and self._p.live is None:
             raise EngineRefusal(
                 "not_in_embedding_cache",
                 "This build scores only the sequences whose ESM-2 states are cached "
                 f"({self.cached_sequences} of them, ADR-0016); this one is not among them. "
                 "Pick a gallery example.",
             )
-        states = self._p.store.states(sha)
+        if cached:
+            states = self._p.store.states(sha)
+        else:
+            assert self._p.live is not None  # noqa: S101 - narrowed by the refusal above
+            try:
+                states = self._p.live.states(sequence)
+            except Exception as error:  # an encoder failure refuses this record only
+                raise EngineRefusal("model_error", f"the live encoder failed: {error}") from error
         try:
             loc = self._p.loc_net.forward(states)
             go = self._p.go_net.forward(states)
@@ -302,6 +324,10 @@ class Engine:
             "length": len(sequence),
             "sequence": sequence,
             "sequence_sha256": sha,
+            # ADR-0019: which encoder produced the states, and whether this sequence lies outside
+            # the 500 sequences every reported number was measured on.
+            "encoder": "cache" if cached else "live",
+            "outside_evaluated_subset": not cached,
             "organism_group": group,
             "localization": localization["rows"],
             "top_location": top,
@@ -649,6 +675,7 @@ class _Parts:
     manifests: dict[str, dict[str, Any]]
     gallery: list[dict[str, Any]]
     attribution: dict[str, Any]
+    live: LiveEncoder | None = None
 
 
 def _tensors(path: Path) -> dict[str, Any]:
@@ -669,7 +696,9 @@ def _descendants(vocabulary: Sequence[Mapping[str, Any]]) -> list[list[int]]:
 
 
 def load_engine(  # noqa: PLR0912, PLR0915
-    settings: ServingSettings, repo_root: Path = REPO_ROOT
+    settings: ServingSettings,
+    repo_root: Path = REPO_ROOT,
+    live_factory: Factory = torch_factory,
 ) -> Engine:
     """Verify and load everything; raise :class:`EngineStartError` listing every problem."""
     pins = _Pins(_read_json(repo_root / "configs" / "serving" / "engine.json"))
@@ -772,7 +801,51 @@ def load_engine(  # noqa: PLR0912, PLR0915
         )
     except (ModelError, KeyError, ValueError, OSError) as error:
         raise EngineStartError(f"the service will not start:\n  - {error}") from error
+    if getattr(settings, "ENCODER_MODE", "cache_only") == "live":
+        _attach_live_encoder(parts, settings, cache_directory, live_factory)
     return Engine(parts)
+
+
+def _attach_live_encoder(
+    parts: _Parts, settings: ServingSettings, cache_directory: Path, factory: Factory
+) -> None:
+    """ADR-0019: load the live encoder, self-check it against the cache, label provenance."""
+    states_spec = read_residue_index(cache_directory)["spec"]["states"]
+    lengths = parts.store.lengths
+    candidates = [g for g in parts.gallery if g.get("sequence_sha256") in lengths]
+    if not candidates:
+        raise EngineStartError(
+            "the service will not start:\n  - live mode needs a cached gallery sequence for its "
+            "self-check (data/gallery/gallery.json); run scripts/build_gallery.py --write"
+        )
+    check = min(candidates, key=lambda g: len(str(g["sequence"])))
+    try:
+        live = load_live_encoder(
+            states_spec,
+            settings.ESM_CACHE_DIR,
+            settings.ESM_DEVICE,
+            (
+                normalize_sequence(str(check["sequence"])),
+                parts.store.states(str(check["sequence_sha256"])),
+            ),
+            factory=factory,
+        )
+    except LiveEncoderError as error:
+        raise EngineStartError(f"the service will not start:\n  - {error}") from error
+    parts.live = live
+    parts.provenance = {
+        **parts.provenance,
+        "predictor": "trained heads over frozen ESM-2 150M states (cached, or computed live for "
+        "other sequences, ADR-0019); membrane type and the scanner are the motif engine",
+        "encoder": {
+            "mode": "live",
+            "cached_sequences": len(lengths),
+            "checkpoint": live.checkpoint,
+            "revision": live.revision,
+            "self_check_sequence": str(check.get("id")),
+            "self_check_max_abs_diff": live.self_check_max_abs_diff,
+        },
+    }
 
 
 def _evidence_file_problems(

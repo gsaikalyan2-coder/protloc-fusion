@@ -1,0 +1,22 @@
+# ProtLoc Fusion — the web app: the built React SPA behind nginx, which also
+# forwards /demo/ to the live API, so the browser makes same-origin requests
+# exactly as it does through the Vite dev proxy. No Node at run time.
+#
+# Build from the repository root:
+#     docker build -f deployment/Dockerfile.web -t protloc-live-web .
+
+FROM node:22-bookworm-slim AS build
+WORKDIR /app
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/ ./
+RUN npm run build
+
+FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
+LABEL org.opencontainers.image.title="protloc-fusion-live-web" \
+      org.opencontainers.image.description="ProtLoc Fusion web app (static build behind nginx, /demo proxied to the API)" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.source="https://github.com/gsaikalyan2-coder/protloc-fusion"
+COPY deployment/nginx.live.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 8080

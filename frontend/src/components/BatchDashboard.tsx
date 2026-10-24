@@ -73,6 +73,7 @@ export function BatchDashboard({
         <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
           {n} scored{s.refused ? ` · ${String(s.refused)} refused` : ""}
           {s.cacheHits ? ` · ${String(s.cacheHits)} from cache` : ""}
+          {s.liveEncoded ? ` · ${String(s.liveEncoded)} encoded live` : ""}
         </span>
       }
     >

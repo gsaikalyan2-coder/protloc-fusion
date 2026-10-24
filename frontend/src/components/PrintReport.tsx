@@ -50,6 +50,12 @@ export function PrintReport({
           accuracy.
         </p>
       )}
+      {r.outside_evaluated_subset === true && (
+        <p className="pr-warn">
+          Encoded live (ADR-0019): outside the 500-sequence subset every reported metric was
+          measured on. Treat the probabilities as indicative.
+        </p>
+      )}
       {!r.evidence_status.available && (
         <p className="pr-warn">
           Homology evidence unavailable ({r.evidence_status.unavailable_reason ?? "no reason"}). The
