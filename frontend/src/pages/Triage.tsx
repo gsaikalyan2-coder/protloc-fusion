@@ -7,6 +7,7 @@
  * not "what is protein 57". Also renders the dual-targeting co-occurrence matrix.
  */
 import { useEffect, useMemo, useState } from "react";
+import { BatchDashboard } from "../components/BatchDashboard";
 import { ServerDownloads } from "../components/ServerDownloads";
 import { batch, useJob } from "../services/demoApi";
 import { failureProblems } from "../services/problems";
@@ -117,6 +118,8 @@ export default function Triage({ onOpen }: { onOpen: (seq: string, group: string
               </div>
             ))}
           </div>
+
+          <BatchDashboard results={done.results ?? []} refused={done.failures?.length ?? 0} />
 
           <Card
             title="Triage queue"
