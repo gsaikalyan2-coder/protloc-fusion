@@ -5,7 +5,9 @@
  * that does nothing: the one button opens the Inspector.
  */
 import type { ReactElement } from "react";
+import { RecentJobs } from "../components/RecentJobs";
 import { Card } from "../components/ui";
+import type { HistoryEntry } from "../services/history";
 
 interface GroupInfo {
   label: string;
@@ -55,10 +57,17 @@ export default function Home({
   version,
   down,
   onStart,
+  onOpenRecent,
 }: {
   version: VersionInfo | null;
   down: boolean;
   onStart: () => void;
+  onOpenRecent?: (e: {
+    id: string;
+    sequence: string;
+    group: string;
+    kind: HistoryEntry["kind"];
+  }) => void;
 }): ReactElement {
   const groups = version?.organism_groups ?? {};
   const served = Object.values(groups)
@@ -84,6 +93,8 @@ export default function Home({
           Try an example
         </button>
       </div>
+
+      {onOpenRecent && <RecentJobs onOpen={onOpenRecent} />}
 
       <Card title="What it answers">
         <ul className="plain">
@@ -127,6 +138,10 @@ export default function Home({
           <li>
             Results expire after a short retention window. An expired result answers 410 Gone and
             the page says so; it is never shown as an empty result.
+          </li>
+          <li>
+            The Recent jobs list lives only in this browser&apos;s local storage. It keeps job ids,
+            labels and, for single sequences, the sequence itself; Clear removes it.
           </li>
           <li>
             There are no accounts and no irreversible or financial actions anywhere in this tool.

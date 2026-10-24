@@ -505,3 +505,8 @@ ul.plain li {
 .sw-tm {
   border-bottom: 2px solid var(--loc-mem-ink);
 }
+
+/* Compare: a summary row whose two sides differ. */
+tr.differs td {
+  background: var(--state-warn-bg);
+}
