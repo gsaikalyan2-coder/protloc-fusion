@@ -41,8 +41,10 @@ DARK_SELECTOR = ':root[data-theme="dark"]'
 _CSS_FENCE = re.compile(r"```css\n(.*?)```", re.DOTALL)
 # A `selector { ... }` rule inside such a block.
 _CSS_RULE = re.compile(r"([^{}]+?)\{([^{}]*)\}", re.DOTALL)
-# A `--name: value;` declaration, with any trailing comment dropped.
+# A `--name: value;` declaration. Comments are removed before this runs.
 _DECLARATION = re.compile(r"(--[a-z0-9-]+)\s*:\s*([^;]+);")
+# A CSS comment, which may span lines and may itself mention a token name.
+_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 # A Markdown table row whose fourth cell is a `--loc-*` token in backticks.
 _HEX = r"#[0-9A-Fa-f]{6}"
 _PALETTE_ROW = re.compile(
@@ -72,6 +74,38 @@ class TokenGenerationError(RuntimeError):
     """Raised when ``docs/DESIGN.md`` cannot produce a complete token set."""
 
 
+def _strip_at_rules(css: str) -> str:
+    """Remove every ``@media``/``@keyframes``/... block, nested rules included.
+
+    The flat rule pattern cannot see nesting, so without this the ``:root`` rule
+    inside ``@media (prefers-reduced-motion: reduce)`` was read as a plain
+    ``:root`` rule and overwrote the base motion tokens with ``0ms``. At-rules
+    are emitted from the template in :func:`render_tokens` instead.
+    """
+    out: list[str] = []
+    i = 0
+    while i < len(css):
+        if css[i] == "@":
+            brace = css.find("{", i)
+            if brace == -1:
+                break
+            depth = 0
+            j = brace
+            while j < len(css):
+                if css[j] == "{":
+                    depth += 1
+                elif css[j] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                j += 1
+            i = j + 1
+            continue
+        out.append(css[i])
+        i += 1
+    return "".join(out)
+
+
 def _parse_css_blocks(markdown: str) -> tuple[dict[str, str], dict[str, str]]:
     """Return the light and dark declarations from the document's CSS blocks.
 
@@ -82,13 +116,12 @@ def _parse_css_blocks(markdown: str) -> tuple[dict[str, str], dict[str, str]]:
     dark: dict[str, str] = {}
 
     for block in _CSS_FENCE.findall(markdown):
-        for raw_selector, body in _CSS_RULE.findall(block):
+        # Motion and colour-scheme at-rules are emitted from the template in
+        # render_tokens rather than copied, so the dark block is written once
+        # and guarded consistently.
+        flat = _strip_at_rules(_COMMENT.sub("", block))
+        for raw_selector, body in _CSS_RULE.findall(flat):
             selector = " ".join(raw_selector.split())
-            if selector.startswith("@media"):
-                # Motion and colour-scheme media rules are emitted from the
-                # template below rather than copied, so that the dark block is
-                # written once and guarded consistently.
-                continue
             declarations = {
                 name: " ".join(value.split()) for name, value in _DECLARATION.findall(body)
             }
