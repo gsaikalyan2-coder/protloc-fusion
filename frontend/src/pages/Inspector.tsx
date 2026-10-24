@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { predict, useJob, type AttributionTrack, type Result } from "../services/demoApi";
 import { SequenceTrack } from "../components/SequenceTrack";
 import { DownloadButtons } from "../components/DownloadButtons";
+import { PrintReport } from "../components/PrintReport";
 import { SourceSummary } from "../components/SourceSummary";
 import { StructurePanel } from "../components/StructurePanel";
 import {
@@ -128,6 +129,20 @@ export default function Inspector({
             </div>
           )}
           <DownloadButtons result={r} jobId={done?.job_id ?? "unknown"} />
+          <div className="row">
+            <button
+              className="btn"
+              onClick={() => {
+                window.print();
+              }}
+            >
+              Print report
+            </button>
+            <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
+              A paper layout of this result with its provenance and limits. Choose &quot;Save as
+              PDF&quot; in the print dialog for a file.
+            </span>
+          </div>
           <div className="grid two">
             <Card
               title="Localization"
@@ -315,6 +330,14 @@ export default function Inspector({
           </Card>
           <ProvenanceBar p={r.provenance} />
         </>
+      )}
+      {r && (
+        <PrintReport
+          result={r}
+          jobId={done?.job_id ?? "unknown"}
+          inSample={inSample}
+          printedAt={new Date()}
+        />
       )}
     </>
   );
