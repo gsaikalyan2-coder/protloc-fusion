@@ -1,0 +1,7 @@
+# Build context for Dockerfile.web: the frontend sources and the nginx config.
+*
+!frontend/
+!deployment/nginx.live.conf
+frontend/node_modules
+frontend/dist
+frontend/coverage

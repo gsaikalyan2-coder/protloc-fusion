@@ -334,3 +334,80 @@ jobs:
         run: |
           cp .env.example .env
           docker compose -f deployment/docker-compose.yml config > /dev/null
+          docker compose -f deployment/docker-compose.live.yml config > /dev/null
+          docker compose -f deployment/docker-compose.live.yml -f deployment/docker-compose.encoder.yml config > /dev/null
+
+  # The live stack (docker-compose.live.yml): the trained-engine API image and the
+  # web image. Model data is gitignored, so CI cannot serve a prediction; it proves
+  # what can be proven without it: both images build, the API image has no torch
+  # and imports the live app, the API refuses to start without its registry (and
+  # says why), and nginx serves the SPA and forwards /demo.
+  docker-live:
+    name: docker · live API and web images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build the live API image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deployment/Dockerfile.live
+          tags: protloc-live-api:ci
+          load: true
+          cache-from: type=gha,scope=live-api
+          cache-to: type=gha,mode=max,scope=live-api
+
+      - name: Build the live web image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deployment/Dockerfile.web
+          tags: protloc-live-web:ci
+          load: true
+          cache-from: type=gha,scope=live-web
+          cache-to: type=gha,mode=max,scope=live-web
+
+      - name: Live API image has no torch and imports the live app
+        run: |
+          if docker run --rm protloc-live-api:ci python -c "import torch" 2>/dev/null; then
+            echo "::error::the live API image can import torch"
+            exit 1
+          fi
+          docker run --rm protloc-live-api:ci python -c "import protloc.api.app_v2, protloc.inference.engine; print('live app imports')"
+
+      - name: Live API refuses to start without its registry, and says why
+        run: |
+          set +e
+          timeout 120 docker run --rm \
+            -e MODEL_REGISTRY=/app/registry -e MODEL_SERVING_MODE=queue \
+            -e MODEL_VERSION=localization-0.10.0+signal_peptide-0.11.0+go_function-0.12.0+evidence_homology-0.13.0 \
+            -e MAX_BATCH_SEQUENCES=20 -e INLINE_RESULT_WINDOW_SECONDS=2 -e JOB_RETENTION_HOURS=1 \
+            -e DATA_ROOT=/app/data -e EMBED_CACHE=/app/data/embeddings \
+            -e EVIDENCE_ROOT=/app/data/evidence -e SWISSPROT_DB_PATH=/app/data/evidence/swissprot_mmseqs \
+            -e EVIDENCE_TIMEOUT_SECONDS=5 -e EVIDENCE_TOP_K=5 \
+            protloc-live-api:ci > /tmp/live.log 2>&1
+          code=$?
+          set -e
+          cat /tmp/live.log
+          if [ "$code" -eq 0 ] || [ "$code" -eq 124 ]; then
+            echo "::error::the live API started (or hung) without a registry; exit $code"
+            exit 1
+          fi
+          grep -q "will not start" /tmp/live.log
+
+      - name: Live web image serves the app and forwards /demo
+        run: |
+          docker run --rm protloc-live-web:ci nginx -t
+          docker run -d --name protloc-live-web-ci -p 8080:8080 protloc-live-web:ci
+          for attempt in $(seq 1 20); do
+            curl -fsS http://127.0.0.1:8080/ -o /tmp/index.html && break
+            sleep 1
+          done
+          grep -q '<div id="root">' /tmp/index.html
+          curl -fsS http://127.0.0.1:8080/gallery -o /dev/null
+          status=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/demo/health)
+          echo "/demo/health without an api container: $status"
+          docker rm -f protloc-live-web-ci
+          [ "$status" = "502" ]

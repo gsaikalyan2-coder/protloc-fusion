@@ -1,0 +1,82 @@
+# ProtLoc Fusion — the live API (api/app_v2.py, the trained engine), CPU, numpy only.
+#
+# Dockerfile.serve builds the Phase 1 contract app (api/app.py) and is what CI's
+# "serving image cannot import torch" check runs against; it is left as it is.
+# This image serves what the five screens use: /demo/*, backed by the frozen
+# registry bundles, the residue cache and (where it can run) the evidence index.
+#
+# Two things differ from Dockerfile.serve, both on purpose:
+#   * dependencies are the base set plus the `serve` extra (numpy, the pin the
+#     parity test ran against); still no torch, no training extras;
+#   * the source keeps its repository layout under /app (backend/protloc,
+#     backend/rules, configs/serving), because the engine finds engine.json and
+#     the rule files relative to the source tree. The `protloc` wheel is
+#     therefore uninstalled after its dependencies are resolved, and PYTHONPATH
+#     points at /app/backend.
+#
+# Model data is NOT in the image: data/ and registry/ are mounted read-only at
+# run time (docker-compose.live.yml). The service refuses to start, listing why,
+# if anything it loads differs from what the registry bundles record.
+#
+# Build from the repository root (Dockerfile.live.dockerignore keeps data/ and
+# node_modules out of the build context):
+#     docker build -f deployment/Dockerfile.live -t protloc-live-api .
+
+FROM python:3.11-slim-bookworm AS build
+
+# EXTRAS=serve (default) is the numpy-only image. EXTRAS=serve,live adds the opt-in live
+# encoder (ADR-0019: torch 2.14.1 CPU build + transformers 5.18.0); docker-compose.encoder.yml
+# sets it. The torch check below holds for the default image only.
+ARG EXTRAS=serve
+ARG TORCH_INDEX=https://download.pytorch.org/whl/cpu
+
+ENV PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /build
+COPY backend/pyproject.toml backend/ruff.toml ./
+COPY backend/protloc ./protloc
+
+RUN python -m venv /opt/venv \
+    && /opt/venv/bin/pip install --upgrade pip setuptools wheel \
+    && /opt/venv/bin/pip install --extra-index-url "${TORCH_INDEX}" ".[${EXTRAS}]" \
+    && /opt/venv/bin/pip uninstall -y protloc \
+    && case ",${EXTRAS}," in \
+         *,live,*) /opt/venv/bin/python -c "import torch, transformers; print('live encoder deps', torch.__version__, transformers.__version__)" ;; \
+         *) /opt/venv/bin/python -c "import importlib.util as u, sys; sys.exit(1 if u.find_spec('torch') else 0)" ;; \
+       esac
+
+FROM python:3.11-slim-bookworm AS runtime
+
+LABEL org.opencontainers.image.title="protloc-fusion-live-api" \
+      org.opencontainers.image.description="ProtLoc Fusion live API: trained heads over cached ESM-2 states (CPU, numpy, no training dependencies)" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.source="https://github.com/gsaikalyan2-coder/protloc-fusion"
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/opt/venv/bin:${PATH}" \
+    PYTHONPATH=/app/backend
+
+RUN useradd --create-home --uid 10001 protloc \
+    && mkdir -p /app/data/evidence/serving_tmp \
+    && chown -R protloc:protloc /app
+
+COPY --from=build /opt/venv /opt/venv
+
+WORKDIR /app
+COPY --chown=protloc:protloc backend/protloc ./backend/protloc
+COPY --chown=protloc:protloc backend/rules ./backend/rules
+COPY --chown=protloc:protloc configs/serving ./configs/serving
+
+USER protloc
+EXPOSE 8010
+
+# /demo/health answers 200 once the engine has loaded and verified everything;
+# the first start reads and hashes the residue cache and the index, so it gets a
+# long start period. A degraded evidence search is still 200: the models serve.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=300s --retries=3 \
+    CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8010/demo/health', timeout=4).status == 200 else 1)"]
+
+# exec: uvicorn becomes PID 1 and receives docker stop's SIGTERM directly.
+CMD ["/bin/sh", "-c", "exec uvicorn protloc.api.app_v2:app --host 0.0.0.0 --port \"${API_PORT:-8010}\""]

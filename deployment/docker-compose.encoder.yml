@@ -1,0 +1,20 @@
+# Opt-in live encoder for the live stack (ADR-0019). Layer it over docker-compose.live.yml:
+#
+#     docker compose -f deployment/docker-compose.live.yml -f deployment/docker-compose.encoder.yml up --build
+#
+# The API image is rebuilt with torch (CPU) and transformers, ENCODER_MODE is set to live, and
+# the pinned ESM-2 weights are read from data/esm2 (already mounted read-only with data/). Fetch
+# them first on the host:  python scripts/fetch_esm.py   (it writes data/esm2 and self-checks).
+# Sequences outside the 500 cached ones are then encoded at request time (about 2 s each on CPU)
+# and every such result is marked outside the evaluated subset.
+
+services:
+  api:
+    build:
+      args:
+        EXTRAS: serve,live
+    image: protloc-fusion-live-api:encoder
+    environment:
+      ENCODER_MODE: live
+      ESM_CACHE_DIR: /app/data/esm2
+      ESM_DEVICE: cpu

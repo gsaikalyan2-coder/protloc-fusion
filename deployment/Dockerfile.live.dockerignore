@@ -1,0 +1,10 @@
+# Build context for Dockerfile.live: only what the image copies. Everything else,
+# above all data/ (several GB) and node_modules, stays out of the context.
+*
+!backend/pyproject.toml
+!backend/ruff.toml
+!backend/protloc/
+!backend/rules/
+!configs/serving/
+**/__pycache__
+**/*.pyc
