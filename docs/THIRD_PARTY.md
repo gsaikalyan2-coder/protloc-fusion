@@ -40,6 +40,10 @@ this file is the live register.
 | 10 | `mahdip72/prot2token` | Methodology reference for unified multi-task protein prediction | **AGPL-3.0** (confirmed) + research-use-only | `8bd6ef846e21a08d80bf1a84bbbf923f10835a2d` (2025-06-06) | no | **Hard blocker — see §3** |
 | 11 | `mem0ai/mem0` | Project context memory service (development-time only) | Apache-2.0 | `c7ee362aff94a369af70f13f2b4f853f6793ff4c` (2026-09-11) | no | Dev tooling; never part of the served product |
 | 12 | `ashleve/lightning-hydra-template` | Config/experiment scaffolding pattern | **No LICENSE file at the pinned commit**; the README's badge claims MIT and its License section is empty — see §1.1 | `bddbc24b82ab6ccfa6243e815a49dc5bfe8d4144` (2023-09-25) | no | **Treat as unlicensed.** The pattern is adopted; no code is copied |
+| 17 | `radix-ui/colors` | Colour scale values copied into `docs/DESIGN.md` §1 (ADR-0020) | MIT | `dbdb85470547c7d34b9001f48fddb08ded335979` (2025-12-17), package 3.0.0 | no | Permissive. Values only; no package is installed or shipped |
+| 18 | `IBM/plex` | Interface and mono typefaces (ADR-0020) | SIL OFL 1.1 (`LICENSE.txt`) | `71f558992315a12ca1f06a2215d57962a1992162` (2026-10-16) | no | Permissive for embedding; shipped as woff2 via `@fontsource/ibm-plex-sans` and `@fontsource/ibm-plex-mono` 5.3.0 (OFL-1.1). Reserved Font Name "Plex": the files are not modified or renamed |
+| 19 | `radix-ui/primitives` | Unstyled accessible interaction primitives: `@radix-ui/react-dialog` 1.3.1, `@radix-ui/react-popover` 1.3.1, `@radix-ui/react-tabs` 1.2.1, `@radix-ui/react-tooltip` 1.4.1 (ADR-0020) | MIT | `eb3a2b7091293e27df8f9ba906632d8daa3d81a3` (HEAD read 2026-10-24); packages pinned exactly in `frontend/package.json` | no | Permissive — bundled into the frontend |
+| 20 | `lucide-icons/lucide` | Navigation and action icons, `lucide-react` 1.56.0 (ADR-0020) | ISC | `7faf87628a1ad6175975bc595344337ce14a7db4` (HEAD read 2026-10-24); package pinned exactly | no | Permissive — bundled into the frontend |
 
 Every `<PIN>` is resolved. Re-pinning a row means re-reading its licence at the new
 commit and recording both here in the same change.

@@ -8,23 +8,21 @@
  */
 import { useEffect, useState } from "react";
 import { predict, useJob } from "../services/demoApi";
+import { Scale } from "lucide-react";
 import {
   Card,
   Chip,
-  ExamplePicker,
-  GroupSelect,
+  EmptyState,
   JobState,
   ProvenanceBar,
+  SequenceForm,
+  Skeleton,
   useExamples,
 } from "../components/ui";
 
 function termList(ids: string[], empty: string) {
   if (ids.length === 0) return <span className="muted">{empty}</span>;
-  return (
-    <span className="mono" style={{ fontSize: "var(--text-xs)" }}>
-      {ids.join(" · ")}
-    </span>
-  );
+  return <span className="mono note">{ids.join(" · ")}</span>;
 }
 
 export default function Evidence() {
@@ -53,43 +51,48 @@ export default function Evidence() {
     <>
       <div className="head">
         <div>
-          <h1>Evidence Ledger</h1>
+          <h1>Evidence ledger</h1>
           <p className="sub">
             Model call vs. independent homology evidence, never merged into one number. Evidence is
             the nearest Swiss-Prot entries by MMseqs2 on this server, and what those entries already
             say.
           </p>
         </div>
-        <div className="row">
-          <GroupSelect value={group} onChange={setGroup} servedOnly />
-          <ExamplePicker
-            examples={examples}
-            value=""
-            onPick={(e) => {
-              setSeq(e.sequence);
-              setGroup(e.organism_group);
-            }}
-          />
-          <button
-            className="btn primary"
-            onClick={() => run(...predict(seq, group))}
-            disabled={busy || !seq.trim()}
-          >
-            {busy ? "Searching…" : "Search evidence"}
-          </button>
-        </div>
       </div>
 
-      <Card title="Query">
-        <textarea
-          value={seq}
-          onChange={(e) => {
-            setSeq(e.target.value);
-          }}
-          spellCheck={false}
-        />
-        <JobState job={job} error={error} accepted={accepted} onRetry={retry} />
-      </Card>
+      <SequenceForm
+        id="evidence-input"
+        label="Query"
+        value={seq}
+        onChange={setSeq}
+        group={group}
+        onGroup={setGroup}
+        examples={examples}
+        onPick={(e) => {
+          setSeq(e.sequence);
+          setGroup(e.organism_group);
+        }}
+        action="Search evidence"
+        busyAction="Searching…"
+        busy={busy}
+        onSubmit={() => void run(...predict(seq, group))}
+        compact={r !== null}
+      />
+      <JobState job={job} error={error} accepted={accepted} onRetry={retry} />
+      {busy && !r && (
+        <Card>
+          <Skeleton lines={4} label="Searching Swiss-Prot" />
+        </Card>
+      )}
+
+      {!busy && !r && !error && (
+        <Card>
+          <EmptyState icon={Scale} title="No search yet">
+            Run a query to see the model&apos;s call beside the nearest Swiss-Prot entries and the
+            GO terms they carry.
+          </EmptyState>
+        </Card>
+      )}
 
       {r && status && !status.available && (
         <div className="flag warning">
@@ -102,18 +105,18 @@ export default function Evidence() {
         <>
           <div className="grid two">
             <Card title="Model says">
-              <p className="row">
+              <p className="row tight model-call">
                 <Chip code={r.top_location} name={topRow?.name} />
                 <span>{topRow?.name}</span>
                 <span className="mono">{topRow?.probability.toFixed(2)}</span>
               </p>
-              <p className="muted" style={{ fontSize: "var(--text-sm)" }}>
+              <p className="hint">
                 {r.no_confident_call
                   ? "No compartment clears its own threshold: not asserted."
                   : "Asserted: at least one compartment clears its own threshold."}{" "}
                 Sequence hash <span className="mono">{r.sequence_sha256.slice(0, 12)}</span>
               </p>
-              <p style={{ fontSize: "var(--text-sm)", margin: 0 }}>
+              <p className="hint">
                 GO function (model):{" "}
                 {termList(
                   modelTerms.map((g) => g.name),
@@ -128,7 +131,7 @@ export default function Evidence() {
               )}
               {top && (
                 <>
-                  <p className="row">
+                  <p className="row tight model-call">
                     <span className="mono">{top.accession}</span>
                     <span className="mono">{(top.identity * 100).toFixed(1)}% id</span>
                     <span className="mono">e {top.evalue.toExponential(1)}</span>
@@ -144,7 +147,7 @@ export default function Evidence() {
                     </div>
                   )}
                   {agreement && (
-                    <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+                    <p className="note">
                       {agreement.voting_hits} voting hit(s). {agreement.basis}.
                     </p>
                   )}
@@ -155,102 +158,100 @@ export default function Evidence() {
 
           {agreement && (
             <Card title="Where the two paths differ (model GO vocabulary)">
-              <table>
-                <tbody>
-                  <tr>
-                    <td>both say</td>
-                    <td>{termList(agreement.shared, "none")}</td>
-                  </tr>
-                  <tr>
-                    <td>model only</td>
-                    <td>{termList(agreement.model_only, "none")}</td>
-                  </tr>
-                  <tr>
-                    <td>homology only</td>
-                    <td>{termList(agreement.homology_only, "none")}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="table-wrap">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>both say</td>
+                      <td>{termList(agreement.shared, "none")}</td>
+                    </tr>
+                    <tr>
+                      <td>model only</td>
+                      <td>{termList(agreement.model_only, "none")}</td>
+                    </tr>
+                    <tr>
+                      <td>homology only</td>
+                      <td>{termList(agreement.homology_only, "none")}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </Card>
           )}
 
           <Card title="Top hits" aside={<span className="badge homology">homology</span>}>
-            <table>
-              <thead>
-                <tr>
-                  <th>accession</th>
-                  <th>identity</th>
-                  <th>e-value</th>
-                  <th>bits</th>
-                  <th>query cov.</th>
-                  <th>target cov.</th>
-                  <th>aln. length</th>
-                  <th>GO terms carried</th>
-                </tr>
-              </thead>
-              <tbody>
-                {hits.map((h) => (
-                  <tr key={h.accession}>
-                    <td className="mono">{h.accession}</td>
-                    <td className="mono">{(h.identity * 100).toFixed(1)}%</td>
-                    <td className="mono">{h.evalue.toExponential(1)}</td>
-                    <td className="mono">{h.bits.toFixed(0)}</td>
-                    <td className="mono">{(h.query_coverage * 100).toFixed(0)}%</td>
-                    <td className="mono">{(h.target_coverage * 100).toFixed(0)}%</td>
-                    <td className="mono">{h.alignment_length}</td>
-                    <td style={{ fontSize: "var(--text-xs)" }}>
-                      {h.go_term_count === 0
-                        ? "—"
-                        : `${h.go_term_count}: ${h.go_terms
-                            .slice(0, 3)
-                            .map((t) => t.name)
-                            .join(", ")}${h.go_term_count > 3 ? "…" : ""}`}
-                    </td>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>accession</th>
+                    <th>identity</th>
+                    <th>e-value</th>
+                    <th>bits</th>
+                    <th>query cov.</th>
+                    <th>target cov.</th>
+                    <th>aln. length</th>
+                    <th>GO terms carried</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {hits.length === 0 && (
-              <p className="muted" style={{ fontSize: "var(--text-sm)" }}>
-                No hits to show.
-              </p>
-            )}
+                </thead>
+                <tbody>
+                  {hits.map((h) => (
+                    <tr key={h.accession}>
+                      <td className="mono">{h.accession}</td>
+                      <td className="mono">{(h.identity * 100).toFixed(1)}%</td>
+                      <td className="mono">{h.evalue.toExponential(1)}</td>
+                      <td className="mono">{h.bits.toFixed(0)}</td>
+                      <td className="mono">{(h.query_coverage * 100).toFixed(0)}%</td>
+                      <td className="mono">{(h.target_coverage * 100).toFixed(0)}%</td>
+                      <td className="mono">{h.alignment_length}</td>
+                      <td className="note">
+                        {h.go_term_count === 0
+                          ? "—"
+                          : `${h.go_term_count}: ${h.go_terms
+                              .slice(0, 3)
+                              .map((t) => t.name)
+                              .join(", ")}${h.go_term_count > 3 ? "…" : ""}`}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {hits.length === 0 && <p className="hint">No hits to show.</p>}
           </Card>
 
           <Card
             title="GO terms carried by the voting homologs"
             aside={<span className="badge homology">homology · transferred</span>}
           >
-            <table>
-              <thead>
-                <tr>
-                  <th>term</th>
-                  <th>name</th>
-                  <th>share of voting hits</th>
-                  <th>from</th>
-                  <th>identity</th>
-                  <th>in the model's vocabulary</th>
-                </tr>
-              </thead>
-              <tbody>
-                {r.evidence_go.map((t) => (
-                  <tr key={t.go_id}>
-                    <td className="mono">{t.go_id}</td>
-                    <td>{t.name ?? "—"}</td>
-                    <td className="mono">{(t.score * 100).toFixed(0)}%</td>
-                    <td className="mono">{t.source_accession}</td>
-                    <td className="mono">{(t.identity * 100).toFixed(1)}%</td>
-                    <td>{t.in_model_vocabulary ? "yes" : "no"}</td>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>term</th>
+                    <th>name</th>
+                    <th>share of voting hits</th>
+                    <th>from</th>
+                    <th>identity</th>
+                    <th>in the model's vocabulary</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {r.evidence_go.length === 0 && (
-              <p className="muted" style={{ fontSize: "var(--text-sm)" }}>
-                No term transferred.
-              </p>
-            )}
-            <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+                </thead>
+                <tbody>
+                  {r.evidence_go.map((t) => (
+                    <tr key={t.go_id}>
+                      <td className="mono">{t.go_id}</td>
+                      <td>{t.name ?? "—"}</td>
+                      <td className="mono">{(t.score * 100).toFixed(0)}%</td>
+                      <td className="mono">{t.source_accession}</td>
+                      <td className="mono">{(t.identity * 100).toFixed(1)}%</td>
+                      <td>{t.in_model_vocabulary ? "yes" : "no"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {r.evidence_go.length === 0 && <p className="hint">No term transferred.</p>}
+            <p className="note">
               Swiss-Prot {status?.swissprot_release}, evidence bundle {status?.bundle_version}.
               These terms are read from the matched entries' own annotation; they never enter a
               model score, a calibrator or a threshold. The hit's source accession is always shown.

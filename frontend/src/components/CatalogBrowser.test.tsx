@@ -94,7 +94,7 @@ describe("CatalogBrowser", () => {
     expect(last).toMatchObject({ q: "arabidopsis", partition: 5, offset: 0, limit: 25 });
   });
 
-  it("opens a row in the Inspector with its sequence and group", async () => {
+  it("opens a row in Predict with its sequence and group", async () => {
     const onOpen = vi.fn();
     render(<CatalogBrowser onOpen={onOpen} />);
     await settle();

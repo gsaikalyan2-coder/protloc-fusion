@@ -30,7 +30,7 @@ describe("toProblem", () => {
     const p = toProblem(422, text);
     expect(p.kind).toBe("not_cached");
     expect(p.message).toBe(text);
-    expect(p.hint).toContain("Gallery");
+    expect(p.hint).toContain("Catalog");
   });
 
   it("422 for an unserved group says which groups are served", () => {

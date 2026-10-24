@@ -66,12 +66,14 @@ it actually stands:
 
 ```
 frontend/src/        React + Vite + TS SPA
-  App.tsx            sidebar shell, 5 screens, no router dependency
-  pages/             Triage · Inspector · Evidence · Scanner · Trust
-  components/        ui.tsx (Chip, ConfidenceRow, Flags, ProvenanceBar, Card)
+  App.tsx            app shell (ADR-0020): sidebar, top bar, hash routes, command palette
+  pages/             Home · Inspector (Predict) · Triage (Batch) · Compare · Gallery (Catalog)
+                     · Evidence · Scanner · Trust · About
+  components/        ui.tsx (Chip, ConfidenceRow, Flags, Card, Select, Segmented, SequenceForm,
+                     Tip, Skeleton, EmptyState) · Sidebar · TopBar · StatusPill · CommandPalette
                      SequenceTrack.tsx (attribution / hydropathy / alignment)
   services/          api.ts (scaffold client) · demoApi.ts (202-then-poll, in use)
-  styles/            tokens.css (generated) · app.css · tokens.demo.css
+  styles/            tokens.css (generated) · app.css · shell.css · pages.css · tokens.demo.css
   types/             api.ts · api.generated.ts (generated from the OpenAPI spec)
 backend/protloc/
   domain/            contracts.py (frozen HTTP contract) · ports.py · types.py
@@ -300,10 +302,11 @@ multi-task loss.
   runtime. A literal `0.5` in code is a bug, not a default.
 - **Colors:** every color comes from `docs/DESIGN.md` tokens. A raw hex in a component is
   a review rejection.
-- **React only.** The frontend is React + Vite + TypeScript with plain CSS driven by the
-  generated tokens. No CSS framework, no component library, no styling or UI runtime
-  beyond React and its type packages. A dependency that renders UI is a decision, and
-  decisions become ADRs.
+- **React plus ADR-0020.** The frontend is React + Vite + TypeScript with plain CSS driven
+  by the generated tokens. ADR-0020 admits unstyled Radix Primitives, `lucide-react` and
+  the self-hosted IBM Plex fonts; nothing else. No CSS framework, no styled component
+  library, no styling runtime. A dependency that renders UI is a decision, and decisions
+  become ADRs; `scripts/check_frontend_deps.py` is the allowlist.
 - **Queries:** parameterized only. No `SELECT *` in production paths.
 - **Secrets:** never in code, never in logs, never in a run manifest.
 - **Restricted licenses:** repos marked restricted in `docs/THIRD_PARTY.md` are read,
@@ -394,6 +397,8 @@ docs say so rather than promising durability the host cannot deliver.
 | 0016 | Serving engine: numpy heads over cached ESM-2 states, served groups, one engine config, refuse to start | Accepted 2026-10-05 | 14, 15, 19 |
 | 0017 | Residue attribution from the trained heads, each served only after a frozen deletion test | Accepted 2026-10-05 | 15 |
 | 0018 | Nightingale deferred; the hand-built sequence viewer is polished instead | Accepted 2026-10-05 | 18 |
+| 0019 | Opt-in live ESM-2 encoder for uncached sequences, self-checked against the cache | Accepted 2026-10-24 | live encoder |
+| 0020 | Design system: Radix Colors values, unstyled Radix Primitives, IBM Plex, lucide icons | Accepted 2026-10-24 | design D1-D7 |
 
 ### Phase 0 close — 2026-09-28
 

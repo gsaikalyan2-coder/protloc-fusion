@@ -17,7 +17,8 @@ import {
   type HistoryEntry,
 } from "../services/history";
 import { ServerDownloads } from "./ServerDownloads";
-import { Card } from "./ui";
+import { History } from "lucide-react";
+import { Card, EmptyState } from "./ui";
 
 function when(ms: number): string {
   const d = new Date(ms);
@@ -70,7 +71,7 @@ export function RecentJobs({
       aside={
         shown.length > 0 ? (
           <button
-            className="btn"
+            className="btn ghost sm"
             onClick={() => {
               clearHistory();
             }}
@@ -81,76 +82,82 @@ export function RecentJobs({
       }
     >
       {shown.length === 0 ? (
-        <p className="sub" style={{ margin: 0 }}>
-          No jobs yet. Jobs you run here are listed in this browser only; nothing is stored on a
-          server beyond the result's retention window.
-        </p>
+        <EmptyState icon={History} title="No jobs yet">
+          Jobs you run here are listed in this browser only; nothing is stored on a server beyond
+          the result&apos;s retention window.
+        </EmptyState>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>when</th>
-              <th>kind</th>
-              <th>what</th>
-              <th>group</th>
-              <th>state</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {shown.map((e) => {
-              const state = live[e.job_id] ?? "checking";
-              const reopen = e.kind !== "batch" && e.sequence;
-              const downloadable = state === "completed" && e.kind !== "scan";
-              return (
-                <tr key={e.job_id}>
-                  <td className="mono">{when(e.submitted_at)}</td>
-                  <td>{e.kind}</td>
-                  <td className="mono" title={e.job_id}>
-                    {e.label}
-                    {e.kind === "batch" ? ` (${String(e.sequence_count)})` : ""}
-                  </td>
-                  <td>{e.organism_group}</td>
-                  <td>{STATE_TEXT[state]}</td>
-                  <td>
-                    <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
-                      {reopen && (
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>when</th>
+                <th>kind</th>
+                <th>what</th>
+                <th>group</th>
+                <th>state</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {shown.map((e) => {
+                const state = live[e.job_id] ?? "checking";
+                const reopen = e.kind !== "batch" && e.sequence;
+                const downloadable = state === "completed" && e.kind !== "scan";
+                return (
+                  <tr key={e.job_id}>
+                    <td className="mono">{when(e.submitted_at)}</td>
+                    <td>{e.kind}</td>
+                    <td className="mono" title={e.job_id}>
+                      {e.label}
+                      {e.kind === "batch" ? ` (${String(e.sequence_count)})` : ""}
+                    </td>
+                    <td>{e.organism_group}</td>
+                    <td>
+                      <span className="state" data-state={state}>
+                        {STATE_TEXT[state]}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="row tight cell-action">
+                        {reopen && (
+                          <button
+                            className="btn sm"
+                            aria-label={`Open ${e.label} again`}
+                            onClick={() => {
+                              onOpen({
+                                id: e.label,
+                                sequence: e.sequence ?? "",
+                                group: e.organism_group,
+                                kind: e.kind,
+                              });
+                            }}
+                          >
+                            Open
+                          </button>
+                        )}
+                        {downloadable && (
+                          <ServerDownloads jobId={e.job_id} formats={["csv", "json"]} />
+                        )}
                         <button
-                          className="btn"
-                          aria-label={`Open ${e.label} again`}
+                          className="btn ghost sm"
+                          aria-label={`Forget ${e.label}`}
                           onClick={() => {
-                            onOpen({
-                              id: e.label,
-                              sequence: e.sequence ?? "",
-                              group: e.organism_group,
-                              kind: e.kind,
-                            });
+                            removeHistory(e.job_id);
                           }}
                         >
-                          Open
+                          Forget
                         </button>
-                      )}
-                      {downloadable && (
-                        <ServerDownloads jobId={e.job_id} formats={["csv", "json"]} />
-                      )}
-                      <button
-                        className="btn"
-                        aria-label={`Forget ${e.label}`}
-                        onClick={() => {
-                          removeHistory(e.job_id);
-                        }}
-                      >
-                        Forget
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
-      <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+      <p className="note">
         Kept in this browser's local storage, newest first (at most 20). Clearing it or using a
         private window removes it. Anyone who has a job link can read its result until it expires.
       </p>

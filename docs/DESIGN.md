@@ -4,9 +4,9 @@ Single source of truth for the visual system. Every UI surface, every exported
 paper figure, and every generated diagram reads its colors, spacing and states
 from this document. Nothing hardcodes a hex value that is not defined here.
 
-Status: **v0.1 — proposed.** Token *names* are stable and may be depended on.
-Token *values* may still change until v1.0 is tagged alongside the first model
-registry release.
+Status: **v0.2 — accepted (ADR-0020).** Neutrals, accent and state colours are
+Radix Colors steps; type is IBM Plex. Token *names* from v0.1 are unchanged and
+may be depended on; v0.2 only adds names.
 
 ---
 
@@ -37,74 +37,115 @@ All tokens are CSS custom properties on `:root`, redefined under
 `:root[data-theme="dark"]` and under `@media (prefers-color-scheme: dark)` for
 viewers who have set no explicit preference.
 
+**Source of the values (v0.2, ADR-0020).** Every neutral, accent and state colour
+below is a step of a [Radix Colors](https://github.com/radix-ui/colors) 12-step
+scale (MIT, `radix-ui/colors` at `dbdb854`, package 3.0.0), copied here as values:
+no Radix Colors package ships to the browser. The scales are **Sand** (neutrals),
+**Indigo** (the one UI accent), **Amber** (warning) and **Red** (blocking). Each
+value is annotated with its scale and step so a change can be made by moving a
+step, not by inventing a hex. The compartment palette in §2 is unchanged and is
+not a Radix scale: it is a fixed dictionary of its own.
+
+Radix's step semantics are kept: 1–2 backgrounds, 3–5 component states, 6–8
+borders, 9–10 solid fills, 11 low-contrast text, 12 high-contrast text.
+
 ### 1.1 Neutrals and surfaces
 
 ```css
 :root {
-  /* Surfaces — page, card, inset */
-  --surface-0:        #FBFAF8;
-  --surface-1:        #FFFFFF;
-  --surface-2:        #F4F2EE;
+  /* Surfaces — page, card, inset, and the two interaction states */
+  --surface-0:           #F9F9F8;  /* sand 2  — page */
+  --surface-1:           #FFFFFF;  /* white   — card, panel, popover */
+  --surface-2:           #F1F0EF;  /* sand 3  — inset, input, table header */
+  --surface-hover:       #E9E8E6;  /* sand 4 */
+  --surface-active:      #E2E1DE;  /* sand 5 */
 
-  /* Text */
-  --text-primary:     #15130F;
-  --text-secondary:   #5B564E;
-  --text-muted:       #8A8479;
-  --text-inverse:     #FBFAF8;
+  /* Text. Radix uses step 12 and step 11 for text and nothing lighter, so
+     --text-muted equals --text-secondary: both clear 4.5:1 on every surface.
+     --text-disabled is for disabled controls and placeholders only. */
+  --text-primary:        #21201C;  /* sand 12 */
+  --text-secondary:      #63635E;  /* sand 11 */
+  --text-muted:          #63635E;  /* sand 11 */
+  --text-disabled:       #8D8D86;  /* sand 9  */
+  --text-inverse:        #FDFDFC;  /* sand 1  */
 
   /* Borders */
-  --border:           #E4E0D8;
-  --border-strong:    #CFC9BE;
-  --border-stronger:  #A9A296;
+  --border:              #DAD9D6;  /* sand 6 — dividers, card edges */
+  --border-strong:       #CFCECA;  /* sand 7 — control edges */
+  --border-stronger:     #BCBBB5;  /* sand 8 — hovered control edges */
 
-  /* The single UI accent — links, focus rings, primary buttons.
-     Deliberately desaturated so it never competes with a compartment. */
-  --accent:           #3A3A6E;
-  --accent-hover:     #2C2C57;
-  --accent-subtle:    #ECECF4;
-  --focus-ring:       #3A3A6E;
+  /* The single UI accent — links, focus, the selected nav item.
+     Indigo is a blue; the nucleus compartment ink (#3D3C8C) is a violet,
+     and the two are never placed adjacent at the same weight. */
+  --accent:              #3A5BC7;  /* indigo 11 */
+  --accent-hover:        #1F2D5C;  /* indigo 12 */
+  --accent-subtle:       #EDF2FE;  /* indigo 3  */
+  --accent-subtle-hover: #E1E9FF;  /* indigo 4  */
+  --accent-solid:        #3E63DD;  /* indigo 9  */
+  --focus-ring:          #3E63DD;  /* indigo 9  — 4.9:1 on the page */
+
+  /* Primary action. Achromatic on purpose: the strongest button on a page
+     is ink, not a hue, so it never competes with a compartment. */
+  --action-bg:           #21201C;  /* sand 12 */
+  --action-bg-hover:     #3B3A37;  /* sand dark 6 */
+  --action-text:         #FDFDFC;  /* sand 1  */
 }
 
 :root[data-theme="dark"] {
-  --surface-0:        #121110;
-  --surface-1:        #1B1A18;
-  --surface-2:        #242220;
+  --surface-0:           #111110;  /* sand dark 1 */
+  --surface-1:           #191918;  /* sand dark 2 */
+  --surface-2:           #222221;  /* sand dark 3 */
+  --surface-hover:       #2A2A28;  /* sand dark 4 */
+  --surface-active:      #31312E;  /* sand dark 5 */
 
-  --text-primary:     #F2EFE9;
-  --text-secondary:   #B3AEA4;
-  --text-muted:       #7E7970;
-  --text-inverse:     #121110;
+  --text-primary:        #EEEEEC;  /* sand dark 12 */
+  --text-secondary:      #B5B3AD;  /* sand dark 11 */
+  --text-muted:          #B5B3AD;  /* sand dark 11 */
+  --text-disabled:       #6F6D66;  /* sand dark 9  */
+  --text-inverse:        #111110;  /* sand dark 1  */
 
-  --border:           #2E2C29;
-  --border-strong:    #423F3A;
-  --border-stronger:  #5E5A53;
+  --border:              #3B3A37;  /* sand dark 6 */
+  --border-strong:       #494844;  /* sand dark 7 */
+  --border-stronger:     #62605B;  /* sand dark 8 */
 
-  --accent:           #A9A9E0;
-  --accent-hover:     #C0C0EC;
-  --accent-subtle:    #24243A;
-  --focus-ring:       #A9A9E0;
+  --accent:              #9EB1FF;  /* indigo dark 11 */
+  --accent-hover:        #D6E1FF;  /* indigo dark 12 */
+  --accent-subtle:       #182449;  /* indigo dark 3  */
+  --accent-subtle-hover: #1D2E62;  /* indigo dark 4  */
+  --accent-solid:        #3E63DD;  /* indigo dark 9  */
+  --focus-ring:          #5472E4;  /* indigo dark 10 — 4.4:1 on the page */
+
+  --action-bg:           #EEEEEC;  /* sand dark 12 */
+  --action-bg-hover:     #B5B3AD;  /* sand dark 11 */
+  --action-text:         #111110;  /* sand dark 1  */
 }
 ```
 
-### 1.2 Type scale
+### 1.2 Type
 
-Two families. One sans for interface, one mono for anything that is a residue,
-an accession, a hash, or a coordinate.
+Two families from **IBM Plex** (SIL OFL 1.1), self-hosted through
+`@fontsource` so no request leaves the page. Plex Sans for the interface; Plex
+Mono for anything that is a residue, an accession, a hash, a probability or a
+coordinate.
 
 ```css
 :root {
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --text-xs:   12px;   /* metadata, hashes, axis ticks */
-  --text-sm:   13px;   /* table cells, captions, badge text */
-  --text-base: 15px;   /* body */
+  --text-xs:   12px;   /* metadata, hashes, axis ticks, overlines */
+  --text-sm:   13px;   /* table cells, captions, badges, nav */
+  --text-base: 14px;   /* body and controls */
+  --text-md:   16px;   /* card titles, the launch input */
   --text-lg:   18px;   /* section headings */
-  --text-xl:   22px;   /* page title */
-  --text-2xl:  28px;   /* landing hero only */
+  --text-xl:   24px;   /* page title */
+  --text-2xl:  32px;   /* home launchpad only */
 
   --leading-tight: 1.25;
-  --leading-body:  1.6;
+  --leading-body:  1.55;
+
+  --tracking-tight: -0.01em;  /* --text-xl and up */
+  --tracking-caps:   0.06em;  /* uppercase overlines */
 
   --weight-regular: 400;
   --weight-medium:  500;
@@ -112,9 +153,10 @@ an accession, a hash, or a coordinate.
 ```
 
 Two weights only — 400 and 500. Bold-heavy interfaces read as marketing; this
-is an instrument.
+is an instrument. Numerals that are compared down a column use
+`font-variant-numeric: tabular-nums`.
 
-### 1.3 Space, radius, elevation
+### 1.3 Space, radius, elevation, layers
 
 ```css
 :root {
@@ -122,16 +164,29 @@ is an instrument.
   --space-4: 16px;  --space-5: 24px;  --space-6: 32px;
   --space-7: 48px;  --space-8: 64px;
 
-  --radius-sm: 4px;   /* badges, chips, inputs */
-  --radius-md: 8px;   /* buttons, panels */
-  --radius-lg: 12px;  /* cards */
+  --radius-sm:   4px;     /* badges, chips, checkboxes */
+  --radius-md:   6px;     /* buttons, inputs, menus */
+  --radius-lg:   8px;     /* cards, panels, dialogs */
+  --radius-full: 9999px;  /* status dots, pills */
 
   --border-width:      1px;
   --border-width-emph: 3px;   /* left rule on trust callouts */
 
   /* Elevation is expressed with borders, not shadows, except for
-     genuinely floating layers (dropdown, drawer, modal). */
-  --shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.12);
+     genuinely floating layers (menu, popover, tooltip, dialog, toast). */
+  --shadow-overlay: 0 10px 38px -10px rgb(22 23 24 / 0.35), 0 10px 20px -15px rgb(22 23 24 / 0.2);
+  /* Behind a modal layer (the command palette, dialogs). */
+  --scrim:          rgb(22 23 24 / 0.32);
+
+  --z-sticky:  10;
+  --z-topbar:  20;
+  --z-overlay: 50;
+  --z-toast:   60;
+}
+
+:root[data-theme="dark"] {
+  --shadow-overlay: 0 10px 38px -10px rgb(0 0 0 / 0.7), 0 10px 20px -15px rgb(0 0 0 / 0.5);
+  --scrim:          rgb(0 0 0 / 0.55);
 }
 ```
 
@@ -139,9 +194,9 @@ is an instrument.
 
 ```css
 :root {
-  --duration-fast: 120ms;
-  --duration-base: 200ms;
-  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+  --duration-fast: 120ms;   /* hover, focus, press */
+  --duration-base: 180ms;   /* panels, menus, the collapsing sidebar */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
 }
 @media (prefers-reduced-motion: reduce) {
   :root { --duration-fast: 0ms; --duration-base: 0ms; }
@@ -150,6 +205,21 @@ is an instrument.
 
 No animated transitions on anything that displays a probability. A number that
 counts up is a number a reader cannot copy mid-animation.
+
+### 1.5 Layout
+
+```css
+:root {
+  --sidebar-width:           240px;
+  --sidebar-width-collapsed: 64px;
+  --topbar-height:           52px;
+  --content-max:             1440px;
+  --content-gutter:          32px;
+}
+```
+
+The content column is fluid up to `--content-max` and centred; it never
+leaves a dead gutter on one side.
 
 ---
 
@@ -314,14 +384,17 @@ These are the only three saturated non-compartment colors in the entire product.
 
 ```css
 :root {
-  --state-note:   #5B564E;  --state-note-bg:  #F4F2EE;
-  --state-warn:   #8A5A11;  --state-warn-bg:  #F9F0DF;
-  --state-block:  #A32D2D;  --state-block-bg: #FAE9E9;
+  /* *-ink is the text colour on the matching *-bg; the bare token is the
+     3px rule and icon. Amber 11 is 4.3:1 on amber 3, under the AA floor, so
+     warning text uses amber 12. */
+  --state-note:      #63635E;  --state-note-ink:  #63635E;  --state-note-bg:  #F1F0EF;  /* sand 11 / 11 / 3 */
+  --state-warn:      #AB6400;  --state-warn-ink:  #4F3422;  --state-warn-bg:  #FFF7C2;  /* amber 11 / 12 / 3 */
+  --state-block:     #CE2C31;  --state-block-ink: #CE2C31;  --state-block-bg: #FEEBEC;  /* red 11 / 11 / 3 */
 }
 :root[data-theme="dark"] {
-  --state-note:   #B3AEA4;  --state-note-bg:  #242220;
-  --state-warn:   #E7BE79;  --state-warn-bg:  #3B2C10;
-  --state-block:  #F09595;  --state-block-bg: #3E1A1A;
+  --state-note:      #B5B3AD;  --state-note-ink:  #B5B3AD;  --state-note-bg:  #222221;  /* sand dark 11 / 11 / 3 */
+  --state-warn:      #FFCA16;  --state-warn-ink:  #FFCA16;  --state-warn-bg:  #302008;  /* amber dark 11 / 11 / 3 */
+  --state-block:     #FF9592;  --state-block-ink: #FF9592;  --state-block-bg: #3B1219;  /* red dark 11 / 11 / 3 */
 }
 ```
 
@@ -419,6 +492,31 @@ otherwise.
 - If the evidence service is unavailable, the panel renders a degraded state
   (`Evidence unavailable — predictions above are unaffected`) and the rest of
   the page is unchanged. Evidence failure must never block a result.
+
+---
+
+## 3.6 Application shell and shared components (v0.2, ADR-0020)
+
+Implemented in `frontend/src/styles/{shell,app,pages}.css` and `components/ui.tsx`.
+
+- **Shell.** Grouped sidebar (Home · Analyze · Explore · Model), collapsible to icons; a top bar
+  with breadcrumb, command palette (⌘K / Ctrl+K), backend status and theme. Below 768 px the
+  sidebar is a drawer. Routes are URL hashes.
+- **One primary action per screen**, drawn in `--action-bg` (ink, not a hue). Secondary
+  buttons are bordered surface; ghost buttons have no border. Heights 28 / 32 / 40 px.
+- **Inputs** are 32 px, `--radius-md`, surface-1 with a `--border-strong` edge; focus adds the
+  focus ring. Selects are native with a drawn chevron.
+- **Segmented controls** choose one of a few visible options (organism group, explanation
+  method). Groups no trained head serves are disabled and say why.
+- **Tables** sit in a bordered wrapper with a surface-2 header row, tabular numerals and
+  right-aligned numbers. A clickable row is keyboard-operable.
+- **Empty states** name what the place is for and the one thing to do next; **skeletons**
+  stand in while a request is in flight and never look like abstention (§3.2, §3.4).
+- **Result page order:** input · result header · five-cell summary · per-residue track beside the
+  3D backbone · detail cards · protein space · tabs (consistency, engines, export) · provenance.
+- **3D views** are hand-drawn canvases with one control set (drag, arrows, wheel, +/−, 0) and an
+  idle spin that never runs under reduced motion. 3D is used only where position carries meaning
+  (a backbone, a representation space); a number to be compared is never drawn in 3D.
 
 ---
 

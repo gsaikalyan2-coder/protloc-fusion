@@ -3,7 +3,8 @@ import type { ReactElement } from "react";
 import { useStructure, type Result } from "../services/demoApi";
 import type { Mode } from "./SequenceTrack";
 import { StructureViewer } from "./StructureViewer";
-import { Card, ProblemNotice } from "./ui";
+import { Box } from "lucide-react";
+import { Card, EmptyState, ProblemNotice, Skeleton } from "./ui";
 
 export function StructurePanel({
   result,
@@ -19,20 +20,26 @@ export function StructurePanel({
   const aligned = structure !== null && structure.ca.length === result.sequence.length;
 
   return (
-    <Card title="3D backbone (AlphaFold DB, orientation only)">
+    <Card
+      title="3D backbone"
+      aside={<span className="badge">AlphaFold DB · orientation only</span>}
+    >
       {state.status === "loading" && (
-        <p className="muted" role="status">
-          Loading the AlphaFold backbone...
-        </p>
+        <>
+          <p className="hint" role="status">
+            Loading the AlphaFold backbone…
+          </p>
+          <Skeleton lines={6} label="Loading" />
+        </>
       )}
       {state.status === "missing" && (
-        <p className="muted" role="status">
-          {state.message}
-        </p>
+        <EmptyState icon={Box} title="Nothing to draw">
+          {state.message} The prediction is unaffected; the 3D view is orientation only.
+        </EmptyState>
       )}
       {state.status === "error" && <ProblemNotice problem={state.problem} />}
       {structure && !aligned && (
-        <p className="muted" role="status">
+        <p className="hint" role="status">
           The stored backbone has {String(structure.ca.length)} residues but this sequence has{" "}
           {String(result.sequence.length)}, so nothing is drawn.
         </p>
@@ -40,7 +47,7 @@ export function StructurePanel({
       {structure && aligned && (
         <>
           <StructureViewer result={result} mode={mode} structure={structure} cursor={cursor} />
-          <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+          <p className="note">
             {structure.note} Source: {structure.source}, {structure.accession}, model version{" "}
             {String(structure.model_version ?? "not reported")}; {structure.license}. Colouring by
             an explanation track puts that track on the AlphaFold backbone for orientation; the

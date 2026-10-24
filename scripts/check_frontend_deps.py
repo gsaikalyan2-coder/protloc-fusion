@@ -34,11 +34,39 @@ PACKAGE_JSON = REPO_ROOT / "frontend" / "package.json"
 # An exact version: 1.2.3, optionally with a prerelease or build suffix.
 _EXACT_VERSION = re.compile(r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$")
 
-# Runtime dependencies. React and its DOM renderer, and nothing else: no CSS
-# framework, no component library, no state, routing or styling runtime.
+# Runtime dependencies. React and its DOM renderer, plus what ADR-0020 admits:
+# no CSS framework, no styled component library, no state, routing or styling runtime.
 ALLOWED_DEPENDENCIES: dict[str, str] = {
     "react": "the UI runtime named in CLAUDE.md",
     "react-dom": "React's DOM renderer",
+    "@fontsource/ibm-plex-sans": (
+        "IBM Plex Sans font files, self-hosted (ADR-0020, docs/DESIGN.md §1.2). "
+        "CSS @font-face and woff2 only; no script, renders no UI. SIL OFL 1.1."
+    ),
+    "@fontsource/ibm-plex-mono": (
+        "IBM Plex Mono font files, self-hosted (ADR-0020, docs/DESIGN.md §1.2). "
+        "CSS @font-face and woff2 only; no script, renders no UI. SIL OFL 1.1."
+    ),
+    "@radix-ui/react-dialog": (
+        "unstyled, accessible modal dialog (focus trap, scroll lock, Escape) for the "
+        "command palette (ADR-0020, design D2). Styled with our tokens. MIT."
+    ),
+    "@radix-ui/react-popover": (
+        "unstyled, collision-aware popover for the backend status details (ADR-0020, "
+        "design D2). Styled with our tokens. MIT."
+    ),
+    "@radix-ui/react-tabs": (
+        "unstyled, accessible tabs (roving focus, arrow keys) for the secondary panels of "
+        "a result (ADR-0020, design D5). Styled with our tokens. MIT."
+    ),
+    "@radix-ui/react-tooltip": (
+        "unstyled hover-and-focus tooltip for provenance badges (ADR-0020, design D3). "
+        "Styled with our tokens. MIT."
+    ),
+    "lucide-react": (
+        "16 px stroke icons for navigation and actions only (ADR-0020, design D2). "
+        "Tree-shaken SVG components; ISC."
+    ),
 }
 
 # Build and check tooling. None of it ships to the browser.

@@ -1,5 +1,18 @@
-/* Shared building blocks. Chip = compartment (color + code); ConfidenceRow = DESIGN.md 3.1. */
-import { useEffect, useState, type ReactElement, type ReactNode } from "react";
+/*
+ * Shared building blocks (design D3, ADR-0020). Chip = compartment (colour + code);
+ * ConfidenceRow = DESIGN.md §3.1. Styling lives in styles/app.css; dynamic values reach CSS as
+ * custom properties (--chip-fill, --p, --tau), never as inline colours.
+ */
+import {
+  useEffect,
+  useState,
+  type CSSProperties,
+  type ReactElement,
+  type ReactNode,
+  type SelectHTMLAttributes,
+} from "react";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import { ChevronDown, type LucideIcon } from "lucide-react";
 import {
   getExamples,
   getVersion,
@@ -38,7 +51,7 @@ export function Chip({
   return (
     <span
       className={`chip ${cls}`}
-      style={{ background: locVar(code), color: locText(code) }}
+      style={{ "--chip-fill": locVar(code), "--chip-ink": locText(code) } as CSSProperties}
       title={name ?? code}
     >
       {code}
@@ -49,44 +62,45 @@ export function Chip({
 /** Which engine answered, and whether a fitted calibrator was applied. Never hidden. */
 export function ProvenanceBadge({ src }: { src: TaskSource | undefined }) {
   if (!src) return null;
+  const why =
+    src.source === "motif"
+      ? "Produced by the interpretable motif engine, not a trained model."
+      : `Produced by registry bundle ${src.bundle_version ?? "?"} (sha256 ${(src.bundle_sha256 ?? "").slice(0, 12)}…).`;
   return (
-    <span
-      className={`badge ${src.source}`}
-      title={
-        src.source === "motif"
-          ? "Produced by the interpretable motif engine, not a trained model."
-          : `Produced by registry bundle ${src.bundle_version ?? "?"} (sha256 ${(src.bundle_sha256 ?? "").slice(0, 12)}…).`
-      }
-    >
-      {src.source} · {src.calibrated ? "calibrated" : "uncalibrated"}
-    </span>
+    <Tip content={why}>
+      <button
+        type="button"
+        className={`badge ${src.source}`}
+        aria-label={`${src.source}, ${src.calibrated ? "calibrated" : "uncalibrated"}. ${why}`}
+      >
+        {src.source} · {src.calibrated ? "calibrated" : "uncalibrated"}
+      </button>
+    </Tip>
   );
 }
 
 /** One label's row. The threshold marker is this label's own threshold, not a constant. */
 export function ConfidenceRow({ row }: { row: LocRow }) {
   return (
-    <div className="conf" data-band={row.confidence_band}>
-      <span className="row" style={{ gap: 6 }}>
+    <div
+      className="conf"
+      data-band={row.confidence_band}
+      data-predicted={row.predicted}
+      style={
+        {
+          "--p": `${String(row.probability * 100)}%`,
+          "--tau": `${String(row.threshold * 100)}%`,
+          "--ink": locText(row.code),
+        } as CSSProperties
+      }
+    >
+      <span className="conf-label">
         <Chip code={row.code} name={row.name} />
-        <span style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)" }}>
-          {row.name}
-        </span>
+        <span>{row.name}</span>
       </span>
-      <span className="track" style={{ position: "relative" }}>
-        <span
-          className="fill"
-          style={{
-            width: `${row.probability * 100}%`,
-            background: locText(row.code),
-            opacity: row.predicted ? 1 : 0.45,
-            display: "block",
-          }}
-        />
-        <span
-          className="tau"
-          style={{ position: "absolute", top: -2, bottom: -2, left: `${row.threshold * 100}%` }}
-        />
+      <span className="track">
+        <span className="fill" />
+        <span className="tau" title={`threshold ${row.threshold.toFixed(2)}`} />
       </span>
       <span className="num" title={`band: ${row.confidence_band}`}>
         {row.probability.toFixed(2)}
@@ -96,12 +110,7 @@ export function ConfidenceRow({ row }: { row: LocRow }) {
 }
 
 export function Flags({ flags }: { flags: Flag[] }) {
-  if (!flags.length)
-    return (
-      <p className="muted" style={{ fontSize: "var(--text-sm)" }}>
-        No consistency rule fired.
-      </p>
-    );
+  if (!flags.length) return <p className="hint">No consistency rule fired.</p>;
   return (
     <>
       {flags.map((f) => (
@@ -151,19 +160,10 @@ export function ProblemNotice({
       data-problem-kind={problem.kind}
     >
       <strong>{problem.title}.</strong> {problem.message}
-      <div style={{ fontSize: "var(--text-sm)", marginTop: "var(--space-1)" }}>{problem.hint}</div>
-      {problem.code && (
-        <div className="muted mono" style={{ fontSize: "var(--text-xs)" }}>
-          code: {problem.code}
-        </div>
-      )}
+      <div className="flag-detail">{problem.hint}</div>
+      {problem.code && <div className="note mono">code: {problem.code}</div>}
       {problem.retryable && onRetry && (
-        <button
-          type="button"
-          className="btn"
-          style={{ marginTop: "var(--space-2)" }}
-          onClick={onRetry}
-        >
+        <button type="button" className="btn sm" onClick={onRetry}>
           Try again
         </button>
       )}
@@ -193,7 +193,7 @@ export function JobState({
   const wait = accepted?.estimated_wait_seconds;
   const queued = (job?.status ?? "queued") === "queued";
   return (
-    <p className="muted mono" role="status" style={{ fontSize: "var(--text-sm)" }}>
+    <p className="jobline" role="status">
       job {(job?.job_id ?? accepted?.job_id ?? "").slice(0, 8)} · {job?.status ?? "queued"}
       {job ? ` · ${String(job.completed_count)}/${String(job.total)}` : ""}
       {queued && accepted ? ` · position ${String(accepted.queue_position)} in the queue` : ""}
@@ -207,22 +207,89 @@ export function JobState({
 export function Card({
   title,
   aside,
+  className,
   children,
 }: {
   title?: string;
   aside?: ReactNode;
+  className?: string;
   children: ReactNode;
 }) {
   return (
-    <section className="card">
+    <section className={className ? `card ${className}` : "card"}>
       {(title || aside) && (
-        <div className="head" style={{ marginBottom: "var(--space-3)" }}>
+        <div className="card-head">
           {title ? <h2>{title}</h2> : <span />}
           {aside}
         </div>
       )}
       {children}
     </section>
+  );
+}
+
+/** A native select with a drawn chevron: keeps the platform picker, keyboard and form semantics. */
+export function Select({
+  children,
+  className,
+  ...props
+}: SelectHTMLAttributes<HTMLSelectElement>): ReactElement {
+  return (
+    <span className={className ? `select ${className}` : "select"}>
+      <select {...props}>{children}</select>
+      <ChevronDown size={14} aria-hidden="true" />
+    </span>
+  );
+}
+
+/** Hover-and-focus tooltip for supplementary text. The trigger must be focusable. */
+export function Tip({ content, children }: { content: ReactNode; children: ReactElement }) {
+  return (
+    <Tooltip.Provider delayDuration={300}>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className="tooltip" sideOffset={6} collisionPadding={8}>
+            {content}
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
+  );
+}
+
+/** Placeholder lines while a request is in flight. Announced once as busy, not read line by line. */
+export function Skeleton({ lines = 3, label = "Loading" }: { lines?: number; label?: string }) {
+  return (
+    <div className="skeleton" role="status" aria-label={label} aria-busy="true">
+      {Array.from({ length: lines }, (_, i) => (
+        <span key={i} />
+      ))}
+    </div>
+  );
+}
+
+/** Nothing to show yet: what this place is for, and the one thing to do next. */
+export function EmptyState({
+  icon: Icon,
+  title,
+  children,
+  action,
+}: {
+  icon: LucideIcon;
+  title: string;
+  children?: ReactNode;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="empty">
+      <span className="empty-icon" aria-hidden="true">
+        <Icon size={18} strokeWidth={1.75} />
+      </span>
+      <strong>{title}</strong>
+      {children && <p>{children}</p>}
+      {action}
+    </div>
   );
 }
 
@@ -269,7 +336,8 @@ export function ExamplePicker({
   onPick: (e: Example) => void;
 }) {
   return (
-    <select
+    <Select
+      aria-label="Load an example"
       value={value}
       onChange={(ev) => {
         const ex = examples.find((x) => x.id === ev.target.value);
@@ -282,7 +350,7 @@ export function ExamplePicker({
           {e.name}
         </option>
       ))}
-    </select>
+    </Select>
   );
 }
 
@@ -325,7 +393,8 @@ export function GroupSelect({
 }) {
   const served = useServedGroups();
   return (
-    <select
+    <Select
+      aria-label="Organism group"
       value={value}
       onChange={(e) => {
         onChange(e.target.value);
@@ -339,6 +408,142 @@ export function GroupSelect({
           </option>
         );
       })}
-    </select>
+    </Select>
+  );
+}
+
+/**
+ * A segmented control: one choice from a few, all visible. A group of toggle buttons
+ * (`aria-pressed`), so each option is a real button in the tab order with its own name.
+ */
+export function Segmented<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: { value: T; label: string; disabled?: boolean; reason?: string }[];
+  onChange: (value: T) => void;
+}): ReactElement {
+  return (
+    <div className="segmented" role="group" aria-label={label}>
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          className="btn"
+          aria-pressed={o.value === value}
+          disabled={o.disabled}
+          title={o.disabled ? o.reason : undefined}
+          onClick={() => {
+            onChange(o.value);
+          }}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** The organism group as a segmented control; groups no trained head covers are disabled. */
+export function GroupSegmented({
+  value,
+  onChange,
+  allGroups = false,
+}: {
+  value: string;
+  onChange: (group: string) => void;
+  /** The motif engine covers every group, so the Scanner enables all four. */
+  allGroups?: boolean;
+}): ReactElement {
+  const served = useServedGroups();
+  return (
+    <Segmented
+      label="Organism group"
+      value={value}
+      onChange={onChange}
+      options={GROUPS.map(([v, l]) => ({
+        value: v,
+        label: l,
+        disabled: !allGroups && served !== null && !served.has(v),
+        reason: "No trained head covers this group; it is refused, not guessed.",
+      }))}
+    />
+  );
+}
+
+/**
+ * The sequence input shared by Predict, Evidence and the Scanner: one labelled textarea, the
+ * organism group, an example picker and the screen's one action. `children` adds controls
+ * between the picker and the action (the Scanner's target and mutation fields).
+ */
+export function SequenceForm({
+  id,
+  label = "Sequence",
+  value,
+  onChange,
+  group,
+  onGroup,
+  examples,
+  onPick,
+  action,
+  busyAction,
+  busy,
+  onSubmit,
+  compact = false,
+  allGroups = false,
+  children,
+}: {
+  id: string;
+  label?: string;
+  value: string;
+  onChange: (value: string) => void;
+  group: string;
+  onGroup: (group: string) => void;
+  examples: Example[];
+  onPick: (e: Example) => void;
+  action: string;
+  busyAction: string;
+  busy: boolean;
+  onSubmit: () => void;
+  compact?: boolean;
+  allGroups?: boolean;
+  children?: ReactNode;
+}): ReactElement {
+  const residues = value.replace(/\s+/g, "").length;
+  return (
+    <form
+      className={compact ? "card input-card compact" : "card input-card"}
+      onSubmit={(ev) => {
+        ev.preventDefault();
+        onSubmit();
+      }}
+    >
+      <label htmlFor={id} className="launch-label">
+        {label}
+        <span className="note">{residues > 0 ? `${String(residues)} residues` : "empty"}</span>
+      </label>
+      <textarea
+        id={id}
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+        }}
+        spellCheck={false}
+      />
+      <div className="launch-controls">
+        <GroupSegmented value={group} onChange={onGroup} allGroups={allGroups} />
+        <div className="row tight">
+          <ExamplePicker examples={examples} value="" onPick={onPick} />
+          {children}
+          <button className="btn primary" type="submit" disabled={busy || !value.trim()}>
+            {busy ? busyAction : action}
+          </button>
+        </div>
+      </div>
+    </form>
   );
 }

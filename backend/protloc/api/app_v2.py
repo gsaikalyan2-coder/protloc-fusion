@@ -36,7 +36,7 @@ from protloc.domain.errors import (
     api_code_for_refusal,
     error_object,
 )
-from protloc.inference import catalog, export, service, structures
+from protloc.inference import catalog, export, service, space, structures
 from protloc.inference.engine import CONFIG_FILE, EngineRefusal, load_engine
 from protloc.inference.fasta import parse_fasta_strict
 from protloc.inference.trust import trust_payload
@@ -459,6 +459,26 @@ def get_structure(sequence_sha256: str) -> dict[str, Any]:
             "differs from the one scored here.",
         )
     return {**document, "note": _STRUCTURE_NOTE}
+
+
+@app.get("/demo/space")
+def get_space() -> dict[str, Any]:
+    """The protein-space map: every cached sequence placed by PCA of its ESM-2 vector.
+
+    Built offline by ``scripts/build_space.py`` and served only if its bytes match the manifest.
+    Orientation only: positions and neighbours are not predictions and never feed a score.
+    """
+    store = space.store_for(get_serving_settings().DATA_ROOT / "space")
+    try:
+        document = store.get()
+    except space.SpaceError as exc:
+        raise ApiError("space_refused", f"Protein-space map refused: {exc}") from exc
+    if document is None:
+        raise ApiError(
+            "space_not_built",
+            "The protein-space map has not been built. Run: python scripts/build_space.py",
+        )
+    return {**document, "provenance": service.provenance()}
 
 
 @app.post("/demo/predict")

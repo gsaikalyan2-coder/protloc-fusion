@@ -97,7 +97,7 @@ export const CODE_TEXT: Readonly<Record<string, CodeText>> = {
   not_cached: {
     kind: "not_cached",
     title: "Not one of the sequences this build can score",
-    hint: "Open one from the Gallery. Anything else is refused rather than guessed.",
+    hint: "Open one from the Catalog. Anything else is refused rather than guessed.",
   },
   invalid_sequence: {
     kind: "invalid_input",
@@ -152,6 +152,16 @@ export const CODE_TEXT: Readonly<Record<string, CodeText>> = {
     kind: "no_structure",
     title: "No structure for this sequence",
     hint: "The prediction is unaffected; the 3D view is orientation only.",
+  },
+  space_not_built: {
+    kind: "server_error",
+    title: "The protein-space map has not been built",
+    hint: "Run python scripts/build_space.py, then reload. Predictions are unaffected.",
+  },
+  space_refused: {
+    kind: "server_error",
+    title: "The protein-space map failed its integrity check",
+    hint: "Rebuild it with python scripts/build_space.py. Predictions are unaffected.",
   },
   structure_refused: {
     kind: "server_error",

@@ -10,7 +10,7 @@
 import { describeError } from "../services/problems";
 import { useEffect, useState } from "react";
 import { getTrust, getVersion } from "../services/demoApi";
-import { Card, Chip, ProvenanceBar } from "../components/ui";
+import { Card, Chip, ProvenanceBar, Skeleton } from "../components/ui";
 
 interface Interval {
   value: number;
@@ -87,8 +87,28 @@ export default function Trust() {
       .catch(() => undefined);
   }, []);
 
-  if (error) return <p className="err">Backend error: {error}</p>;
-  if (!t) return <p className="muted">Loading calibration…</p>;
+  if (error)
+    return (
+      <>
+        <div className="head">
+          <h1>Trust &amp; abstention</h1>
+        </div>
+        <p className="flag blocked" role="alert">
+          Could not load the calibration record: {error}
+        </p>
+      </>
+    );
+  if (!t)
+    return (
+      <>
+        <div className="head">
+          <h1>Trust &amp; abstention</h1>
+        </div>
+        <Card>
+          <Skeleton lines={6} label="Loading calibration" />
+        </Card>
+      </>
+    );
 
   const chosen = t.labels.find((l) => l.label === pick) ?? t.labels[0];
   const macro = t.macro;
@@ -102,23 +122,21 @@ export default function Trust() {
     <>
       <div className="head">
         <div>
-          <h1>Trust &amp; Abstention Console</h1>
+          <h1>Trust &amp; abstention</h1>
           <p className="sub">
             What a probability from this system is worth. Calibrators and per-label thresholds were
             fitted cross-fold on validation partitions {t.validation_partitions.join(", ")}; the
             numbers below are the frozen Phase 10 measurements, not recomputed here.
           </p>
-          <p className="mono muted" style={{ fontSize: "var(--text-xs)" }}>
-            {t.scope_label}
-          </p>
-          <p className="mono muted" style={{ fontSize: "var(--text-xs)" }}>
+          <p className="note mono">{t.scope_label}</p>
+          <p className="note mono">
             threshold policy: {t.threshold_policy} · calibrator: {t.calibration_version} · source:
             model · bundle {t.bundle_version} ({t.bundle_sha256.slice(0, 12)}…)
           </p>
         </div>
       </div>
 
-      <div className="grid kpi">
+      <div className="grid kpi kpi-row">
         {(
           [
             ["macro ECE before", span(eceRaw)],
@@ -127,11 +145,9 @@ export default function Trust() {
             ["ECE change", span(eceDelta)],
           ] as const
         ).map(([l, v]) => (
-          <div className="card" key={l} style={{ marginBottom: 0 }}>
-            <div className="kpi-v" style={{ fontSize: "var(--text-lg)" }}>
-              {v}
-            </div>
+          <div className="kpi-tile" key={l}>
             <div className="kpi-l">{l}</div>
+            <div className="kpi-v kpi-sm">{v}</div>
           </div>
         ))}
       </div>
@@ -139,50 +155,60 @@ export default function Trust() {
       <Card
         title="Per-label calibrator and threshold"
         aside={
-          <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
+          <span className="note">
             {t.n_labelled_rows} labelled rows · 95% bootstrap intervals by cluster
           </span>
         }
       >
-        <table>
-          <thead>
-            <tr>
-              <th>label</th>
-              <th>calibrator</th>
-              <th>threshold</th>
-              <th>positives</th>
-              <th>ECE before</th>
-              <th>ECE after</th>
-              <th>change</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {t.labels.map((l) => (
-              <tr
-                key={l.label}
-                className={`pick ${l.label === chosen?.label ? "on" : ""}`}
-                onClick={() => {
-                  setPick(l.label);
-                }}
-              >
-                <td>
-                  <Chip code={l.code} name={l.name} /> {l.name}
-                </td>
-                <td className="mono">{l.calibrated ? l.method : "identity"}</td>
-                <td className="mono">{l.threshold.toFixed(3)}</td>
-                <td className="mono">{l.positives}</td>
-                <td className="mono">{fmt(l.ece_raw.value)}</td>
-                <td className="mono">{fmt(l.ece_calibrated.value)}</td>
-                <td className="mono">{span(l.ece_delta)}</td>
-                <td className="muted" style={{ fontSize: "var(--text-xs)" }}>
-                  {l.ece_change_significant ? "interval excludes 0" : "no significant change"}
-                </td>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>label</th>
+                <th>calibrator</th>
+                <th>threshold</th>
+                <th>positives</th>
+                <th>ECE before</th>
+                <th>ECE after</th>
+                <th>change</th>
+                <th />
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+            </thead>
+            <tbody>
+              {t.labels.map((l) => (
+                <tr
+                  key={l.label}
+                  className={`pick ${l.label === chosen?.label ? "on" : ""}`}
+                  tabIndex={0}
+                  aria-current={l.label === chosen?.label ? "true" : undefined}
+                  onClick={() => {
+                    setPick(l.label);
+                  }}
+                  onKeyDown={(ev) => {
+                    if (ev.key === "Enter" || ev.key === " ") {
+                      ev.preventDefault();
+                      setPick(l.label);
+                    }
+                  }}
+                >
+                  <td>
+                    <Chip code={l.code} name={l.name} /> {l.name}
+                  </td>
+                  <td className="mono">{l.calibrated ? l.method : "identity"}</td>
+                  <td className="num">{l.threshold.toFixed(3)}</td>
+                  <td className="num">{l.positives}</td>
+                  <td className="num">{fmt(l.ece_raw.value)}</td>
+                  <td className="num">{fmt(l.ece_calibrated.value)}</td>
+                  <td className="num">{span(l.ece_delta)}</td>
+                  <td className="note">
+                    {l.ece_change_significant ? "interval excludes 0" : "no significant change"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="note mt-3">
           {t.significance_rule}. Labels with few positives (peroxisome, plastid) carry wide
           intervals; read their rows as indications, not findings.
         </p>
@@ -192,61 +218,60 @@ export default function Trust() {
         <Card
           title={`Reliability — ${chosen.name}`}
           aside={
-            <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
+            <span className="note">
               {t.bins} equal-width score bins · click a label above to change
             </span>
           }
         >
-          <table>
-            <thead>
-              <tr>
-                <th>score bin</th>
-                <th>n</th>
-                <th>mean score (after)</th>
-                <th>observed positive rate</th>
-                <th>gap</th>
-                <th>uncalibrated: mean score → positive rate</th>
-              </tr>
-            </thead>
-            <tbody>
-              {chosen.reliability.calibrated.map((b, i) => {
-                const raw = chosen.reliability.raw[i];
-                if (b.rows === 0 || b.mean_score === null || b.fraction_positive === null)
-                  return null;
-                const gap = b.fraction_positive - b.mean_score;
-                return (
-                  <tr key={i}>
-                    <td className="mono">
-                      {(i / t.bins).toFixed(1)}–{((i + 1) / t.bins).toFixed(1)}
-                    </td>
-                    <td className="mono">{b.rows}</td>
-                    <td className="mono">{fmt(b.mean_score)}</td>
-                    <td className="mono">{fmt(b.fraction_positive)}</td>
-                    <td
-                      className="mono"
-                      style={{ color: Math.abs(gap) > 0.1 ? "var(--state-warn)" : undefined }}
-                    >
-                      {gap >= 0 ? "+" : ""}
-                      {gap.toFixed(3)}
-                    </td>
-                    <td className="mono muted" style={{ fontSize: "var(--text-xs)" }}>
-                      {raw &&
-                      raw.rows > 0 &&
-                      raw.mean_score !== null &&
-                      raw.fraction_positive !== null
-                        ? `${raw.mean_score.toFixed(2)} → ${raw.fraction_positive.toFixed(2)} (n ${raw.rows})`
-                        : "—"}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>score bin</th>
+                  <th>n</th>
+                  <th>mean score (after)</th>
+                  <th>observed positive rate</th>
+                  <th>gap</th>
+                  <th>uncalibrated: mean score → positive rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {chosen.reliability.calibrated.map((b, i) => {
+                  const raw = chosen.reliability.raw[i];
+                  if (b.rows === 0 || b.mean_score === null || b.fraction_positive === null)
+                    return null;
+                  const gap = b.fraction_positive - b.mean_score;
+                  return (
+                    <tr key={i}>
+                      <td className="mono">
+                        {(i / t.bins).toFixed(1)}–{((i + 1) / t.bins).toFixed(1)}
+                      </td>
+                      <td className="num">{b.rows}</td>
+                      <td className="num">{fmt(b.mean_score)}</td>
+                      <td className="num">{fmt(b.fraction_positive)}</td>
+                      <td className={Math.abs(gap) > 0.1 ? "num gap-warn" : "num"}>
+                        {gap >= 0 ? "+" : ""}
+                        {gap.toFixed(3)}
+                      </td>
+                      <td className="note mono">
+                        {raw &&
+                        raw.rows > 0 &&
+                        raw.mean_score !== null &&
+                        raw.fraction_positive !== null
+                          ? `${raw.mean_score.toFixed(2)} → ${raw.fraction_positive.toFixed(2)} (n ${raw.rows})`
+                          : "—"}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </Card>
       )}
 
       <Card title="Abstention">
-        <p style={{ fontSize: "var(--text-sm)" }}>
+        <p className="sub">
           There is no single τ. Each label asserts when its calibrated probability reaches its own
           threshold (table above, chosen to maximise MCC for that label). When no label reaches its
           threshold the result says <em>no confident call</em> and shows the highest score only for
@@ -256,33 +281,31 @@ export default function Trust() {
 
       <Card
         title="Consistency rule set"
-        aside={
-          <span className="mono muted" style={{ fontSize: "var(--text-xs)" }}>
-            rules {t.provenance?.rules_version}
-          </span>
-        }
+        aside={<span className="note mono">rules {t.provenance?.rules_version}</span>}
       >
-        <table>
-          <thead>
-            <tr>
-              <th>id</th>
-              <th>severity</th>
-              <th>rule</th>
-              <th>status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rules.map((r) => (
-              <tr key={r.id}>
-                <td className="mono">{r.id}</td>
-                <td className="mono">{r.severity}</td>
-                <td>{r.message}</td>
-                <td className="mono muted">{r.active === false ? "inactive" : "active"}</td>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>severity</th>
+                <th>rule</th>
+                <th>status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+            </thead>
+            <tbody>
+              {rules.map((r) => (
+                <tr key={r.id}>
+                  <td className="mono">{r.id}</td>
+                  <td className="mono">{r.severity}</td>
+                  <td>{r.message}</td>
+                  <td className="mono muted">{r.active === false ? "inactive" : "active"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="note mt-3">
           An inactive rule is not evaluated: R06 compares the model with the annotated location of
           the nearest hit, and Phase 13's hits carry GO terms but no location.
         </p>
