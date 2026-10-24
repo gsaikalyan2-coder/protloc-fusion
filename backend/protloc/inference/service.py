@@ -13,9 +13,11 @@ evidence. Nothing here scores anything.
 
 from typing import Any
 
+from protloc.data.records import normalize_sequence, sequence_sha256
 from protloc.features.classical import LOC_NAMES, ORGANISM_GROUPS
 from protloc.inference import motif
 from protloc.inference.engine import Engine, EngineRefusal
+from protloc.inference.result_cache import DEFAULT_CAPACITY, Key, ResultCache
 
 parse_fasta = motif.parse_fasta
 parse_mutations = motif.parse_mutations
@@ -29,6 +31,7 @@ _MULTI_COMPARTMENT_MIN = 2
 _CLOSE_HOMOLOG_IDENTITY = 0.3
 
 _engine: Engine | None = None
+_cache = ResultCache(DEFAULT_CAPACITY)
 
 
 class EngineNotConfigured(RuntimeError):  # noqa: N818
@@ -53,18 +56,62 @@ def provenance() -> dict[str, Any]:
     return dict(engine().provenance)
 
 
+def configure_cache(capacity: int) -> None:
+    """Replace the result cache with an empty one of ``capacity`` entries (0 turns it off)."""
+    global _cache  # noqa: PLW0603 - one cache per process, beside the one engine
+    _cache = ResultCache(capacity)
+
+
+def cache_stats() -> dict[str, Any]:
+    """Size, hits, misses and hit rate of the result cache."""
+    return _cache.stats()
+
+
+def _key(raw: str, group: str, with_evidence: bool) -> Key | None:
+    """The cache key, or ``None`` when the sequence does not normalize (the engine refuses it)."""
+    try:
+        return (sequence_sha256(normalize_sequence(raw)), group, with_evidence)
+    except ValueError:
+        return None
+
+
 def predict(
     seq_raw: str, group: str, seq_id: str = "query", with_evidence: bool = True
 ) -> dict[str, Any]:
     """One sequence through the engine; an :class:`EngineRefusal` is a ``ValueError``."""
-    return engine().predict(seq_raw, group, seq_id, with_evidence)
+    only = predict_many([(seq_id, seq_raw)], group, with_evidence)[0]
+    if isinstance(only, EngineRefusal):
+        raise only
+    return only
 
 
 def predict_many(
     records: list[tuple[str, str]], group: str, with_evidence: bool = True
 ) -> list[dict[str, Any] | EngineRefusal]:
-    """Many sequences with one evidence search; refusals are returned in place."""
-    return engine().predict_many(records, group, with_evidence)
+    """Many sequences with one evidence search; refusals are returned in place.
+
+    Results already in the cache are served from it; only the rest reach the engine, still in
+    one call (one evidence search). Order is preserved.
+    """
+    model = str(engine().provenance["model_version"])
+    keys = [_key(raw, group, with_evidence) for _, raw in records]
+    outcome: list[dict[str, Any] | EngineRefusal | None] = []
+    todo: list[int] = []
+    for index, ((seq_id, _), key) in enumerate(zip(records, keys, strict=True)):
+        hit = _cache.get(key, model, seq_id) if key is not None and _cache.enabled else None
+        outcome.append(hit)
+        if hit is None:
+            todo.append(index)
+    if todo:
+        fresh = engine().predict_many([records[i] for i in todo], group, with_evidence)
+        for index, result in zip(todo, fresh, strict=True):
+            key = keys[index]
+            if isinstance(result, dict):
+                result["result_cache"] = "miss"
+                if key is not None:
+                    _cache.put(key, model, result, with_evidence)
+            outcome[index] = result
+    return [r for r in outcome if r is not None]
 
 
 def scan(

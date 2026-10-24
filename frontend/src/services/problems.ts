@@ -104,6 +104,21 @@ export const CODE_TEXT: Readonly<Record<string, CodeText>> = {
     title: "The sequence holds characters the model cannot use",
     hint: "Use the standard amino-acid letters only.",
   },
+  job_not_finished: {
+    kind: "job_failed",
+    title: "The job has not finished yet",
+    hint: "Wait until it shows as completed, then download again.",
+  },
+  no_results: {
+    kind: "job_failed",
+    title: "This job has no results to download",
+    hint: "It failed or was cancelled. Run the prediction again.",
+  },
+  export_unsupported: {
+    kind: "invalid_input",
+    title: "That format is not available for this job",
+    hint: "Scanner jobs download as JSON only.",
+  },
   unknown_job: {
     kind: "unknown_job",
     title: "The server does not know this job",

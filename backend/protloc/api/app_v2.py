@@ -24,7 +24,7 @@ from typing import Any
 from fastapi import FastAPI, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from protloc.config.serving import get_serving_settings
@@ -36,7 +36,7 @@ from protloc.domain.errors import (
     api_code_for_refusal,
     error_object,
 )
-from protloc.inference import catalog, service, structures
+from protloc.inference import catalog, export, service, structures
 from protloc.inference.engine import CONFIG_FILE, EngineRefusal, load_engine
 from protloc.inference.fasta import parse_fasta_strict
 from protloc.inference.trust import trust_payload
@@ -61,6 +61,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     configure_logging(settings.LOG_LEVEL)
     METRICS.reset()
     service.configure(load_engine(settings))
+    service.configure_cache(settings.RESULT_CACHE_ENTRIES)
     catalog.configure(
         catalog.load_for(settings.DATA_ROOT, CONFIG_FILE, service.engine().has_states)
     )
@@ -411,6 +412,7 @@ def metrics() -> dict[str, Any]:
     return {
         **METRICS.snapshot(),
         "queue": {"depth": jobs.depth(), "pending_sequences": jobs.pending_sequences()},
+        "result_cache": service.cache_stats(),
         "evidence": service.engine().evidence_state,
         "catalog": catalog.current().state(),
         **service.provenance(),
@@ -543,6 +545,37 @@ def get_job(job_id: str) -> dict[str, Any]:
         body.update(j["result"])
     body.update(service.provenance())
     return body
+
+
+@app.get("/demo/jobs/{job_id}/results")
+def download_results(
+    job_id: str,
+    format: str = Query("json", pattern="^(json|csv|fasta)$"),  # noqa: A002
+) -> Response:
+    """The whole finished job as a file: JSON, one-row-per-sequence CSV, or FASTA."""
+    j = jobs.get(job_id)
+    if j is None:
+        raise ApiError("unknown_job", "Unknown job_id")
+    if jobs.expired(j):
+        raise ApiError("result_expired", "Result expired")
+    if j["status"] in ("queued", "running"):
+        raise ApiError("job_not_finished", f"The job is {j['status']}; download it once completed.")
+    if j["status"] != "completed" or not isinstance(j.get("result"), dict):
+        raise ApiError("no_results", f"The job is {j['status']}; it has no results to download.")
+    merged = {**{k: v for k, v in j.items() if k != "result"}, **j["result"]}
+    mode = str(merged.get("mode", ""))
+    if not export.supports(mode, format):
+        raise ApiError(
+            "export_unsupported", f"A {mode} job exports as JSON only, not {format.upper()}."
+        )
+    media_type, _ = export.FORMATS[format]
+    return Response(
+        export.build(merged, service.provenance(), format),
+        media_type=media_type,
+        headers={
+            "Content-Disposition": f'attachment; filename="{export.filename(job_id, format)}"'
+        },
+    )
 
 
 @app.post("/demo/jobs/{job_id}/cancel")

@@ -48,6 +48,15 @@ class ServingSettings(BaseSettings):
     SWISSPROT_DB_PATH: Path = Field(description="Directory of the MMseqs2 Swiss-Prot index.")
     EVIDENCE_TIMEOUT_SECONDS: int = Field(ge=1, description="Wall-clock budget of one search.")
     EVIDENCE_TOP_K: int = Field(ge=1, description="Hits shown per sequence.")
+    RESULT_CACHE_ENTRIES: int = Field(
+        default=1024,
+        ge=0,
+        description=(
+            "Finished results kept in memory and served again for the same sequence and group "
+            "(0 turns the cache off). Degraded results are never kept. Like LOG_LEVEL it has a "
+            "default because it changes speed, never which model is served."
+        ),
+    )
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         default="INFO",
         description=(

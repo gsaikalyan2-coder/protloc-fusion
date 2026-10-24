@@ -35,8 +35,16 @@ def test_an_unknown_refusal_code_falls_back_to_job_failed() -> None:
 
 def test_retryable_only_where_a_retry_can_change_the_outcome() -> None:
     retryable = {code for code, spec in ERRORS.items() if spec.retryable}
-    assert retryable == {"structure_refused", "demo_disabled", "job_failed"}
-    for code in ("not_cached", "sequence_too_long", "invalid_input", "group_not_served"):
+    # job_not_finished: the same download succeeds once the job completes (feature 6).
+    assert retryable == {"structure_refused", "demo_disabled", "job_failed", "job_not_finished"}
+    for code in (
+        "not_cached",
+        "sequence_too_long",
+        "invalid_input",
+        "group_not_served",
+        "no_results",
+        "export_unsupported",
+    ):
         assert not ERRORS[code].retryable
 
 
