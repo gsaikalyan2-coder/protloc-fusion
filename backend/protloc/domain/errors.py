@@ -59,6 +59,8 @@ _SPECS: Final[tuple[ErrorSpec, ...]] = (
     ErrorSpec("structure_bad_hash", 400, "The structure key is not a SHA-256 digest.", False),
     ErrorSpec("structure_not_found", 404, "No structure is stored for this sequence.", False),
     ErrorSpec("structure_refused", 500, "The stored structure failed its integrity check.", True),
+    ErrorSpec("space_not_built", 404, "The protein-space map has not been built.", False),
+    ErrorSpec("space_refused", 500, "The protein-space map failed its integrity check.", False),
     ErrorSpec("demo_disabled", 503, "The service is switched off.", True),
     ErrorSpec("model_error", 500, "The model could not score this sequence.", False),
     ErrorSpec("job_failed", 500, "The job failed.", True),
